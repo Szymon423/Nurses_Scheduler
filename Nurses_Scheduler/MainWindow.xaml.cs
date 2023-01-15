@@ -1,4 +1,6 @@
-﻿using Nurses_Scheduler.Windows;
+﻿using Nurses_Scheduler.Classes;
+using Nurses_Scheduler.Windows;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,18 +26,31 @@ namespace Nurses_Scheduler
         public MainWindow()
         {
             InitializeComponent();
+
+            ReadDatabase();
         }
 
         private void AddDepartmentWindow_Button(object sender, RoutedEventArgs e)
         {
             AddDepartmentWindow addDepartmentWindow = new AddDepartmentWindow();
             addDepartmentWindow.ShowDialog();
+            ReadDatabase();
         }
 
         private void AddEmployeeWindow_Button(object sender, RoutedEventArgs e)
         {
             AddEmployeeWindow addEmployeeWindow = new AddEmployeeWindow();  
-            addEmployeeWindow.ShowDialog(); 
+            addEmployeeWindow.ShowDialog();
+            ReadDatabase();
+        }
+
+        void ReadDatabase()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
+            {
+                conn.CreateTable<Department>();
+                var department = conn.Table<Department>().ToList();
+            }
         }
     }
 }

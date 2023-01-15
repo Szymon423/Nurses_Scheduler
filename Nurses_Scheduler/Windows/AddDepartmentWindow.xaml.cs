@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Nurses_Scheduler.Classes;
+using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +28,19 @@ namespace Nurses_Scheduler.Windows
 
         private void AddDepartment_Button(object sender, RoutedEventArgs e)
         {
-            // zrób coś
+            //TODO: Save contact
+            Department department = new Department()
+            { 
+                DepartmentName = DepartmentName_TextBox.Text,
+                DepartmentShortName = DepartmentShortName_TextBox.Text
+            };
+
+            using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
+            {
+                connection.CreateTable<Department>();
+                connection.Insert(department);
+            }
+
             Close();
         }
     }

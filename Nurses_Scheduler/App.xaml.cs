@@ -13,5 +13,8 @@ namespace Nurses_Scheduler
     /// </summary>
     public partial class App : Application
     {
+        static string databaseName = "data.db";
+        static string folderPath = Environment.CurrentDirectory;
+        public static string databasePath = System.IO.Path.Combine(folderPath, databaseName);
     }
 }
