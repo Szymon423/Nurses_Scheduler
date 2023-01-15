@@ -6,15 +6,17 @@
         xmlns:local="clr-namespace:Nurses_Scheduler"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Title="Grafiki" Height="300" Width="400">
-    <Grid>
-        <StackPanel Margin="15">
-            <Button Content="DODAJ ODDZIAŁ" 
-                    Click="AddDepartmentWindow_Button"
-                    Margin="0, 0, 0, 5"/>
-            
-            <Button Content="DODAJ PRACOWNIKA" 
-                    Click="AddEmployeeWindow_Button"
-                    Margin="0, 0, 0, 5"/>
-        </StackPanel>
-    </Grid>
+
+    <StackPanel Margin="15">
+        <Button Content="DODAJ ODDZIAŁ" 
+                Click="AddDepartmentWindow_Button"
+                Margin="0, 0, 0, 5"/>
+
+        <Button Content="DODAJ PRACOWNIKA" 
+                Click="AddEmployeeWindow_Button"
+                Margin="0, 0, 0, 5"/>
+        <ListView x:Name="Department_ListView"
+                  Margin="0 0 0 5"/>
+    </StackPanel>
+
 </Window>

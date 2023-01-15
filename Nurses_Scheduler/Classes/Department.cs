@@ -18,5 +18,10 @@ namespace Nurses_Scheduler.Classes
         public string DepartmentName { get; set; }
 
         public string DepartmentShortName { get; set; }
+
+        public override string ToString()
+        {
+            return $"{DepartmentName} - ({DepartmentShortName})";
+        }
     }
 }

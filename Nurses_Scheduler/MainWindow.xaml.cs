@@ -46,10 +46,16 @@ namespace Nurses_Scheduler
 
         void ReadDatabase()
         {
+            List<Department> departmentList;
             using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
             {
                 conn.CreateTable<Department>();
-                var department = conn.Table<Department>().ToList();
+                departmentList = conn.Table<Department>().ToList();
+            }
+
+            if (departmentList != null)
+            {
+                Department_ListView.ItemsSource = departmentList;
             }
         }
     }
