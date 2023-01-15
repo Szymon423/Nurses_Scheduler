@@ -9,11 +9,14 @@ Glównym celem projektu jest stworzenie systemu wspomagającego tworzenie grafik
 2. Dobór odpowiednich narzędzi
 3. Szkic aplikacji
 
-### Tutoriale z których chcę korzystać:
+### Tutoriale z których Korzystam:
 
 1. <a href="https://www.youtube.com/watch?v=gSfMNjWNoX0&list=PLLWMQd6PeGY3QEHCmCWaUKNhmFFdIDxE8">WPF with Tim Corey</a>
 2. <a href="https://www.youtube.com/watch?v=66K5Nmmc9g8">SQLite</a>
 3. <a href="https://www.youtube.com/watch?v=ayp3tHEkRc0">How to create DB file</a>
+4. <a href="https://www.udemy.com/course/windows-presentation-foundation-masterclass/">Windows Presentation Foundation Masterclass</a>
+
+
 
 
 
