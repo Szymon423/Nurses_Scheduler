@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nurses_Scheduler.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,18 @@ namespace Nurses_Scheduler
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void AddDepartmentWindow_Button(object sender, RoutedEventArgs e)
+        {
+            AddDepartmentWindow addDepartmentWindow = new AddDepartmentWindow();
+            addDepartmentWindow.ShowDialog();
+        }
+
+        private void AddEmployeeWindow_Button(object sender, RoutedEventArgs e)
+        {
+            AddEmployeeWindow addEmployeeWindow = new AddEmployeeWindow();  
+            addEmployeeWindow.ShowDialog(); 
         }
     }
 }

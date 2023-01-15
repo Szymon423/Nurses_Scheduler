@@ -1,0 +1,22 @@
+﻿<Window x:Class="Nurses_Scheduler.Windows.AddEmployeeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Nurses_Scheduler.Windows"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="Dodaj pracownika" Height="300" Width="300">
+    <StackPanel Margin="15">
+        <Label>Imię:</Label>
+        <TextBox x:Name="EmployeeName_TextBox"></TextBox>
+        <Label>Nazwisko:</Label>
+        <TextBox x:Name="EmployeeLastName_TextBox"></TextBox>
+        <Label>Oddział:</Label>
+        <TextBox x:Name="EmployeeDepartment_TextBox"></TextBox>
+        <Label>Stanowisko:</Label>
+        <TextBox x:Name="EmployeeOcupation_TextBox"></TextBox>
+        <Button Content="DODAJ PRACOWNIKA" 
+                Click="AddEmployee_Button"
+                Margin="0, 10, 0, 0"/>
+    </StackPanel>
+</Window>

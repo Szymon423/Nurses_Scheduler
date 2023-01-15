@@ -4,9 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nurses_Scheduler"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="Grafiki" Height="300" Width="400">
     <Grid>
-
+        <StackPanel Margin="15">
+            <Button Content="DODAJ ODDZIAŁ" 
+                    Click="AddDepartmentWindow_Button"
+                    Margin="0, 0, 0, 5"/>
+            
+            <Button Content="DODAJ PRACOWNIKA" 
+                    Click="AddEmployeeWindow_Button"
+                    Margin="0, 0, 0, 5"/>
+        </StackPanel>
     </Grid>
 </Window>
