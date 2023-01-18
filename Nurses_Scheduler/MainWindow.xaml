@@ -16,7 +16,21 @@
                 Click="AddEmployeeWindow_Button"
                 Margin="0, 0, 0, 5"/>
         <ListView x:Name="Department_ListView"
-                  Margin="0 0 0 5"/>
+                  Margin="0 0 0 5"
+                  Height="150" >
+            <ListView.ItemTemplate >
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding DepartmentName}"
+                                   FontSize="20"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="{Binding DepartmentShortName}"
+                                   FontSize="15"
+                                   FontStyle="Italic"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </StackPanel>
 
 </Window>
