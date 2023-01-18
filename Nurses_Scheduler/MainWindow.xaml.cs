@@ -23,9 +23,13 @@ namespace Nurses_Scheduler
     /// </summary>
     public partial class MainWindow : Window
     {
+        List<Department> departmentList;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            departmentList = new List<Department>();
 
             ReadDatabase();
         }
@@ -46,7 +50,6 @@ namespace Nurses_Scheduler
 
         void ReadDatabase()
         {
-            List<Department> departmentList;
             using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
             {
                 conn.CreateTable<Department>();
@@ -57,6 +60,15 @@ namespace Nurses_Scheduler
             {
                 Department_ListView.ItemsSource = departmentList;
             }
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox searchTextBox = sender as TextBox;
+
+            var filteredList = departmentList.Where(d => d.DepartmentName.ToLower().Contains(searchTextBox.Text.ToLower())).ToList();
+            Department_ListView.ItemsSource = filteredList;
+
         }
     }
 }
