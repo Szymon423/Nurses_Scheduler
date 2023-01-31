@@ -54,6 +54,10 @@ namespace Nurses_Scheduler
             {
                 conn.CreateTable<Department>();
                 departmentList = (conn.Table<Department>().ToList()).OrderBy(c => c.DepartmentName).ToList();
+
+                departmentList = (from c in conn.Table<Department>().ToList()
+                                orderby c.DepartmentName descending
+                                select c ).ToList();  
             }
 
             if (departmentList != null)
@@ -69,6 +73,18 @@ namespace Nurses_Scheduler
             var filteredList = departmentList.Where(d => d.DepartmentName.ToLower().Contains(searchTextBox.Text.ToLower())).ToList();
             Department_ListView.ItemsSource = filteredList;
 
+        }
+
+        private void Department_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Department selectedDepartment = (Department)Department_ListView.SelectedItem;
+
+            if (selectedDepartment != null)
+            {
+                ModifyDepartmentWindow modifyDepartmentWindow = new ModifyDepartmentWindow(selectedDepartment);
+                modifyDepartmentWindow.ShowDialog();
+            }
+            ReadDatabase();
         }
     }
 }
