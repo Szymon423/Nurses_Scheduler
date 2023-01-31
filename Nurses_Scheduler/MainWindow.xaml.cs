@@ -53,7 +53,7 @@ namespace Nurses_Scheduler
             using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
             {
                 conn.CreateTable<Department>();
-                departmentList = conn.Table<Department>().ToList();
+                departmentList = (conn.Table<Department>().ToList()).OrderBy(c => c.DepartmentName).ToList();
             }
 
             if (departmentList != null)
