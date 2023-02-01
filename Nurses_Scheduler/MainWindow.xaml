@@ -5,22 +5,56 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nurses_Scheduler"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="Grafiki" Height="350" Width="400">
+        Title="Grafiki" Height="350" Width="800">
 
-    <StackPanel Margin="15">
-        <Button Content="DODAJ ODDZIAŁ" 
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="15"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="15"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="15"/>
+        </Grid.RowDefinitions>
+        
+        <!-- ROW 1 -->
+        <Button Grid.Column="1"
+                Grid.Row="1"
+                Content="DODAJ ODDZIAŁ" 
                 Click="AddDepartmentWindow_Button"
                 Margin="0, 0, 0, 5"/>
 
-        <Button Content="DODAJ PRACOWNIKA" 
+        <Button Grid.Column="3"
+                Grid.Row="1"
+                Content="DODAJ PRACOWNIKA" 
                 Click="AddEmployeeWindow_Button"
                 Margin="0, 0, 0, 5"/>
-        <TextBox Margin="0 5 0 5"
-                 TextChanged="TextBox_TextChanged"/>
-        <ListView x:Name="Department_ListView"
+        
+        <!-- ROW 2 -->
+        <TextBox Grid.Column="1"
+                 Grid.Row="2"
+                 Margin="0 0 0 0"
+                 TextChanged="DepartmentTextBox_TextChanged"/>
+
+        <TextBox Grid.Column="3"
+                 Grid.Row="2"
+                 Margin="0 0 0 0"
+                 TextChanged="EmployeeTextBox_TextChanged"/>
+
+        <!-- ROW 3 -->
+        <ListView Grid.Column="1"
+                  Grid.Row="3"
+                  x:Name="Department_ListView"
                   SelectionChanged="Department_ListView_SelectionChanged"
-                  Margin="0 0 0 5"
-                  Height="150" >
+                  Margin="0 0 0 5">
             <ListView.ItemTemplate >
                 <DataTemplate>
                     <StackPanel>
@@ -34,9 +68,35 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button Content="MIESIĄC" 
+
+        <!-- ROW 3 -->
+        <ListView Grid.Column="3"
+                  Grid.Row="3"
+                  x:Name="Employee_ListView"
+                  SelectionChanged="Employee_ListView_SelectionChanged"
+                  Margin="0 0 0 5">
+            <ListView.ItemTemplate >
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding FullName}"
+                                   FontSize="20"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Occupation}"
+                                   FontSize="15"
+                                   FontStyle="Italic"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <!-- ROW 4 -->
+        <Button Grid.Column="1"
+                Grid.Row="4"
+                Grid.ColumnSpan="3"
+                Content="MIESIĄC" 
                 Click="ShowMonthWIndow_Button"
                 Margin="0, 0, 0, 5"/>
-    </StackPanel>
+        
+    </Grid>
 
 </Window>

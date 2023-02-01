@@ -24,12 +24,14 @@ namespace Nurses_Scheduler
     public partial class MainWindow : Window
     {
         List<Department> departmentList;
+        List<Employee> employeeList;
 
         public MainWindow()
         {
             InitializeComponent();
 
             departmentList = new List<Department>();
+            employeeList = new List<Employee>();
 
             ReadDatabase();
         }
@@ -57,22 +59,40 @@ namespace Nurses_Scheduler
 
                 departmentList = (from c in conn.Table<Department>().ToList()
                                 orderby c.DepartmentName descending
-                                select c ).ToList();  
+                                select c ).ToList();
+
+                conn.CreateTable<Employee>();
+                employeeList = (conn.Table<Employee>().ToList()).OrderBy(c => c.FirstName).ToList();
+
+                employeeList = (from c in conn.Table<Employee>().ToList()
+                                  orderby c.FirstName descending
+                                  select c).ToList();
             }
 
             if (departmentList != null)
             {
                 Department_ListView.ItemsSource = departmentList;
             }
+            if (employeeList != null)
+            {
+                Employee_ListView.ItemsSource = employeeList;
+            }
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void DepartmentTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox searchTextBox = sender as TextBox;
 
             var filteredList = departmentList.Where(d => d.DepartmentName.ToLower().Contains(searchTextBox.Text.ToLower())).ToList();
             Department_ListView.ItemsSource = filteredList;
+        }
 
+        private void EmployeeTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox searchTextBox = sender as TextBox;
+
+            var filteredList = employeeList.Where(d => d.FullName.ToLower().Contains(searchTextBox.Text.ToLower())).ToList();
+            Employee_ListView.ItemsSource = filteredList;
         }
 
         private void Department_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -82,6 +102,18 @@ namespace Nurses_Scheduler
             if (selectedDepartment != null)
             {
                 ModifyDepartmentWindow modifyDepartmentWindow = new ModifyDepartmentWindow(selectedDepartment);
+                modifyDepartmentWindow.ShowDialog();
+            }
+            ReadDatabase();
+        }
+
+        private void Employee_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Employee selectedEmployee = (Employee)Employee_ListView.SelectedItem;
+
+            if (selectedEmployee != null)
+            {
+                ModifyEmployeeWindow modifyDepartmentWindow = new ModifyEmployeeWindow(selectedEmployee);
                 modifyDepartmentWindow.ShowDialog();
             }
             ReadDatabase();

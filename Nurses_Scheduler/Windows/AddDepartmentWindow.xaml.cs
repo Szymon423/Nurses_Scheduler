@@ -28,7 +28,6 @@ namespace Nurses_Scheduler.Windows
 
         private void AddDepartment_Button(object sender, RoutedEventArgs e)
         {
-            //TODO: Save contact
             Department department = new Department()
             { 
                 DepartmentName = DepartmentName_TextBox.Text,

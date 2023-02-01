@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Nurses_Scheduler.Classes
 {
     [Table("Employee")]
-    internal class Employee
+    public class Employee
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }

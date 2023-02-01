@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Nurses_Scheduler.Classes;
+using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +28,20 @@ namespace Nurses_Scheduler.Windows
 
         private void AddEmployee_Button(object sender, RoutedEventArgs e)
         {
-            // zrób coś
+            Employee employee = new Employee()
+            {
+                FirstName = EmployeeName_TextBox.Text,
+                LastName = EmployeeLastName_TextBox.Text,
+                Department = EmployeeDepartment_TextBox.Text,
+                Occupation = EmployeeOcupation_TextBox.Text
+            };
+
+            using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
+            {
+                connection.CreateTable<Employee>();
+                connection.Insert(employee);
+            }
+
             Close();
         }
     }
