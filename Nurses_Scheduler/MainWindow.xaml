@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nurses_Scheduler"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="Grafiki" Height="300" Width="400">
+        Title="Grafiki" Height="350" Width="400">
 
     <StackPanel Margin="15">
         <Button Content="DODAJ ODDZIAŁ" 
@@ -34,6 +34,9 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <Button Content="MIESIĄC" 
+                Click="ShowMonthWIndow_Button"
+                Margin="0, 0, 0, 5"/>
     </StackPanel>
 
 </Window>

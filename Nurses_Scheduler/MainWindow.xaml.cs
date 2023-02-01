@@ -86,5 +86,12 @@ namespace Nurses_Scheduler
             }
             ReadDatabase();
         }
+
+        private void ShowMonthWIndow_Button(object sender, RoutedEventArgs e)
+        {
+            MonthView monthView = new MonthView();
+
+            monthView.ShowDialog();
+        }
     }
 }
