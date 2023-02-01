@@ -1,7 +1,10 @@
 ﻿using Nurses_Scheduler.Classes;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -53,11 +56,43 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_DataGrid.CanUserReorderColumns = false;
             MonthGrid_DataGrid.MinColumnWidth = 40;
             MonthGrid_DataGrid.MinRowHeight = 40;
-            // MonthGrid_DataGrid.AutoGenerateColumns = false;
-            MonthGrid_DataGrid.ItemsSource = list;
+            MonthGrid_DataGrid.AutoGenerateColumns = false;
 
-            
-            
+        }
+
+
+        private void GenerateNewMonthView(int daysInMonth)
+        {
+
+            MonthGrid_DataGrid.Columns.Clear();
+
+            DataGrid d = new DataGrid();
+
+            DataGridTextColumn name = new DataGridTextColumn();
+            name.Header = "Pracownik";
+            MonthGrid_DataGrid.Columns.Add(name);
+
+            for (int i = 0; i < daysInMonth; i++)
+            {
+                DataGridTextColumn t = new DataGridTextColumn();
+                t.Header = (i + 1).ToString();
+                MonthGrid_DataGrid.Columns.Add(t);
+            }
+        }
+
+        private void MonthChoosed_Click(object sender, RoutedEventArgs e)
+        {
+            var daysDictionary = new Dictionary<string, int>(){
+                {"28 dni", 28},
+                {"30 dni", 30},
+                {"31 dni", 31}
+            };
+
+            if (daysDictionary.ContainsKey(DaysInMonth_ComboBox.Text))
+            {
+                int daysInMonth = daysDictionary[DaysInMonth_ComboBox.Text]; 
+                GenerateNewMonthView(daysInMonth);
+            }
         }
     }
 }

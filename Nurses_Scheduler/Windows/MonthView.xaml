@@ -11,12 +11,14 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"/>
             <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="15"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="15"/>
         </Grid.ColumnDefinitions>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="15"/>
             <RowDefinition Height="auto"/>
@@ -26,16 +28,27 @@
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
         
-        <DataGrid Grid.Column="2" 
+        <ComboBox Grid.Row="1"
+                  Grid.Column="1"
+                  x:Name="DaysInMonth_ComboBox">
+            <ComboBoxItem IsSelected="True">30 dni</ComboBoxItem>
+            <ComboBoxItem>31 dni</ComboBoxItem>
+            <ComboBoxItem>28 dni</ComboBoxItem>
+        </ComboBox>
+        
+        <Button Content="Wybierz Miesiąc"
+                Click="MonthChoosed_Click"
+                Grid.Column="1"
+                Grid.Row="2"
+                Margin="0 5 0 0"/>
+
+        <DataGrid Grid.Column="3" 
                   Grid.ColumnSpan="4"
-                  Grid.Row="2"
-                  Grid.RowSpan="3"
+                  Grid.Row="1"
+                  Grid.RowSpan="4"
                   x:Name="MonthGrid_DataGrid"
                   FontSize="15"
                   MinColumnWidth="30"/>
-        
-
-        
-        
+ 
     </Grid>
 </Window>
