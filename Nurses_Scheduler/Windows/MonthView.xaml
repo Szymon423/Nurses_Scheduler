@@ -27,14 +27,10 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
-        
+
         <ComboBox Grid.Row="1"
                   Grid.Column="1"
                   x:Name="DaysInMonth_ComboBox">
-            <ComboBoxItem IsSelected="True">30 dni</ComboBoxItem>
-            <ComboBoxItem>31 dni</ComboBoxItem>
-            <ComboBoxItem>28 dni</ComboBoxItem>
-            <ComboBoxItem>5 dni</ComboBoxItem>
         </ComboBox>
         
         <Button Content="Wybierz Miesiąc"

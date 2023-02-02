@@ -28,11 +28,40 @@ namespace Nurses_Scheduler.Windows
     /// </summary>
     public partial class MonthView : Window
     {
-        
+        private int currentMonth;
+        private int currentYear;
+        private List<String> monthsToChoose;
+        private int howManyMonthToShow;
+        private string[] months = {"Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"};
 
         public MonthView()
         {
             InitializeComponent();
+            currentMonth = DateTime.Now.Month;
+            currentYear = DateTime.Now.Year;
+            howManyMonthToShow = 3;
+            monthsToChoose = new List<string>();
+            InitialiseMonthComboBox();
+
+        }
+
+        private void InitialiseMonthComboBox()
+        {
+            for (int i = 0; i < howManyMonthToShow; i++)
+            {
+                int monthToAdd = currentMonth + i;
+                int yearToShow = currentYear;
+
+                // if the next month exceeds december, then substract 12, and ad 1 to current year
+                if (monthToAdd > 12)
+                {
+                    monthToAdd -= 12;
+                    yearToShow = currentYear + 1;
+                }
+                monthsToChoose.Add(months[monthToAdd - 1] + " " + yearToShow.ToString());
+            }
+            DaysInMonth_ComboBox.ItemsSource = monthsToChoose;
+            DaysInMonth_ComboBox.SelectedIndex = 0;
         }
 
         private List<Employee> GetEmployeesFromDB()
@@ -64,7 +93,7 @@ namespace Nurses_Scheduler.Windows
             }
             // clear dataGrid before inserting new month view
             MonthGrid_DataGrid.Columns.Clear();
-            MonthGrid_DataGrid.Items.Clear();
+            
 
             DataGrid d = new DataGrid();
             DataGridTextColumn name = new DataGridTextColumn();
@@ -99,20 +128,29 @@ namespace Nurses_Scheduler.Windows
 
         }
 
-    private void MonthChoosed_Click(object sender, RoutedEventArgs e)
+        private int GetNumberOfDaysInMonth()
         {
-            var daysDictionary = new Dictionary<string, int>(){
-                {"28 dni", 28},
-                {"30 dni", 30},
-                {"31 dni", 31},
-                {"5 dni", 5}
-            };
+            var splitedValuesFromComboBox = DaysInMonth_ComboBox.Text.Split(" ");
+            string month = splitedValuesFromComboBox[0];
 
-            if (daysDictionary.ContainsKey(DaysInMonth_ComboBox.Text))
+            int monthNumber = 0;
+            int year = int.Parse(splitedValuesFromComboBox[1]);
+
+            // finding which month was in combobox
+            for (int i = 0; i < 12; i++)
             {
-                int daysInMonth = daysDictionary[DaysInMonth_ComboBox.Text]; 
-                GenerateNewMonthView(daysInMonth);
+                if (month.Equals(months[i]))
+                {
+                    monthNumber = i + 1;
+                    break;
+                }
             }
+            return DateTime.DaysInMonth(year, monthNumber);
+        }
+
+        private void MonthChoosed_Click(object sender, RoutedEventArgs e)
+        {
+            GenerateNewMonthView(GetNumberOfDaysInMonth());
         }
     }
 }
