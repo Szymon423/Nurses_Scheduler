@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nurses_Scheduler.Windows"
         mc:Ignorable="d"
-        Title="MonthView" Height="720" Width="1450"
+        Title="MonthView" Height="1080" Width="1920"
         WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>

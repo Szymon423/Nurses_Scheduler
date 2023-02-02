@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace Nurses_Scheduler.Classes
 {
-    public class Month
+    public class EmployeeWorkArrangement
     {
 
-        public Month(string employeeName)
+        public EmployeeWorkArrangement(string employeeName)
         {
+            this._Pracownik = employeeName;
             this._1 = "";
             this._2 = "";
             this._3 = "";
@@ -43,10 +44,9 @@ namespace Nurses_Scheduler.Classes
             this._29 = "";
             this._30 = "";
             this._31 = "";
-            this.employeeName = employeeName;
         }
 
-        public string employeeName { get; set; }
+        public string _Pracownik { get; set; }
         public string _1 { get; set; }
         public string _2 { get; set; }
         public string _3 { get; set; }
@@ -78,8 +78,6 @@ namespace Nurses_Scheduler.Classes
         public string _29 { get; set; }
         public string _30 { get; set; }
         public string _31 { get; set; }
-
-
     }
 }
     

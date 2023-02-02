@@ -32,60 +32,12 @@ namespace Nurses_Scheduler.Windows
 
         public MonthView()
         {
-            
             InitializeComponent();
-
-            MonthGrid_DataGrid.CanUserResizeColumns = false;
-            MonthGrid_DataGrid.CanUserResizeRows = false;
-            MonthGrid_DataGrid.CanUserDeleteRows = false;
-            MonthGrid_DataGrid.CanUserSortColumns = false;
-            MonthGrid_DataGrid.CanUserAddRows = false;
-            MonthGrid_DataGrid.CanUserReorderColumns = false;
-            MonthGrid_DataGrid.MinColumnWidth = 40;
-            MonthGrid_DataGrid.MinRowHeight = 40;
-            MonthGrid_DataGrid.AutoGenerateColumns = false;
-
-        }
-
-        public struct ElementsInSingleRow
-        {
-            public string header_Pracownik { get; set; }
-            public string header_1 { get; set; }
-            public string header_2 { get; set; }
-            public string header_3 { get; set; }
-            public string header_4 { get; set; }
-            public string header_5 { get; set; }
-            public string header_6 { get; set; }
-            public string header_7 { get; set; }
-            public string header_8 { get; set; }
-            public string header_9 { get; set; }
-            public string header_10 { get; set; }
-            public string header_11 { get; set; }
-            public string header_12 { get; set; }
-            public string header_13 { get; set; }
-            public string header_14 { get; set; }
-            public string header_15 { get; set; }
-            public string header_16 { get; set; }
-            public string header_17 { get; set; }
-            public string header_18 { get; set; }
-            public string header_19 { get; set; }
-            public string header_20 { get; set; }
-            public string header_21 { get; set; }
-            public string header_22 { get; set; }
-            public string header_23 { get; set; }
-            public string header_24 { get; set; }
-            public string header_25 { get; set; }
-            public string header_26 { get; set; }
-            public string header_27 { get; set; }
-            public string header_28 { get; set; }
-            public string header_29 { get; set; }
-            public string header_30 { get; set; }
-            public string header_31 { get; set; }
         }
 
         private List<Employee> GetEmployeesFromDB()
         {
-            var employees = new List<Employee>();
+            List<Employee> employees = new List<Employee>();
 
             using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
             {
@@ -96,7 +48,6 @@ namespace Nurses_Scheduler.Windows
                              orderby c.FirstName descending
                              select c).ToList();
             }
-
             return employees;
         }
 
@@ -105,14 +56,13 @@ namespace Nurses_Scheduler.Windows
 
             List<Employee> employees = GetEmployeesFromDB();
 
-
             List <string> headers = new List<string> ();
             headers.Add("Pracownik");
             for (int i = 0; i < daysInMonth; i++)
             {
                 headers.Add((i + 1).ToString());
             }
-
+            // clear dataGrid before inserting new month view
             MonthGrid_DataGrid.Columns.Clear();
             MonthGrid_DataGrid.Items.Clear();
 
@@ -123,56 +73,30 @@ namespace Nurses_Scheduler.Windows
             {
                 DataGridTextColumn t = new DataGridTextColumn();
                 t.Header = headers[i];
-                t.Binding = new Binding("header_" + headers[i]);
+                t.Binding = new Binding("_" + headers[i]);
                 MonthGrid_DataGrid.Columns.Add(t);
             }
 
+            List<EmployeeWorkArrangement> employeesWorkArrangements = new List<EmployeeWorkArrangement>();
             foreach (Employee empl in employees)
             {
-                ElementsInSingleRow item = new ElementsInSingleRow
-                {
-                    header_Pracownik = empl.FullName,
-                    header_1 = "a",
-                    header_2 = "b",
-                    header_3 = "c",
-                    header_4 = "d",
-                    header_5 = "e",
-                    header_6 = "a",
-                    header_7 = "b",
-                    header_8 = "c",
-                    header_9 = "d",
-                    header_10 = "e",
-                    header_11 = "a",
-                    header_12 = "b",
-                    header_13 = "c",
-                    header_14 = "d",
-                    header_15 = "e",
-                    header_16 = "a",
-                    header_17 = "b",
-                    header_18 = "c",
-                    header_19 = "d",
-                    header_20 = "e",
-                    header_21 = "a",
-                    header_22 = "b",
-                    header_23 = "c",
-                    header_24 = "d",
-                    header_25 = "e",
-                    header_26 = "a",
-                    header_27 = "b",
-                    header_28 = "c",
-                    header_29 = "d",
-                    header_30 = "d",
-                    header_31 = "d"
-                };
-                MonthGrid_DataGrid.Items.Add(item);
+                EmployeeWorkArrangement item = new EmployeeWorkArrangement(empl.FullName);
+                employeesWorkArrangements.Add(item);
             }
 
 
-        }
+            MonthGrid_DataGrid.ItemsSource = employeesWorkArrangements;
+            MonthGrid_DataGrid.CanUserResizeColumns = false;
+            MonthGrid_DataGrid.CanUserResizeRows = false;
+            MonthGrid_DataGrid.CanUserDeleteRows = false;
+            MonthGrid_DataGrid.CanUserSortColumns = false;
+            MonthGrid_DataGrid.CanUserAddRows = false;
+            MonthGrid_DataGrid.CanUserReorderColumns = false;
+            MonthGrid_DataGrid.MinColumnWidth = 40;
+            MonthGrid_DataGrid.MinRowHeight = 40;
+            MonthGrid_DataGrid.AutoGenerateColumns = false;
 
-        interface INamedObject
-        {
-            string Name { get; }
+
         }
 
     private void MonthChoosed_Click(object sender, RoutedEventArgs e)
