@@ -93,7 +93,6 @@ namespace Nurses_Scheduler.Windows
             }
             // clear dataGrid before inserting new month view
             MonthGrid_DataGrid.Columns.Clear();
-            
 
             DataGrid d = new DataGrid();
             DataGridTextColumn name = new DataGridTextColumn();
@@ -113,7 +112,6 @@ namespace Nurses_Scheduler.Windows
                 employeesWorkArrangements.Add(item);
             }
 
-
             MonthGrid_DataGrid.ItemsSource = employeesWorkArrangements;
             MonthGrid_DataGrid.CanUserResizeColumns = false;
             MonthGrid_DataGrid.CanUserResizeRows = false;
@@ -124,8 +122,6 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_DataGrid.MinColumnWidth = 40;
             MonthGrid_DataGrid.MinRowHeight = 40;
             MonthGrid_DataGrid.AutoGenerateColumns = false;
-
-
         }
 
         private int GetNumberOfDaysInMonth()
