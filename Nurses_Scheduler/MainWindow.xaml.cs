@@ -79,6 +79,7 @@ namespace Nurses_Scheduler
             }
         }
 
+
         private void DepartmentTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox searchTextBox = sender as TextBox;

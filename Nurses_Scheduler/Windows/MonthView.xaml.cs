@@ -1,4 +1,5 @@
 ﻿using Nurses_Scheduler.Classes;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -82,9 +83,28 @@ namespace Nurses_Scheduler.Windows
             public string header_31 { get; set; }
         }
 
+        private List<Employee> GetEmployeesFromDB()
+        {
+            var employees = new List<Employee>();
+
+            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
+            {
+                conn.CreateTable<Employee>();
+                employees = (conn.Table<Employee>().ToList()).OrderBy(c => c.FirstName).ToList();
+
+                employees = (from c in conn.Table<Employee>().ToList()
+                             orderby c.FirstName descending
+                             select c).ToList();
+            }
+
+            return employees;
+        }
 
         private void GenerateNewMonthView(int daysInMonth)
         {
+
+            List<Employee> employees = GetEmployeesFromDB();
+
 
             List <string> headers = new List<string> ();
             headers.Add("Pracownik");
@@ -107,43 +127,46 @@ namespace Nurses_Scheduler.Windows
                 MonthGrid_DataGrid.Columns.Add(t);
             }
 
-            ElementsInSingleRow item = new ElementsInSingleRow
+            foreach (Employee empl in employees)
             {
-                header_Pracownik = "Testowy pracownik",
-                header_1 = "a",
-                header_2 = "b",
-                header_3 = "c",
-                header_4 = "d",
-                header_5 = "e",
-                header_6 = "a",
-                header_7 = "b",
-                header_8 = "c",
-                header_9 = "d",
-                header_10 = "e",
-                header_11 = "a",
-                header_12 = "b",
-                header_13 = "c",
-                header_14 = "d",
-                header_15 = "e",
-                header_16 = "a",
-                header_17 = "b",
-                header_18 = "c",
-                header_19 = "d",
-                header_20 = "e",
-                header_21 = "a",
-                header_22 = "b",
-                header_23 = "c",
-                header_24 = "d",
-                header_25 = "e",
-                header_26 = "a",
-                header_27 = "b",
-                header_28 = "c",
-                header_29 = "d",
-                header_30 = "d",
-                header_31 = "d"
-            };
+                ElementsInSingleRow item = new ElementsInSingleRow
+                {
+                    header_Pracownik = empl.FullName,
+                    header_1 = "a",
+                    header_2 = "b",
+                    header_3 = "c",
+                    header_4 = "d",
+                    header_5 = "e",
+                    header_6 = "a",
+                    header_7 = "b",
+                    header_8 = "c",
+                    header_9 = "d",
+                    header_10 = "e",
+                    header_11 = "a",
+                    header_12 = "b",
+                    header_13 = "c",
+                    header_14 = "d",
+                    header_15 = "e",
+                    header_16 = "a",
+                    header_17 = "b",
+                    header_18 = "c",
+                    header_19 = "d",
+                    header_20 = "e",
+                    header_21 = "a",
+                    header_22 = "b",
+                    header_23 = "c",
+                    header_24 = "d",
+                    header_25 = "e",
+                    header_26 = "a",
+                    header_27 = "b",
+                    header_28 = "c",
+                    header_29 = "d",
+                    header_30 = "d",
+                    header_31 = "d"
+                };
+                MonthGrid_DataGrid.Items.Add(item);
+            }
 
-            MonthGrid_DataGrid.Items.Add(item);
 
         }
 
