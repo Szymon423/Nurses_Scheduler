@@ -34,6 +34,7 @@
             <ComboBoxItem IsSelected="True">30 dni</ComboBoxItem>
             <ComboBoxItem>31 dni</ComboBoxItem>
             <ComboBoxItem>28 dni</ComboBoxItem>
+            <ComboBoxItem>5 dni</ComboBoxItem>
         </ComboBox>
         
         <Button Content="Wybierz Miesiąc"

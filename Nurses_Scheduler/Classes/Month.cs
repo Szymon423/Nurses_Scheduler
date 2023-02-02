@@ -10,21 +10,6 @@ namespace Nurses_Scheduler.Classes
     public class Month
     {
 
-        /*private int daysInMonth;
-        private List<int> listOfDays;
-
-        public Month(int daysInMonth)
-        {
-            this.daysInMonth = daysInMonth;
-            this.listOfDays = new List<int>();
-
-            for (int i = 1; i <= daysInMonth; i++)
-            {
-                this.listOfDays.Add(i);
-                Debug.WriteLine(this.listOfDays[i - 1]);
-            }
-        }*/
-
         public Month(string employeeName)
         {
             this._1 = "";
