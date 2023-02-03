@@ -36,6 +36,7 @@ namespace Nurses_Scheduler.Windows
         IDictionary<string, int> OccupationToIndex = new Dictionary<string, int>();
         private List<List<EmployeeWorkArrangement>> employeesWorkArrangements_GroupedByOccupation;
         private List<EmployeeWorkArrangement> employeesWorkArrangements_OtherThanNurse; // opiekuni medyczni, salowe i sanitariuszki
+        private List<EmployeeWorkArrangement> employeesWorkArrangements_Nurses;         // pielęgniarki oraz asystentki pielęgniarek
 
         public MonthView()
         {
@@ -52,6 +53,7 @@ namespace Nurses_Scheduler.Windows
 
             employeesWorkArrangements_GroupedByOccupation = new List<List<EmployeeWorkArrangement>>();
             employeesWorkArrangements_OtherThanNurse = new List<EmployeeWorkArrangement>();
+            employeesWorkArrangements_Nurses = new List<EmployeeWorkArrangement>();
             InitialiseMonthComboBox();
         }
 
@@ -88,6 +90,10 @@ namespace Nurses_Scheduler.Windows
 
         private void GenerateNewMonthView(int daysInMonth)
         {
+            employeesWorkArrangements_GroupedByOccupation = new List<List<EmployeeWorkArrangement>>();
+            employeesWorkArrangements_OtherThanNurse = new List<EmployeeWorkArrangement>();
+            employeesWorkArrangements_Nurses = new List<EmployeeWorkArrangement>();
+
             // create datagrid headers according to days in month
             List<string> headers = new List<string>();
             headers.Add("Pracownik");
@@ -97,23 +103,26 @@ namespace Nurses_Scheduler.Windows
             }
 
             // clear dataGrid before inserting new month view
-            MonthGrid_DataGrid.Columns.Clear();
+            MonthGrid_Pielegniarki_DataGrid.ItemsSource = null;
+            MonthGrid_Pielegniarki_DataGrid.Columns.Clear();
+
+            MonthGrid_Pozostali_DataGrid.ItemsSource = null;
+            MonthGrid_Pozostali_DataGrid.Columns.Clear();
 
             // make proper collumns basing on prevoiusly made headers list
             for (int i = 0; i < headers.Count; i++)
             {
-                DataGridTextColumn t = new DataGridTextColumn();
-                t.Header = headers[i];
-                t.Binding = new Binding("_" + headers[i]);
-                MonthGrid_DataGrid.Columns.Add(t);
-            }
+                DataGridTextColumn t1 = new DataGridTextColumn();
+                DataGridTextColumn t2 = new DataGridTextColumn();
+                t1.Header = headers[i];
+                t2.Header = headers[i];
+                t1.Binding = new Binding("_" + headers[i]);
+                t2.Binding = new Binding("_" + headers[i]);
 
-            /*
-                Pielęgniarka
-                Opiekun Medyczny
-                Salowa lub Sanitariuszka
-                Asystentka Pielęgniarki
-            */
+                
+                MonthGrid_Pielegniarki_DataGrid.Columns.Add(t1);
+                MonthGrid_Pozostali_DataGrid.Columns.Add(t2);
+            }
 
             foreach (string occupation in App.AllowedOccupations)
             {
@@ -127,18 +136,43 @@ namespace Nurses_Scheduler.Windows
                 }
 
                 employeesWorkArrangements_GroupedByOccupation.Add(employeesWorkArrangements);
-            }
 
-            MonthGrid_DataGrid.ItemsSource = employeesWorkArrangements_GroupedByOccupation[OccupationToIndex["Pielęgniarka"]];
-            MonthGrid_DataGrid.CanUserResizeColumns = false;
-            MonthGrid_DataGrid.CanUserResizeRows = false;
-            MonthGrid_DataGrid.CanUserDeleteRows = false;
-            MonthGrid_DataGrid.CanUserSortColumns = false;
-            MonthGrid_DataGrid.CanUserAddRows = false;
-            MonthGrid_DataGrid.CanUserReorderColumns = false;
-            MonthGrid_DataGrid.MinColumnWidth = 40;
-            MonthGrid_DataGrid.MinRowHeight = 40;
-            MonthGrid_DataGrid.AutoGenerateColumns = false;
+                if (occupation == "Pielęgniarka" || occupation == "Asystentka Pielęgniarki")
+                {
+                    employeesWorkArrangements_Nurses.AddRange(employeesWorkArrangements);
+                }
+                else
+                {
+                    employeesWorkArrangements_OtherThanNurse.AddRange(employeesWorkArrangements);
+                }
+
+            }
+            MonthGrid_Pielegniarki_DataGrid.ItemsSource = employeesWorkArrangements_Nurses;
+            MonthGrid_Pozostali_DataGrid.ItemsSource = employeesWorkArrangements_OtherThanNurse;
+            SetPropertiesForDataGrids();
+        }
+
+        private void SetPropertiesForDataGrids()
+        {
+            MonthGrid_Pielegniarki_DataGrid.CanUserResizeColumns = false;
+            MonthGrid_Pielegniarki_DataGrid.CanUserResizeRows = false;
+            MonthGrid_Pielegniarki_DataGrid.CanUserDeleteRows = false;
+            MonthGrid_Pielegniarki_DataGrid.CanUserSortColumns = false;
+            MonthGrid_Pielegniarki_DataGrid.CanUserAddRows = false;
+            MonthGrid_Pielegniarki_DataGrid.CanUserReorderColumns = false;
+            MonthGrid_Pielegniarki_DataGrid.MinColumnWidth = 40;
+            MonthGrid_Pielegniarki_DataGrid.MinRowHeight = 40;
+            MonthGrid_Pielegniarki_DataGrid.AutoGenerateColumns = false;
+
+            MonthGrid_Pozostali_DataGrid.CanUserResizeColumns = false;
+            MonthGrid_Pozostali_DataGrid.CanUserResizeRows = false;
+            MonthGrid_Pozostali_DataGrid.CanUserDeleteRows = false;
+            MonthGrid_Pozostali_DataGrid.CanUserSortColumns = false;
+            MonthGrid_Pozostali_DataGrid.CanUserAddRows = false;
+            MonthGrid_Pozostali_DataGrid.CanUserReorderColumns = false;
+            MonthGrid_Pozostali_DataGrid.MinColumnWidth = 40;
+            MonthGrid_Pozostali_DataGrid.MinRowHeight = 40;
+            MonthGrid_Pozostali_DataGrid.AutoGenerateColumns = false;
         }
 
         private int GetNumberOfDaysInMonth()
@@ -163,7 +197,9 @@ namespace Nurses_Scheduler.Windows
 
         private void MonthChoosed_Click(object sender, RoutedEventArgs e)
         {
-            GenerateNewMonthView(GetNumberOfDaysInMonth());
+            int dni = GetNumberOfDaysInMonth();
+            Debug.WriteLine(dni.ToString());
+            GenerateNewMonthView(dni);
         }
     }
 }

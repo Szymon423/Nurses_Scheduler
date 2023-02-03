@@ -124,7 +124,7 @@ namespace Nurses_Scheduler
             ReadDatabase();
         }
 
-        private void ShowMonthWIndow_Button(object sender, RoutedEventArgs e)
+        private void ShowMonthWindow_Button(object sender, RoutedEventArgs e)
         {
             MonthView monthView = new MonthView();
 

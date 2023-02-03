@@ -39,13 +39,22 @@
                 Grid.Row="2"
                 Margin="0 5 0 0"/>
 
-        <DataGrid Grid.Column="3" 
-                  Grid.ColumnSpan="4"
-                  Grid.Row="1"
-                  Grid.RowSpan="4"
-                  x:Name="MonthGrid_DataGrid"
-                  FontSize="15"
-                  MinColumnWidth="30"/>
- 
+        <TabControl Grid.Column="3" 
+                    Grid.ColumnSpan="4"
+                    Grid.Row="1"
+                    Grid.RowSpan="4">
+            <TabItem Header="Pielęgniarki">
+                <DataGrid x:Name="MonthGrid_Pielegniarki_DataGrid"
+                          FontSize="15"
+                          MinColumnWidth="30"/>
+            </TabItem>
+
+            <TabItem Header="Pozostali">
+                <DataGrid x:Name="MonthGrid_Pozostali_DataGrid"
+                          FontSize="15"
+                          MinColumnWidth="30"/>
+            </TabItem>
+
+        </TabControl>
     </Grid>
 </Window>
