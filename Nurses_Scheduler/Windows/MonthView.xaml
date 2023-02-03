@@ -6,11 +6,12 @@
         xmlns:local="clr-namespace:Nurses_Scheduler.Windows"
         mc:Ignorable="d"
         Title="MonthView" Height="1080" Width="1920"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="150" />
             <ColumnDefinition Width="15"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>

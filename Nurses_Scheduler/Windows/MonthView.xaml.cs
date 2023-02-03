@@ -21,8 +21,6 @@ using System.Windows.Shapes;
 
 namespace Nurses_Scheduler.Windows
 {
-    
-    
     /// <summary>
     /// Interaction logic for MonthView.xaml
     /// </summary>
