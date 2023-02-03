@@ -69,16 +69,8 @@ namespace Nurses_Scheduler
                 conn.CreateTable<Department>();
                 departmentList = (conn.Table<Department>().ToList()).OrderBy(c => c.DepartmentName).ToList();
 
-                departmentList = (from c in conn.Table<Department>().ToList()
-                                orderby c.DepartmentName descending
-                                select c ).ToList();
-
                 conn.CreateTable<Employee>();
                 employeeList = (conn.Table<Employee>().ToList()).OrderBy(c => c.FirstName).ToList();
-
-                employeeList = (from c in conn.Table<Employee>().ToList()
-                                  orderby c.FirstName descending
-                                  select c).ToList();
             }
 
             if (departmentList != null)

@@ -24,6 +24,10 @@ namespace Nurses_Scheduler.Windows
         public AddEmployeeWindow()
         {
             InitializeComponent();
+
+            EmployeeOccupation_ComboBox.ItemsSource = App.AllowedOccupations;
+            EmployeeOccupation_ComboBox.SelectedIndex = 0;
+
             List<Department> departmentList = GetDepartmentsFromDB();
             if (departmentList.Count > 0)
             {
@@ -34,7 +38,7 @@ namespace Nurses_Scheduler.Windows
             {
                 throw new Exception("Brak istniejących oddziałów");
                 Close();
-            }   
+            }
         }
 
         private void AddEmployee_Button(object sender, RoutedEventArgs e)

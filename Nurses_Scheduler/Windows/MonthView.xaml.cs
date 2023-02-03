@@ -33,8 +33,9 @@ namespace Nurses_Scheduler.Windows
         private List<String> monthsToChoose;
         private int howManyMonthToShow;
         private string[] months = {"Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"};
-        private List<EmployeeWorkArrangement> employeesWorkArrangements_Nurses;
-        private List<EmployeeWorkArrangement> employeesWorkArrangements_Others; // opiekuni medyczni, salowe i sanitariuszki
+        IDictionary<string, int> OccupationToIndex = new Dictionary<string, int>();
+        private List<List<EmployeeWorkArrangement>> employeesWorkArrangements_GroupedByOccupation;
+        private List<EmployeeWorkArrangement> employeesWorkArrangements_OtherThanNurse; // opiekuni medyczni, salowe i sanitariuszki
 
         public MonthView()
         {
@@ -43,8 +44,14 @@ namespace Nurses_Scheduler.Windows
             currentYear = DateTime.Now.Year;
             howManyMonthToShow = 3;
             monthsToChoose = new List<string>();
-            employeesWorkArrangements_Nurses = new List<EmployeeWorkArrangement>();
-            employeesWorkArrangements_Others = new List<EmployeeWorkArrangement>();
+
+            for (int i = 0; i < App.AllowedOccupations.Length; i++)
+            {
+                OccupationToIndex.Add(App.AllowedOccupations[i], i);
+            }
+
+            employeesWorkArrangements_GroupedByOccupation = new List<List<EmployeeWorkArrangement>>();
+            employeesWorkArrangements_OtherThanNurse = new List<EmployeeWorkArrangement>();
             InitialiseMonthComboBox();
         }
 
@@ -67,35 +74,32 @@ namespace Nurses_Scheduler.Windows
             DaysInMonth_ComboBox.SelectedIndex = 0;
         }
 
-        private List<Employee> GetEmployeesFromDB()
+        private List<Employee> GetEmployeesFromDB(string Occupation)
         {
             List<Employee> employees = new List<Employee>();
 
             using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
             {
                 conn.CreateTable<Employee>();
-                employees = (conn.Table<Employee>().ToList()).OrderBy(c => c.FirstName).ToList();
+                employees = conn.Table<Employee>().ToList().Where(c => c.Occupation.Contains(Occupation)).OrderBy(c => c.LastName).ToList();
             }
             return employees;
         }
 
         private void GenerateNewMonthView(int daysInMonth)
         {
-
-            List<Employee> employees = GetEmployeesFromDB();
-
-            List <string> headers = new List<string> ();
+            // create datagrid headers according to days in month
+            List<string> headers = new List<string>();
             headers.Add("Pracownik");
             for (int i = 0; i < daysInMonth; i++)
             {
                 headers.Add((i + 1).ToString());
             }
+
             // clear dataGrid before inserting new month view
             MonthGrid_DataGrid.Columns.Clear();
 
-            DataGrid d = new DataGrid();
-            DataGridTextColumn name = new DataGridTextColumn();
-
+            // make proper collumns basing on prevoiusly made headers list
             for (int i = 0; i < headers.Count; i++)
             {
                 DataGridTextColumn t = new DataGridTextColumn();
@@ -104,14 +108,28 @@ namespace Nurses_Scheduler.Windows
                 MonthGrid_DataGrid.Columns.Add(t);
             }
 
-            employeesWorkArrangements_Nurses = new List<EmployeeWorkArrangement>();
-            foreach (Employee empl in employees)
+            /*
+                Pielęgniarka
+                Opiekun Medyczny
+                Salowa lub Sanitariuszka
+                Asystentka Pielęgniarki
+            */
+
+            foreach (string occupation in App.AllowedOccupations)
             {
-                EmployeeWorkArrangement item = new EmployeeWorkArrangement(empl.FullName);
-                employeesWorkArrangements_Nurses.Add(item);
+                List<Employee> employeeList = GetEmployeesFromDB(occupation);
+                List<EmployeeWorkArrangement> employeesWorkArrangements = new List<EmployeeWorkArrangement>();
+
+                foreach (Employee employee in employeeList)
+                {
+                    EmployeeWorkArrangement item = new EmployeeWorkArrangement(employee.FullName);
+                    employeesWorkArrangements.Add(item);
+                }
+
+                employeesWorkArrangements_GroupedByOccupation.Add(employeesWorkArrangements);
             }
 
-            MonthGrid_DataGrid.ItemsSource = employeesWorkArrangements_Nurses;
+            MonthGrid_DataGrid.ItemsSource = employeesWorkArrangements_GroupedByOccupation[OccupationToIndex["Pielęgniarka"]];
             MonthGrid_DataGrid.CanUserResizeColumns = false;
             MonthGrid_DataGrid.CanUserResizeRows = false;
             MonthGrid_DataGrid.CanUserDeleteRows = false;

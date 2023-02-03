@@ -16,5 +16,6 @@ namespace Nurses_Scheduler
         static string databaseName = "data.db";
         static string folderPath = Environment.CurrentDirectory;
         public static string databasePath = System.IO.Path.Combine(folderPath, databaseName);
+        public static string[] AllowedOccupations = { "Pielęgniarka" , "Opiekun Medyczny", "Salowa lub Sanitariuszka", "Asystentka Pielęgniarki" };
     }
 }

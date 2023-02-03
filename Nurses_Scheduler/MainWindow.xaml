@@ -84,6 +84,10 @@
                         <TextBlock Text="{Binding Occupation}"
                                    FontSize="15"
                                    FontStyle="Italic"/>
+                        <TextBlock Text="{Binding Department}"
+                                   FontSize="15"
+                                   FontStyle="Italic"
+                                   Foreground="Blue"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

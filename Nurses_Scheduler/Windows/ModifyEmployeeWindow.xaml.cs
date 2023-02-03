@@ -26,6 +26,7 @@ namespace Nurses_Scheduler.Windows
         {
             InitializeComponent();
 
+            EmployeeOccupation_ComboBox.ItemsSource = App.AllowedOccupations;
             EmployeeDepartment_ComboBox.ItemsSource = GetDepartmentsFromDB();
             
             this.employee = employee;
