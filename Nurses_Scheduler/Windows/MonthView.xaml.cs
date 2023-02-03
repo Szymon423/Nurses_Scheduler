@@ -33,6 +33,8 @@ namespace Nurses_Scheduler.Windows
         private List<String> monthsToChoose;
         private int howManyMonthToShow;
         private string[] months = {"Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"};
+        private List<EmployeeWorkArrangement> employeesWorkArrangements_Nurses;
+        private List<EmployeeWorkArrangement> employeesWorkArrangements_Others; // opiekuni medyczni, salowe i sanitariuszki
 
         public MonthView()
         {
@@ -41,8 +43,9 @@ namespace Nurses_Scheduler.Windows
             currentYear = DateTime.Now.Year;
             howManyMonthToShow = 3;
             monthsToChoose = new List<string>();
+            employeesWorkArrangements_Nurses = new List<EmployeeWorkArrangement>();
+            employeesWorkArrangements_Others = new List<EmployeeWorkArrangement>();
             InitialiseMonthComboBox();
-
         }
 
         private void InitialiseMonthComboBox()
@@ -72,10 +75,6 @@ namespace Nurses_Scheduler.Windows
             {
                 conn.CreateTable<Employee>();
                 employees = (conn.Table<Employee>().ToList()).OrderBy(c => c.FirstName).ToList();
-
-                employees = (from c in conn.Table<Employee>().ToList()
-                             orderby c.FirstName descending
-                             select c).ToList();
             }
             return employees;
         }
@@ -105,14 +104,14 @@ namespace Nurses_Scheduler.Windows
                 MonthGrid_DataGrid.Columns.Add(t);
             }
 
-            List<EmployeeWorkArrangement> employeesWorkArrangements = new List<EmployeeWorkArrangement>();
+            employeesWorkArrangements_Nurses = new List<EmployeeWorkArrangement>();
             foreach (Employee empl in employees)
             {
                 EmployeeWorkArrangement item = new EmployeeWorkArrangement(empl.FullName);
-                employeesWorkArrangements.Add(item);
+                employeesWorkArrangements_Nurses.Add(item);
             }
 
-            MonthGrid_DataGrid.ItemsSource = employeesWorkArrangements;
+            MonthGrid_DataGrid.ItemsSource = employeesWorkArrangements_Nurses;
             MonthGrid_DataGrid.CanUserResizeColumns = false;
             MonthGrid_DataGrid.CanUserResizeRows = false;
             MonthGrid_DataGrid.CanUserDeleteRows = false;

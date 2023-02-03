@@ -14,12 +14,17 @@
         
         <Label>Nazwisko:</Label>
         <TextBox x:Name="EmployeeLastName_TextBox"></TextBox>
-        
-        <Label>Oddział:</Label>
-        <TextBox x:Name="EmployeeDepartment_TextBox"></TextBox>
 
-        <Label>Pełniona funkcja:</Label>
-        <TextBox x:Name="EmployeeOccupation_TextBox"></TextBox>
+        <Label>Oddział:</Label>
+        <ComboBox x:Name="EmployeeDepartment_ComboBox"></ComboBox>
+        
+        <Label>Stanowisko:</Label>
+        <ComboBox x:Name="EmployeeOccupation_ComboBox">
+            <ComboBoxItem Content="Pielęgniarka"/>
+            <ComboBoxItem Content="Opiekun Medyczny"/>
+            <ComboBoxItem Content="Salowa lub Sanitariuszka"/>
+            <ComboBoxItem Content="Asystentka Pielęgniarki"/>
+        </ComboBox>
 
         <Button Content="ZATWIERDŹ" 
                 Click="ConfirmChangesEmployee_Button"

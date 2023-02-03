@@ -45,9 +45,21 @@ namespace Nurses_Scheduler
 
         private void AddEmployeeWindow_Button(object sender, RoutedEventArgs e)
         {
-            AddEmployeeWindow addEmployeeWindow = new AddEmployeeWindow();  
-            addEmployeeWindow.ShowDialog();
-            ReadDatabase();
+            try
+            {
+                AddEmployeeWindow addEmployeeWindow = new AddEmployeeWindow();
+                addEmployeeWindow.ShowDialog();
+                ReadDatabase();
+            }
+            catch (Exception ex)
+            {
+                string messageBoxText = "Nie utworzono oddziału, do którego można przypisać pracownika. " +
+                                        "Najpierw stwórz oddział, by móc dodać pracownika oraz przypisać go do oddziału.";
+                string caption = ex.Message;
+                MessageBoxButton button = MessageBoxButton.OK;
+                MessageBoxImage icon = MessageBoxImage.Warning;
+                MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
+            } 
         }
 
         void ReadDatabase()

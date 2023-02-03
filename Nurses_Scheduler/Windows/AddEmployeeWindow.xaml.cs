@@ -24,6 +24,17 @@ namespace Nurses_Scheduler.Windows
         public AddEmployeeWindow()
         {
             InitializeComponent();
+            List<Department> departmentList = GetDepartmentsFromDB();
+            if (departmentList.Count > 0)
+            {
+                EmployeeDepartment_ComboBox.ItemsSource = departmentList;
+                EmployeeDepartment_ComboBox.SelectedIndex = 0;
+            }
+            else
+            {
+                throw new Exception("Brak istniejących oddziałów");
+                Close();
+            }   
         }
 
         private void AddEmployee_Button(object sender, RoutedEventArgs e)
@@ -32,8 +43,8 @@ namespace Nurses_Scheduler.Windows
             {
                 FirstName = EmployeeName_TextBox.Text,
                 LastName = EmployeeLastName_TextBox.Text,
-                Department = EmployeeDepartment_TextBox.Text,
-                Occupation = EmployeeOcupation_TextBox.Text
+                Department = EmployeeDepartment_ComboBox.Text,
+                Occupation = EmployeeOccupation_ComboBox.Text
             };
 
             using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
@@ -41,8 +52,19 @@ namespace Nurses_Scheduler.Windows
                 connection.CreateTable<Employee>();
                 connection.Insert(employee);
             }
-
             Close();
+        }
+
+        private List<Department> GetDepartmentsFromDB()
+        {
+            List<Department> departments = new List<Department>();
+
+            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
+            {
+                conn.CreateTable<Employee>();
+                departments = (conn.Table<Department>().ToList()).OrderBy(c => c.DepartmentName).ToList();
+            }
+            return departments;
         }
     }
 }

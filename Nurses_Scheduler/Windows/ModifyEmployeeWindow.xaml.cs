@@ -26,19 +26,21 @@ namespace Nurses_Scheduler.Windows
         {
             InitializeComponent();
 
+            EmployeeDepartment_ComboBox.ItemsSource = GetDepartmentsFromDB();
+            
             this.employee = employee;
             EmployeeFirstName_TextBox.Text = employee.FirstName;
             EmployeeLastName_TextBox.Text= employee.LastName;
-            EmployeeOccupation_TextBox.Text = employee.Occupation;
-            EmployeeDepartment_TextBox.Text = employee.Department;
+            EmployeeOccupation_ComboBox.Text = employee.Occupation;
+            EmployeeDepartment_ComboBox.Text = employee.Department;
         }
 
         private void ConfirmChangesEmployee_Button(object sender, RoutedEventArgs e)
         {
             employee.FirstName = EmployeeFirstName_TextBox.Text;
             employee.LastName = EmployeeLastName_TextBox.Text;
-            employee.Occupation = EmployeeOccupation_TextBox.Text;
-            employee.Department = EmployeeDepartment_TextBox.Text;
+            employee.Occupation = EmployeeOccupation_ComboBox.Text;
+            employee.Department = EmployeeDepartment_ComboBox.Text;
 
             using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
             {
@@ -61,6 +63,18 @@ namespace Nurses_Scheduler.Windows
                 connection.Delete(employee);
             }
             Close();
+        }
+
+        private List<Department> GetDepartmentsFromDB()
+        {
+            List<Department> departments = new List<Department>();
+
+            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
+            {
+                conn.CreateTable<Employee>();
+                departments = (conn.Table<Department>().ToList()).OrderBy(c => c.DepartmentName).ToList();
+            }
+            return departments;
         }
     }
 }
