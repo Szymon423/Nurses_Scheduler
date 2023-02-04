@@ -28,9 +28,11 @@ namespace Nurses_Scheduler.Windows
     {
         private int currentMonth;
         private int currentYear;
+        private int choosenMonth;
+        private int choosenYear;
         private List<String> monthsToChoose;
         private int howManyMonthToShow;
-        private string[] months = {"Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"};
+        private string[] months = { "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień" };
         IDictionary<string, int> OccupationToIndex = new Dictionary<string, int>();
         private List<List<EmployeeWorkArrangement>> employeesWorkArrangements_GroupedByOccupation;
         private List<EmployeeWorkArrangement> employeesWorkArrangements_OtherThanNurse; // opiekuni medyczni, salowe i sanitariuszki
@@ -41,6 +43,8 @@ namespace Nurses_Scheduler.Windows
             InitializeComponent();
             currentMonth = DateTime.Now.Month;
             currentYear = DateTime.Now.Year;
+            choosenMonth = currentMonth;
+            choosenYear = currentYear;
             howManyMonthToShow = 3;
             monthsToChoose = new List<string>();
 
@@ -117,7 +121,7 @@ namespace Nurses_Scheduler.Windows
                 t1.Binding = new Binding("_" + headers[i]);
                 t2.Binding = new Binding("_" + headers[i]);
 
-                
+
                 MonthGrid_Pielegniarki_DataGrid.Columns.Add(t1);
                 MonthGrid_Pozostali_DataGrid.Columns.Add(t2);
             }
@@ -147,10 +151,11 @@ namespace Nurses_Scheduler.Windows
             }
             MonthGrid_Pielegniarki_DataGrid.ItemsSource = employeesWorkArrangements_Nurses;
             MonthGrid_Pozostali_DataGrid.ItemsSource = employeesWorkArrangements_OtherThanNurse;
-            SetPropertiesForDataGrids();
+            
+            SetPropertiesForDataGrids(FindEventDaysInMonth(daysInMonth));
         }
 
-        private void SetPropertiesForDataGrids()
+        private void SetPropertiesForDataGrids(List <int> eventDays)
         {
             MonthGrid_Pielegniarki_DataGrid.CanUserResizeColumns = false;
             MonthGrid_Pielegniarki_DataGrid.CanUserResizeRows = false;
@@ -161,6 +166,7 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pielegniarki_DataGrid.MinColumnWidth = 40;
             MonthGrid_Pielegniarki_DataGrid.MinRowHeight = 40;
             MonthGrid_Pielegniarki_DataGrid.AutoGenerateColumns = false;
+            MonthGrid_Pielegniarki_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
 
             MonthGrid_Pozostali_DataGrid.CanUserResizeColumns = false;
             MonthGrid_Pozostali_DataGrid.CanUserResizeRows = false;
@@ -171,6 +177,32 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pozostali_DataGrid.MinColumnWidth = 40;
             MonthGrid_Pozostali_DataGrid.MinRowHeight = 40;
             MonthGrid_Pozostali_DataGrid.AutoGenerateColumns = false;
+            MonthGrid_Pozostali_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
+
+            foreach (int day in eventDays)
+            {
+                Debug.Write(day.ToString() + ", "); 
+                MonthGrid_Pozostali_DataGrid.Columns[day].CellStyle = MonthGrid_Pozostali_DataGrid.TryFindResource("WeekendStyle") as Style;
+                MonthGrid_Pielegniarki_DataGrid.Columns[day].CellStyle = MonthGrid_Pielegniarki_DataGrid.TryFindResource("WeekendStyle") as Style;
+            }            
+        }
+
+        private List<int> FindEventDaysInMonth(int daysInMonth)
+        {
+            List<int> eventDays = new List<int>();
+
+            DateTime dt = new DateTime(choosenYear, choosenMonth, 1);
+            Debug.Write(dt);
+            for (int i = 0; i < daysInMonth; i++)
+            {
+                Debug.Write(dt.DayOfWeek);
+                if (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    eventDays.Add(i + 1);
+                }
+                dt = dt.AddDays(1);
+            }
+            return eventDays;
         }
 
         private int GetNumberOfDaysInMonth()
@@ -180,6 +212,7 @@ namespace Nurses_Scheduler.Windows
 
             int monthNumber = 0;
             int year = int.Parse(splitedValuesFromComboBox[1]);
+            choosenYear = year;
 
             // finding which month was in combobox
             for (int i = 0; i < 12; i++)
@@ -187,6 +220,7 @@ namespace Nurses_Scheduler.Windows
                 if (month.Equals(months[i]))
                 {
                     monthNumber = i + 1;
+                    choosenMonth = monthNumber;
                     break;
                 }
             }
@@ -196,7 +230,6 @@ namespace Nurses_Scheduler.Windows
         private void MonthChoosed_Click(object sender, RoutedEventArgs e)
         {
             int dni = GetNumberOfDaysInMonth();
-            Debug.WriteLine(dni.ToString());
             GenerateNewMonthView(dni);
         }
     }

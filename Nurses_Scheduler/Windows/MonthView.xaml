@@ -8,6 +8,11 @@
         Title="MonthView" Height="1080" Width="1920"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized">
+    <Window.Resources>
+        <Style x:Key="WeekendStyle" TargetType="DataGridCell">
+            <Setter Property="Background" Value="LightGray"/>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"/>
@@ -47,7 +52,8 @@
             <TabItem Header="Pielęgniarki">
                 <DataGrid x:Name="MonthGrid_Pielegniarki_DataGrid"
                           FontSize="15"
-                          MinColumnWidth="30"/>
+                          MinColumnWidth="30">
+                </DataGrid>
             </TabItem>
 
             <TabItem Header="Pozostali">
