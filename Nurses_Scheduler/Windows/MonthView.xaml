@@ -12,6 +12,9 @@
         <Style x:Key="WeekendStyle" TargetType="DataGridCell">
             <Setter Property="Background" Value="LightGray"/>
         </Style>
+        <Style x:Key="BoldNameStyle" TargetType="DataGridCell">
+            <Setter Property="TextBlock.FontWeight" Value="Bold"/>
+        </Style>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -52,8 +55,7 @@
             <TabItem Header="Pielęgniarki">
                 <DataGrid x:Name="MonthGrid_Pielegniarki_DataGrid"
                           FontSize="15"
-                          MinColumnWidth="30">
-                </DataGrid>
+                          MinColumnWidth="30"/>
             </TabItem>
 
             <TabItem Header="Pozostali">

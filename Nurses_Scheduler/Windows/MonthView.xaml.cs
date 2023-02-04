@@ -167,6 +167,9 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pielegniarki_DataGrid.MinRowHeight = 40;
             MonthGrid_Pielegniarki_DataGrid.AutoGenerateColumns = false;
             MonthGrid_Pielegniarki_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
+            MonthGrid_Pielegniarki_DataGrid.Columns[0].CellStyle = MonthGrid_Pielegniarki_DataGrid.TryFindResource("BoldNameStyle") as Style;
+            MonthGrid_Pielegniarki_DataGrid.Columns[0].IsReadOnly = true;
+            MonthGrid_Pielegniarki_DataGrid.Columns[0].Width = 250;
 
             MonthGrid_Pozostali_DataGrid.CanUserResizeColumns = false;
             MonthGrid_Pozostali_DataGrid.CanUserResizeRows = false;
@@ -178,6 +181,9 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pozostali_DataGrid.MinRowHeight = 40;
             MonthGrid_Pozostali_DataGrid.AutoGenerateColumns = false;
             MonthGrid_Pozostali_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
+            MonthGrid_Pozostali_DataGrid.Columns[0].CellStyle = MonthGrid_Pozostali_DataGrid.TryFindResource("BoldNameStyle") as Style;
+            MonthGrid_Pozostali_DataGrid.Columns[0].IsReadOnly = true;
+            MonthGrid_Pozostali_DataGrid.Columns[0].Width = 250;
 
             foreach (int day in eventDays)
             {
