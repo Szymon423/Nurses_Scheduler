@@ -29,5 +29,16 @@ namespace Nurses_Scheduler.Classes
                 return FirstName + " " + LastName;
             }
         }
+        public static List<Employee> GetEmployeesFromDB(string Occupation, String DepartmentName)
+        {
+            List<Employee> employees = new List<Employee>();
+
+            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
+            {
+                conn.CreateTable<Employee>();
+                employees = conn.Table<Employee>().ToList().Where(c => c.Occupation.Contains(Occupation)).Where(c => c.Department.Contains(DepartmentName)).OrderBy(c => c.LastName).ToList();
+            }
+            return employees;
+        }
     }
 }

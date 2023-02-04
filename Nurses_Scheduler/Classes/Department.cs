@@ -23,5 +23,18 @@ namespace Nurses_Scheduler.Classes
         {
             return $"{DepartmentName} - ({DepartmentShortName})";
         }
+
+        static public List<Department> GetDepartmentsFromDB()
+        {
+            List<Department> departments = new List<Department>();
+
+            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
+            {
+                conn.CreateTable<Employee>();
+                departments = (conn.Table<Department>().ToList()).OrderBy(c => c.DepartmentName).ToList();
+            }
+            return departments;
+        }
+
     }
 }

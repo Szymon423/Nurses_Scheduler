@@ -34,7 +34,12 @@ namespace Nurses_Scheduler.Windows
         private int howManyMonthToShow;
         private string[] months = { "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień" };
         IDictionary<string, int> OccupationToIndex = new Dictionary<string, int>();
+        IDictionary<string, int> DepartmentToIndex = new Dictionary<string, int>();
         private List<List<EmployeeWorkArrangement>> employeesWorkArrangements_GroupedByOccupation;
+        
+        List<Department> departmentList;
+        private List<DepartmentWorkArrangement> departmentsWorkArrangement;
+
         private List<EmployeeWorkArrangement> employeesWorkArrangements_OtherThanNurse; // opiekuni medyczni, salowe i sanitariuszki
         private List<EmployeeWorkArrangement> employeesWorkArrangements_Nurses;         // pielęgniarki oraz asystentki pielęgniarek
 
@@ -48,6 +53,12 @@ namespace Nurses_Scheduler.Windows
             howManyMonthToShow = 3;
             monthsToChoose = new List<string>();
 
+            departmentList = Department.GetDepartmentsFromDB();
+            for (int i = 0; i < departmentList.Count; i++)
+            {
+                DepartmentToIndex.Add(departmentList[i].DepartmentName, i);
+            }
+
             for (int i = 0; i < App.AllowedOccupations.Length; i++)
             {
                 OccupationToIndex.Add(App.AllowedOccupations[i], i);
@@ -56,7 +67,23 @@ namespace Nurses_Scheduler.Windows
             employeesWorkArrangements_GroupedByOccupation = new List<List<EmployeeWorkArrangement>>();
             employeesWorkArrangements_OtherThanNurse = new List<EmployeeWorkArrangement>();
             employeesWorkArrangements_Nurses = new List<EmployeeWorkArrangement>();
+
+            departmentsWorkArrangement = new List<DepartmentWorkArrangement>();
+
             InitialiseMonthComboBox();
+            InitialiseDepartmentComboBox();
+            ShowDepartment_Button.IsEnabled = false;
+        }
+
+        private void InitialiseDepartmentComboBox()
+        {
+            List<String> departmentToChoose = new List<string>();
+            foreach (Department department in departmentList)
+            {
+                departmentToChoose.Add(department.DepartmentName);
+            }
+            Department_ComboBox.ItemsSource = departmentToChoose;
+            Department_ComboBox.SelectedIndex = 0;
         }
 
         private void InitialiseMonthComboBox()
@@ -74,24 +101,14 @@ namespace Nurses_Scheduler.Windows
                 }
                 monthsToChoose.Add(months[monthToAdd - 1] + " " + yearToShow.ToString());
             }
-            DaysInMonth_ComboBox.ItemsSource = monthsToChoose;
-            DaysInMonth_ComboBox.SelectedIndex = 0;
-        }
-
-        private List<Employee> GetEmployeesFromDB(string Occupation)
-        {
-            List<Employee> employees = new List<Employee>();
-
-            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
-            {
-                conn.CreateTable<Employee>();
-                employees = conn.Table<Employee>().ToList().Where(c => c.Occupation.Contains(Occupation)).OrderBy(c => c.LastName).ToList();
-            }
-            return employees;
+            ChoosenMonth_ComboBox.ItemsSource = monthsToChoose;
+            ChoosenMonth_ComboBox.SelectedIndex = 0;
         }
 
         private void GenerateNewMonthView(int daysInMonth)
         {
+            departmentsWorkArrangement = new List<DepartmentWorkArrangement>();
+
             employeesWorkArrangements_GroupedByOccupation = new List<List<EmployeeWorkArrangement>>();
             employeesWorkArrangements_OtherThanNurse = new List<EmployeeWorkArrangement>();
             employeesWorkArrangements_Nurses = new List<EmployeeWorkArrangement>();
@@ -121,37 +138,36 @@ namespace Nurses_Scheduler.Windows
                 t1.Binding = new Binding("_" + headers[i]);
                 t2.Binding = new Binding("_" + headers[i]);
 
-
                 MonthGrid_Pielegniarki_DataGrid.Columns.Add(t1);
                 MonthGrid_Pozostali_DataGrid.Columns.Add(t2);
             }
-
-            foreach (string occupation in App.AllowedOccupations)
+ 
+            foreach (Department department in departmentList)
             {
-                List<Employee> employeeList = GetEmployeesFromDB(occupation);
-                List<EmployeeWorkArrangement> employeesWorkArrangements = new List<EmployeeWorkArrangement>();
-
-                foreach (Employee employee in employeeList)
+                DepartmentWorkArrangement departmentWorkArrangement = new DepartmentWorkArrangement();
+                foreach (String occupation in App.AllowedOccupations)
                 {
-                    EmployeeWorkArrangement item = new EmployeeWorkArrangement(employee.FullName);
-                    employeesWorkArrangements.Add(item);
-                }
-
-                employeesWorkArrangements_GroupedByOccupation.Add(employeesWorkArrangements);
-
-                if (occupation == "Pielęgniarka" || occupation == "Asystentka Pielęgniarki")
-                {
-                    employeesWorkArrangements_Nurses.AddRange(employeesWorkArrangements);
-                }
-                else
-                {
-                    employeesWorkArrangements_OtherThanNurse.AddRange(employeesWorkArrangements);
-                }
-
+                    List<Employee> employeeList = Employee.GetEmployeesFromDB(occupation, department.DepartmentName);
+                    List<EmployeeWorkArrangement> employeeWorkArrangement = new List<EmployeeWorkArrangement>();
+                    foreach (Employee employee in employeeList)
+                    {
+                        if (occupation == "Pielęgniarka" || occupation == "Asystentka Pielęgniarki")
+                        {
+                            departmentWorkArrangement.nursesWorkArrangement.Add(new EmployeeWorkArrangement(employee.FullName));
+                        }
+                        else
+                        {
+                            departmentWorkArrangement.otherThanNursesWorkArrangement.Add(new EmployeeWorkArrangement(employee.FullName));
+                        }
+                        departmentWorkArrangement.allEmployeeWorkArrangement.Add(new EmployeeWorkArrangement(employee.FullName));
+                    }
+                }  
+                departmentsWorkArrangement.Add(departmentWorkArrangement);
             }
-            MonthGrid_Pielegniarki_DataGrid.ItemsSource = employeesWorkArrangements_Nurses;
-            MonthGrid_Pozostali_DataGrid.ItemsSource = employeesWorkArrangements_OtherThanNurse;
-            
+
+            MonthGrid_Pielegniarki_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].nursesWorkArrangement;
+            MonthGrid_Pozostali_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].otherThanNursesWorkArrangement;
+
             SetPropertiesForDataGrids(FindEventDaysInMonth(daysInMonth));
         }
 
@@ -164,7 +180,7 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pielegniarki_DataGrid.CanUserAddRows = false;
             MonthGrid_Pielegniarki_DataGrid.CanUserReorderColumns = false;
             MonthGrid_Pielegniarki_DataGrid.MinColumnWidth = 40;
-            MonthGrid_Pielegniarki_DataGrid.MinRowHeight = 40;
+            MonthGrid_Pielegniarki_DataGrid.MinRowHeight = 30;
             MonthGrid_Pielegniarki_DataGrid.AutoGenerateColumns = false;
             MonthGrid_Pielegniarki_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
             MonthGrid_Pielegniarki_DataGrid.Columns[0].CellStyle = MonthGrid_Pielegniarki_DataGrid.TryFindResource("BoldNameStyle") as Style;
@@ -178,7 +194,7 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pozostali_DataGrid.CanUserAddRows = false;
             MonthGrid_Pozostali_DataGrid.CanUserReorderColumns = false;
             MonthGrid_Pozostali_DataGrid.MinColumnWidth = 40;
-            MonthGrid_Pozostali_DataGrid.MinRowHeight = 40;
+            MonthGrid_Pozostali_DataGrid.MinRowHeight = 30;
             MonthGrid_Pozostali_DataGrid.AutoGenerateColumns = false;
             MonthGrid_Pozostali_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
             MonthGrid_Pozostali_DataGrid.Columns[0].CellStyle = MonthGrid_Pozostali_DataGrid.TryFindResource("BoldNameStyle") as Style;
@@ -213,7 +229,7 @@ namespace Nurses_Scheduler.Windows
 
         private int GetNumberOfDaysInMonth()
         {
-            var splitedValuesFromComboBox = DaysInMonth_ComboBox.Text.Split(" ");
+            var splitedValuesFromComboBox = ChoosenMonth_ComboBox.Text.Split(" ");
             string month = splitedValuesFromComboBox[0];
 
             int monthNumber = 0;
@@ -237,6 +253,24 @@ namespace Nurses_Scheduler.Windows
         {
             int dni = GetNumberOfDaysInMonth();
             GenerateNewMonthView(dni);
+            MonthChoosed_Button.IsEnabled = false;
+        }
+
+        private void ShowDepartment_Click(object sender, RoutedEventArgs e)
+        {
+            MonthGrid_Pielegniarki_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].nursesWorkArrangement;
+            MonthGrid_Pozostali_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].otherThanNursesWorkArrangement;
+            ShowDepartment_Button.IsEnabled = false;
+        }
+
+        private void Department_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ShowDepartment_Button.IsEnabled = true;
+        }
+
+        private void ChoosenMonth_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            MonthChoosed_Button.IsEnabled = true;
         }
     }
 }

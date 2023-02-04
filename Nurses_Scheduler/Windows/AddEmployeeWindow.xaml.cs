@@ -28,7 +28,7 @@ namespace Nurses_Scheduler.Windows
             EmployeeOccupation_ComboBox.ItemsSource = App.AllowedOccupations;
             EmployeeOccupation_ComboBox.SelectedIndex = 0;
 
-            List<Department> departmentList = GetDepartmentsFromDB();
+            List<Department> departmentList = Department.GetDepartmentsFromDB();
             if (departmentList.Count > 0)
             {
                 EmployeeDepartment_ComboBox.ItemsSource = departmentList;
@@ -57,18 +57,6 @@ namespace Nurses_Scheduler.Windows
                 connection.Insert(employee);
             }
             Close();
-        }
-
-        private List<Department> GetDepartmentsFromDB()
-        {
-            List<Department> departments = new List<Department>();
-
-            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
-            {
-                conn.CreateTable<Employee>();
-                departments = (conn.Table<Department>().ToList()).OrderBy(c => c.DepartmentName).ToList();
-            }
-            return departments;
         }
     }
 }

@@ -33,25 +33,23 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
-
+        
+        <!-- ROW 1 -->
         <ComboBox Grid.Row="1"
                   Grid.Column="1"
-                  x:Name="DaysInMonth_ComboBox">
-        </ComboBox>
-        
-        <Button Content="Wybierz Miesiąc"
-                Click="MonthChoosed_Click"
-                Grid.Column="1"
-                Grid.Row="2"
-                Margin="0 5 0 0"/>
+                  x:Name="ChoosenMonth_ComboBox"
+                  SelectionChanged="ChoosenMonth_ComboBox_SelectionChanged"/>
+
 
         <TabControl Grid.Column="3" 
                     Grid.ColumnSpan="4"
                     Grid.Row="1"
-                    Grid.RowSpan="4">
+                    Grid.RowSpan="6">
             <TabItem Header="Pielęgniarki">
                 <DataGrid x:Name="MonthGrid_Pielegniarki_DataGrid"
                           FontSize="15"
@@ -65,5 +63,34 @@
             </TabItem>
 
         </TabControl>
+
+        <!-- ROW 2 -->
+        <Button Content="Wybierz Miesiąc"
+                x:Name="MonthChoosed_Button"
+                Click="MonthChoosed_Click"
+                Grid.Column="1"
+                Grid.Row="2"
+                Margin="0 5 0 0"/>
+
+        <!-- ROW 3 -->
+        <Separator Grid.Row="3"
+                   Grid.Column="1"
+                   Margin="0, 15, 0, 15"/>
+        
+        <!-- ROW 4 -->
+        <ComboBox Grid.Row="4"
+                  Grid.Column="1"
+                  x:Name="Department_ComboBox" 
+                  SelectionChanged="Department_ComboBox_SelectionChanged"/>
+
+        <!-- ROW 5 -->
+        <Button Content="Wyświetl oddział"
+                x:Name="ShowDepartment_Button"
+                Click="ShowDepartment_Click"
+                Grid.Column="1"
+                Grid.Row="5"
+                Margin="0 5 0 0"/>
+
+
     </Grid>
 </Window>
