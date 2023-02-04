@@ -4,12 +4,11 @@
 Glównym celem projektu jest stworzenie systemu wspomagającego tworzenie grafiku dla peronelu medycznego. 
 
 ### Bieżąca lista ToDo
-1. Dodać kolorowanie kolumn zawierających weekendy,
-2. Dodać możliwość wprowadzania grafiku dla poszczególnych oddziałów,
-3. Połączyć Pracownika z Oddziałem w bazie danych,
-4. Dodać możliwość generowania raportu - wydruk w formie pdf wyglądający jak dotychczasowe harmonogramy,
-5. Określić, oraz przyjąć konwencję dotyczącą wprowadzania próśb pracowników przez użytkownika,
-6. Zebrać wszelkie informacje prawne, dotyczące harmonogramowania pracy.
+1. Dodać możliwość wprowadzania grafiku dla poszczególnych oddziałów,
+2. Połączyć Pracownika z Oddziałem w bazie danych,
+3. Dodać możliwość generowania raportu - wydruk w formie pdf wyglądający jak dotychczasowe harmonogramy,
+4. Określić, oraz przyjąć konwencję dotyczącą wprowadzania próśb pracowników przez użytkownika,
+5. Zebrać wszelkie informacje prawne, dotyczące harmonogramowania pracy.
 
 ### Mile stones
 
