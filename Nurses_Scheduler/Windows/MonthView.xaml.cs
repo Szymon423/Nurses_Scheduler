@@ -33,15 +33,11 @@ namespace Nurses_Scheduler.Windows
         private List<String> monthsToChoose;
         private int howManyMonthToShow;
         private string[] months = { "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień" };
-        IDictionary<string, int> OccupationToIndex = new Dictionary<string, int>();
-        IDictionary<string, int> DepartmentToIndex = new Dictionary<string, int>();
-        private List<List<EmployeeWorkArrangement>> employeesWorkArrangements_GroupedByOccupation;
-        
-        List<Department> departmentList;
+        private IDictionary<string, int> OccupationToIndex = new Dictionary<string, int>();
+        private IDictionary<string, int> DepartmentToIndex = new Dictionary<string, int>();
+        private List<Department> departmentList;
         private List<DepartmentWorkArrangement> departmentsWorkArrangement;
 
-        private List<EmployeeWorkArrangement> employeesWorkArrangements_OtherThanNurse; // opiekuni medyczni, salowe i sanitariuszki
-        private List<EmployeeWorkArrangement> employeesWorkArrangements_Nurses;         // pielęgniarki oraz asystentki pielęgniarek
 
         public MonthView()
         {
@@ -63,10 +59,6 @@ namespace Nurses_Scheduler.Windows
             {
                 OccupationToIndex.Add(App.AllowedOccupations[i], i);
             }
-
-            employeesWorkArrangements_GroupedByOccupation = new List<List<EmployeeWorkArrangement>>();
-            employeesWorkArrangements_OtherThanNurse = new List<EmployeeWorkArrangement>();
-            employeesWorkArrangements_Nurses = new List<EmployeeWorkArrangement>();
 
             departmentsWorkArrangement = new List<DepartmentWorkArrangement>();
 
@@ -108,10 +100,6 @@ namespace Nurses_Scheduler.Windows
         private void GenerateNewMonthView(int daysInMonth)
         {
             departmentsWorkArrangement = new List<DepartmentWorkArrangement>();
-
-            employeesWorkArrangements_GroupedByOccupation = new List<List<EmployeeWorkArrangement>>();
-            employeesWorkArrangements_OtherThanNurse = new List<EmployeeWorkArrangement>();
-            employeesWorkArrangements_Nurses = new List<EmployeeWorkArrangement>();
 
             // create datagrid headers according to days in month
             List<string> headers = new List<string>();

@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nurses_Scheduler"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="Grafiki" Height="350" Width="800">
+        WindowState="Maximized"
+        Title="Grafiki" Height="1080" Width="1920">
 
 
     <Grid>
