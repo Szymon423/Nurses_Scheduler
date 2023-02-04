@@ -3,11 +3,20 @@
 ## Opis projektu
 Glównym celem projektu jest stworzenie systemu wspomagającego tworzenie grafiku dla peronelu medycznego. 
 
+
+### Bieżąca lista ToDo
+1. Dodać kolorowanie kolumn zawierających weekendy,
+2. Dodać możliwość wprowadzania grafiku dla poszczególnych oddziałów,
+3. Połączyć Pracownika z Oddziałem w bazie danych
+
+
+
 ### Mile stones
 
 1. Stworzenie zamysłu projektu
 2. Dobór odpowiednich narzędzi
 3. Szkic aplikacji
+
 
 ### Tutoriale z których Korzystam:
 
