@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace Nurses_Scheduler.Classes.Raport
 {
@@ -35,6 +37,10 @@ namespace Nurses_Scheduler.Classes.Raport
         public async Task SaveRaport()
         {
             await File.WriteAllLinesAsync("index.html", html.pages[0].Content);
+            string pth = Path.Combine(Directory.GetCurrentDirectory(), "index.html");
+            Debug.WriteLine(pth);
+            Process.Start(pth);
+
         }
     }
 }
