@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Shapes;
+using System.Printing;
+using System.Windows.Documents;
+
 
 namespace Nurses_Scheduler.Classes.Raport
 {
@@ -99,7 +102,7 @@ namespace Nurses_Scheduler.Classes.Raport
             });
 
 
-            page.AddTabele(workArrangementList, raportData.eventDays);
+            page.AddTabele(workArrangementList, raportData.eventDays, raportData.monthLength);
             page.AddStyle("table", new string[]
             {
                 "border-collapse: collapse",
@@ -132,11 +135,6 @@ namespace Nurses_Scheduler.Classes.Raport
         public async Task SaveRaport()
         {
             await File.WriteAllLinesAsync(raportFileName + ".html", html.SavePage(0));
-            string messageBoxText = "Raport został wygenerowany.";
-            string caption = "Raport";
-            MessageBoxButton button = MessageBoxButton.OK;
-            MessageBoxImage icon = MessageBoxImage.Information;
-            MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
         }
 
         private static List<List<string>> InsertLpAndSignature(List<List<string>> toChange)
@@ -156,5 +154,7 @@ namespace Nurses_Scheduler.Classes.Raport
             }
             return toChange;
         }
+
+
     }
 }

@@ -291,6 +291,11 @@ namespace Nurses_Scheduler.Windows
                 raport.GenerateRaport();
                 raport.SaveRaport();
             }
+            string messageBoxText = "Raport został wygenerowany.";
+            string caption = "Raport";
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Information;
+            MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
         }
     }
 }

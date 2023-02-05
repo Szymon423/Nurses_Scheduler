@@ -41,7 +41,7 @@ namespace Nurses_Scheduler.Classes.Raport
             Debug.WriteLine(paragraphToAdd);
         }
 
-        public void AddTabele(List<List<string>> TabeleContent, List<int> eventDays)
+        public void AddTabele(List<List<string>> TabeleContent, List<int> eventDays, int monthLength)
         {
             string tableString = "";
             for (int i = 0; i < TabeleContent.Count; i++)
@@ -49,6 +49,11 @@ namespace Nurses_Scheduler.Classes.Raport
                 string tableRow = "";
                 for (int j = 0; j < TabeleContent[i].Count; j ++)
                 {
+                    if (j > monthLength + 1 && j != TabeleContent[i].Count - 1)
+                    {
+                        continue;
+                    }
+
                     string item = TabeleContent[i][j];
                     string tableData;
                     if (i == 0) // tabele headers
