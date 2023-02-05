@@ -4,11 +4,18 @@
 Glównym celem projektu jest stworzenie systemu wspomagającego tworzenie grafiku dla peronelu medycznego. 
 
 ### Bieżąca lista ToDo
-1. Generowanie raportu w formie *.pdf
+1. Poprawić generowanie raportów: 
+    - Wprowadzić dynamiczne generowanie raportów dla każego oddziału,
+    - Wprowadzić dynamiczne dopasowanie kolumn w raporcie do miesiąca,
+    - Wprowadzić dodatkowe informacje do raportu,
+    - Ustalić jednen, stały podział szerokości kolumn,
+    - Dodać liczbę porządkową,
+    - Dodać miejsce na podpisy,
+    - Dodać stopkę,
+    - wprowadzić generowanie *.HTML -> *.pdf.
 2. Połączyć Pracownika z Oddziałem w bazie danych,
-3. Dodać możliwość generowania raportu - wydruk w formie pdf wyglądający jak dotychczasowe harmonogramy,
-4. Określić, oraz przyjąć konwencję dotyczącą wprowadzania próśb pracowników przez użytkownika,
-5. Zebrać wszelkie informacje prawne, dotyczące harmonogramowania pracy.
+3. Określić, oraz przyjąć konwencję dotyczącą wprowadzania próśb pracowników przez użytkownika,
+4. Zebrać wszelkie informacje prawne, dotyczące harmonogramowania pracy.
 
 ### Mile stones
 
