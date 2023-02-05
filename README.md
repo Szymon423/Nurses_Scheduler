@@ -4,18 +4,13 @@
 Glównym celem projektu jest stworzenie systemu wspomagającego tworzenie grafiku dla peronelu medycznego. 
 
 ### Bieżąca lista ToDo
-1. Poprawić generowanie raportów: 
-    - Wprowadzić dynamiczne generowanie raportów dla każego oddziału,
-    - Wprowadzić dynamiczne dopasowanie kolumn w raporcie do miesiąca,
-    - Wprowadzić dodatkowe informacje do raportu,
-    - Ustalić jednen, stały podział szerokości kolumn,
-    - Dodać liczbę porządkową,
-    - Dodać miejsce na podpisy,
-    - Dodać stopkę,
+1. Wprowadzić rozróżnienie: Salowa / Sanitariuszka
+2. Poprawić generowanie raportów: 
+    - Wprowadzić dynamiczne generowanie raportów dla każedej grupy pracowników oddziału,
     - wprowadzić generowanie *.HTML -> *.pdf.
-2. Połączyć Pracownika z Oddziałem w bazie danych,
-3. Określić, oraz przyjąć konwencję dotyczącą wprowadzania próśb pracowników przez użytkownika,
-4. Zebrać wszelkie informacje prawne, dotyczące harmonogramowania pracy.
+3. Połączyć Pracownika z Oddziałem w bazie danych,
+4. Określić, oraz przyjąć konwencję dotyczącą wprowadzania próśb pracowników przez użytkownika,
+5. Zebrać wszelkie informacje prawne, dotyczące harmonogramowania pracy.
 
 ### Mile stones
 
@@ -30,9 +25,6 @@ Glównym celem projektu jest stworzenie systemu wspomagającego tworzenie grafik
 2. <a href="https://www.youtube.com/watch?v=66K5Nmmc9g8">SQLite</a>
 3. <a href="https://www.youtube.com/watch?v=ayp3tHEkRc0">How to create DB file</a>
 4. <a href="https://www.udemy.com/course/windows-presentation-foundation-masterclass/">Windows Presentation Foundation Masterclass</a>
-
-
-
 
 
 ## Szkic projektu
