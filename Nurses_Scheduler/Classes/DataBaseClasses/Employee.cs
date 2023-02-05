@@ -26,7 +26,7 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
         {
             get
             {
-                return FirstName + " " + LastName;
+                return LastName + " " + FirstName;
             }
         }
         public static List<Employee> GetEmployeesFromDB(string Occupation, string DepartmentName)

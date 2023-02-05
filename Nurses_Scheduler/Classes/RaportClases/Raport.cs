@@ -99,13 +99,13 @@ namespace Nurses_Scheduler.Classes.Raport
             });
 
 
-            page.AddTabele(workArrangementList);
+            page.AddTabele(workArrangementList, raportData.eventDays);
             page.AddStyle("table", new string[]
             {
                 "border-collapse: collapse",
                 "width: 100%",
                 "table-layout: fixed",
-                "background-color: #D3D3D3"
+                "background-color: #f7f7f7"
             });
 
             page.AddStyle("td, th", new string[]

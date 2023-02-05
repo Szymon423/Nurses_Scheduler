@@ -41,7 +41,7 @@ namespace Nurses_Scheduler.Classes.Raport
             Debug.WriteLine(paragraphToAdd);
         }
 
-        public void AddTabele(List<List<string>> TabeleContent)
+        public void AddTabele(List<List<string>> TabeleContent, List<int> eventDays)
         {
             string tableString = "";
             for (int i = 0; i < TabeleContent.Count; i++)
@@ -63,11 +63,20 @@ namespace Nurses_Scheduler.Classes.Raport
                     if (j == 1 || j == TabeleContent[i].Count - 1)
                     {
                         string style = "width: 10%;";
-                        tableData = PutOnBracketsWithStyle(tableData, item, style);
+                        tableData = PutOnBracketsWithStyle(tableData, item, style);                      
                     }
                     else
                     {
-                        tableData = PutOnBrackets(tableData, item);
+                        if (eventDays.Contains(j - 1))
+                        {
+                            string style = "background-color: #ababab;";
+                            tableData = PutOnBracketsWithStyle(tableData, item, style);
+                        }
+                        else
+                        {
+                            tableData = PutOnBrackets(tableData, item);
+                        }
+                        
                     }
                     tableRow += tableData;
                 }
