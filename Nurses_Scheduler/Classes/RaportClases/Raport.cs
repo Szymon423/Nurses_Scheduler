@@ -32,15 +32,27 @@ namespace Nurses_Scheduler.Classes.Raport
                 list.Add(subList);
             }
             html.pages[0].AddTabele(list);
+            html.pages[0].AddStyle("table", new string[] 
+            {
+                "font-family: arial, sans-serif",
+                "border-collapse: collapse",
+                "width: 100 %"
+            });
+            html.pages[0].AddStyle("td, th", new string[]
+            {
+                "border: 1px solid #dddddd",
+                "text-align: left",
+                "padding: 8px"
+            });
         }
 
         public async Task SaveRaport()
         {
-            await File.WriteAllLinesAsync("index.html", html.pages[0].Content);
-            string pth = Path.Combine(Directory.GetCurrentDirectory(), "index.html");
-            Debug.WriteLine(pth);
-            Process.Start(pth);
-
+            await File.WriteAllLinesAsync("index.html", html.SavePage(0));
+            //    I don't know how to open html in browser ???
+            //    string pth = Path.Combine(Directory.GetCurrentDirectory(), "index.html");
+            //    Debug.WriteLine(pth);
+            //    Process.Start(pth);
         }
     }
 }

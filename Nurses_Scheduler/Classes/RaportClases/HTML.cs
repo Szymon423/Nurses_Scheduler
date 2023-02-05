@@ -20,6 +20,10 @@ namespace Nurses_Scheduler.Classes.Raport
             pages.Add(new HTMLpage());
         }
 
-        
+        public List<string> SavePage(int pageNumber)
+        {
+            pages[pageNumber].AddStyleToContent();
+            return pages[pageNumber].Content;
+        }     
     }
 }
