@@ -1,4 +1,5 @@
 ﻿using Nurses_Scheduler.Classes;
+using Nurses_Scheduler.Classes.Raport;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -259,6 +260,12 @@ namespace Nurses_Scheduler.Windows
         private void ChoosenMonth_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             MonthChoosed_Button.IsEnabled = true;
+        }
+
+        private void GenerateRaport_Click(object sender, RoutedEventArgs e)
+        {
+            Raport raport = new Raport();
+            raport.SaveRaport();
         }
     }
 }

@@ -35,6 +35,8 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
@@ -49,7 +51,7 @@
         <TabControl Grid.Column="3" 
                     Grid.ColumnSpan="4"
                     Grid.Row="1"
-                    Grid.RowSpan="6">
+                    Grid.RowSpan="8">
             <TabItem Header="Pielęgniarki">
                 <DataGrid x:Name="MonthGrid_Pielegniarki_DataGrid"
                           FontSize="15"
@@ -91,6 +93,18 @@
                 Grid.Row="5"
                 Margin="0 5 0 0"/>
 
+        <!-- ROW 6 -->
+        <Separator Grid.Row="6"
+                   Grid.Column="1"
+                   Margin="0, 15, 0, 15"/>
+        
+        <!-- ROW 7 -->
+        <Button Content="Generuj raport"
+                x:Name="GenerateRaport_Button"
+                Click="GenerateRaport_Click"
+                Grid.Column="1"
+                Grid.Row="7"
+                Margin="0 5 0 0"/>
 
     </Grid>
 </Window>
