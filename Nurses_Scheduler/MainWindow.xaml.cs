@@ -1,4 +1,4 @@
-﻿using Nurses_Scheduler.Classes;
+﻿using Nurses_Scheduler.Classes.DataBaseClasses;
 using Nurses_Scheduler.Windows;
 using SQLite;
 using System;

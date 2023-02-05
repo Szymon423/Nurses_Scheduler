@@ -65,7 +65,7 @@ namespace Nurses_Scheduler.Classes.Raport
 
         private string PutOnBrackets(string Tag, string content)
         {
-            return "<" + Tag + ">" + content + "</" + Tag + ">";
+            return "<" + Tag + ">" + content + "</" + Tag + ">" + "\n";
         }
 
         public void AddStyleToContent()
@@ -73,11 +73,15 @@ namespace Nurses_Scheduler.Classes.Raport
             string styleString = "";
             foreach (InternalStyle style in InternalStyles)
             {
-                styleString += style.getStyle();
+                styleString += style.getStyle() + "\n";
             }
             Content.Insert(0, PutOnBrackets("style", styleString));
         }
 
-
+        public void InsertHTMLtag()
+        {
+            Content.Insert(0, "<HTML>");
+            Content.Add("</HTML>");
+        }
     }
 }

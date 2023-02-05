@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nurses_Scheduler.Classes
+namespace Nurses_Scheduler.Classes.DataBaseClasses
 {
     [Table("Department")]
     public class Department
@@ -14,7 +14,7 @@ namespace Nurses_Scheduler.Classes
 
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        
+
         public string DepartmentName { get; set; }
 
         public string DepartmentShortName { get; set; }
@@ -31,7 +31,7 @@ namespace Nurses_Scheduler.Classes
             using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
             {
                 conn.CreateTable<Employee>();
-                departments = (conn.Table<Department>().ToList()).OrderBy(c => c.DepartmentName).ToList();
+                departments = conn.Table<Department>().ToList().OrderBy(c => c.DepartmentName).ToList();
             }
             return departments;
         }

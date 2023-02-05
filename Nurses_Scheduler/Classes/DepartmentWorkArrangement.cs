@@ -18,5 +18,22 @@ namespace Nurses_Scheduler.Classes
             nursesWorkArrangement = new List<EmployeeWorkArrangement>();
             otherThanNursesWorkArrangement = new List<EmployeeWorkArrangement>();
         }
+
+        public List<List<string>> GetNursesWorkArrangementAsList()
+        {
+            List<List<string>> result = new List<List<string>>();
+            List<string> headers = new List<string>();
+            headers.Add("Pracownik");
+            for (int i = 1; i <= 31; i++)
+            {
+                headers.Add((i).ToString());
+            }
+            result.Add(headers);
+            foreach (EmployeeWorkArrangement emp in nursesWorkArrangement)
+            {
+                result.Add(emp.GetWorkArrangementAsList());
+            }
+            return result;
+        }
     }
 }

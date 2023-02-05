@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nurses_Scheduler.Classes
+namespace Nurses_Scheduler.Classes.DataBaseClasses
 {
     [Table("Employee")]
     public class Employee
@@ -19,17 +19,17 @@ namespace Nurses_Scheduler.Classes
 
         public string Department { get; set; }
 
-        public string Occupation { get; set; }  
+        public string Occupation { get; set; }
 
         [Ignore]
-        public string FullName 
-        { 
+        public string FullName
+        {
             get
             {
                 return FirstName + " " + LastName;
             }
         }
-        public static List<Employee> GetEmployeesFromDB(string Occupation, String DepartmentName)
+        public static List<Employee> GetEmployeesFromDB(string Occupation, string DepartmentName)
         {
             List<Employee> employees = new List<Employee>();
 

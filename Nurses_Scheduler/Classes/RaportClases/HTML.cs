@@ -22,7 +22,8 @@ namespace Nurses_Scheduler.Classes.Raport
 
         public List<string> SavePage(int pageNumber)
         {
-            pages[pageNumber].AddStyleToContent();
+            pages[pageNumber].InsertHTMLtag();
+            pages[pageNumber].AddStyleToContent();    
             return pages[pageNumber].Content;
         }     
     }

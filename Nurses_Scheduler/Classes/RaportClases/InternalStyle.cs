@@ -19,12 +19,12 @@ namespace Nurses_Scheduler.Classes.RaportClases
 
         public string getStyle()
         {
-            string toReturn = targetObject + "{";
+            string toReturn = targetObject + " {\n";
             foreach (string property in properties)
             {
-                toReturn += property + ";";
+                toReturn += property + ";\n";
             }
-            toReturn += "}";
+            toReturn += "\n}";
             return toReturn;
         }
     }

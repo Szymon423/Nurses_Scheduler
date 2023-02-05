@@ -9,7 +9,6 @@ namespace Nurses_Scheduler.Classes
 {
     public class EmployeeWorkArrangement
     {
-
         public EmployeeWorkArrangement(string employeeName)
         {
             this._Pracownik = employeeName;
@@ -78,6 +77,45 @@ namespace Nurses_Scheduler.Classes
         public string _29 { get; set; }
         public string _30 { get; set; }
         public string _31 { get; set; }
+
+        public List<string> GetWorkArrangementAsList()
+        {
+            List<string> workArrangementAsList = new List<string>();
+            workArrangementAsList.Add(_Pracownik);
+            workArrangementAsList.Add(_1);
+            workArrangementAsList.Add(_2);
+            workArrangementAsList.Add(_3);
+            workArrangementAsList.Add(_4);
+            workArrangementAsList.Add(_5);
+            workArrangementAsList.Add(_6);
+            workArrangementAsList.Add(_7);
+            workArrangementAsList.Add(_8);
+            workArrangementAsList.Add(_9);
+            workArrangementAsList.Add(_10);
+            workArrangementAsList.Add(_11);
+            workArrangementAsList.Add(_12);
+            workArrangementAsList.Add(_13);
+            workArrangementAsList.Add(_14);
+            workArrangementAsList.Add(_15);
+            workArrangementAsList.Add(_16);
+            workArrangementAsList.Add(_17);
+            workArrangementAsList.Add(_18);
+            workArrangementAsList.Add(_19);
+            workArrangementAsList.Add(_20);
+            workArrangementAsList.Add(_21);
+            workArrangementAsList.Add(_22);
+            workArrangementAsList.Add(_23);
+            workArrangementAsList.Add(_24);
+            workArrangementAsList.Add(_25);
+            workArrangementAsList.Add(_26);
+            workArrangementAsList.Add(_27);
+            workArrangementAsList.Add(_28);
+            workArrangementAsList.Add(_29);
+            workArrangementAsList.Add(_30);
+            workArrangementAsList.Add(_31);
+
+            return workArrangementAsList;
+        }
     }
 }
     

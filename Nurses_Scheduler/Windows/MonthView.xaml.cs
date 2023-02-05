@@ -1,4 +1,5 @@
 ﻿using Nurses_Scheduler.Classes;
+using Nurses_Scheduler.Classes.DataBaseClasses;
 using Nurses_Scheduler.Classes.Raport;
 using SQLite;
 using System;
@@ -264,7 +265,7 @@ namespace Nurses_Scheduler.Windows
 
         private void GenerateRaport_Click(object sender, RoutedEventArgs e)
         {
-            Raport raport = new Raport();
+            Raport raport = new Raport(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].GetNursesWorkArrangementAsList());
             raport.SaveRaport();
         }
     }
