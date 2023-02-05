@@ -105,7 +105,7 @@ namespace Nurses_Scheduler.Classes.Raport
                 "border-collapse: collapse",
                 "width: 100%",
                 "table-layout: fixed",
-                "background-color: #dddddd"
+                "background-color: #D3D3D3"
             });
 
             page.AddStyle("td, th", new string[]

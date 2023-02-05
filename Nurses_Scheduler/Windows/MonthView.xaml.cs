@@ -284,7 +284,8 @@ namespace Nurses_Scheduler.Windows
                     choosenMonth, 
                     choosenYear,
                     departmentList[i],
-                    159.15
+                    159.15,
+                    eventDays
                 );
                 Raport raport = new Raport(raportData);
                 raport.GenerateRaport();

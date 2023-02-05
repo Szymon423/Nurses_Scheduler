@@ -62,7 +62,7 @@ namespace Nurses_Scheduler.Classes.Raport
 
                     if (j == 1 || j == TabeleContent[i].Count - 1)
                     {
-                        string style = "width: 8%;";
+                        string style = "width: 10%;";
                         tableData = PutOnBracketsWithStyle(tableData, item, style);
                     }
                     else

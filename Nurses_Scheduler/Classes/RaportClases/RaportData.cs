@@ -15,8 +15,9 @@ namespace Nurses_Scheduler.Classes.RaportClases
         public int year;
         public Department department;
         public double monthlyHours;
+        public List<int> eventDays;
 
-        public RaportData(DepartmentWorkArrangement dwa, int monthLength, int month, int year, Department department, double monthlyHours)
+        public RaportData(DepartmentWorkArrangement dwa, int monthLength, int month, int year, Department department, double monthlyHours, List<int> eventDays)
         {
             this.departmentWorkArrangement = dwa;
             this.monthLength = monthLength;
@@ -24,6 +25,7 @@ namespace Nurses_Scheduler.Classes.RaportClases
             this.year = year;   
             this.department = department;   
             this.monthlyHours = monthlyHours;
+            this.eventDays = eventDays;
         }
     }
 }
