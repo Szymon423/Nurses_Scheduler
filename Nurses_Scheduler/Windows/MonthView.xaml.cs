@@ -1,11 +1,13 @@
 ﻿using Nurses_Scheduler.Classes;
 using Nurses_Scheduler.Classes.DataBaseClasses;
 using Nurses_Scheduler.Classes.Raport;
+using Nurses_Scheduler.Classes.RaportClases;
 using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -30,11 +32,15 @@ namespace Nurses_Scheduler.Windows
     {
         private int currentMonth;
         private int currentYear;
+        private int howManyMonthToShow;
+        private List<String> monthsToChoose;
+
         private int choosenMonth;
         private int choosenYear;
-        private List<String> monthsToChoose;
-        private int howManyMonthToShow;
-        private string[] months = { "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień" };
+        private int daysInMonth;
+        private List<int> eventDays;
+
+
         private IDictionary<string, int> OccupationToIndex = new Dictionary<string, int>();
         private IDictionary<string, int> DepartmentToIndex = new Dictionary<string, int>();
         private List<Department> departmentList;
@@ -48,6 +54,7 @@ namespace Nurses_Scheduler.Windows
             currentYear = DateTime.Now.Year;
             choosenMonth = currentMonth;
             choosenYear = currentYear;
+            eventDays = new List<int>();
             howManyMonthToShow = 3;
             monthsToChoose = new List<string>();
 
@@ -93,13 +100,13 @@ namespace Nurses_Scheduler.Windows
                     monthToAdd -= 12;
                     yearToShow = currentYear + 1;
                 }
-                monthsToChoose.Add(months[monthToAdd - 1] + " " + yearToShow.ToString());
+                monthsToChoose.Add(App.months[monthToAdd - 1] + " " + yearToShow.ToString());
             }
             ChoosenMonth_ComboBox.ItemsSource = monthsToChoose;
             ChoosenMonth_ComboBox.SelectedIndex = 0;
         }
 
-        private void GenerateNewMonthView(int daysInMonth)
+        private void GenerateNewMonthView()
         {
             departmentsWorkArrangement = new List<DepartmentWorkArrangement>();
 
@@ -158,10 +165,11 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pielegniarki_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].nursesWorkArrangement;
             MonthGrid_Pozostali_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].otherThanNursesWorkArrangement;
 
-            SetPropertiesForDataGrids(FindEventDaysInMonth(daysInMonth));
+            FindEventDaysInMonth(daysInMonth);
+            SetPropertiesForDataGrids();
         }
 
-        private void SetPropertiesForDataGrids(List <int> eventDays)
+        private void SetPropertiesForDataGrids()
         {
             MonthGrid_Pielegniarki_DataGrid.CanUserResizeColumns = false;
             MonthGrid_Pielegniarki_DataGrid.CanUserResizeRows = false;
@@ -199,9 +207,9 @@ namespace Nurses_Scheduler.Windows
             }            
         }
 
-        private List<int> FindEventDaysInMonth(int daysInMonth)
+        private void FindEventDaysInMonth(int daysInMonth)
         {
-            List<int> eventDays = new List<int>();
+            eventDays = new List<int>();
 
             DateTime dt = new DateTime(choosenYear, choosenMonth, 1);
             Debug.Write(dt);
@@ -214,10 +222,10 @@ namespace Nurses_Scheduler.Windows
                 }
                 dt = dt.AddDays(1);
             }
-            return eventDays;
+            return;
         }
 
-        private int GetNumberOfDaysInMonth()
+        private void GetNumberOfDaysInMonth()
         {
             var splitedValuesFromComboBox = ChoosenMonth_ComboBox.Text.Split(" ");
             string month = splitedValuesFromComboBox[0];
@@ -229,20 +237,21 @@ namespace Nurses_Scheduler.Windows
             // finding which month was in combobox
             for (int i = 0; i < 12; i++)
             {
-                if (month.Equals(months[i]))
+                if (month.Equals(App.months[i]))
                 {
                     monthNumber = i + 1;
                     choosenMonth = monthNumber;
                     break;
                 }
             }
-            return DateTime.DaysInMonth(year, monthNumber);
+            daysInMonth = DateTime.DaysInMonth(year, monthNumber);
+            return;
         }
 
         private void MonthChoosed_Click(object sender, RoutedEventArgs e)
         {
-            int dni = GetNumberOfDaysInMonth();
-            GenerateNewMonthView(dni);
+            GetNumberOfDaysInMonth();
+            GenerateNewMonthView();
             MonthChoosed_Button.IsEnabled = false;
         }
 
@@ -263,10 +272,24 @@ namespace Nurses_Scheduler.Windows
             MonthChoosed_Button.IsEnabled = true;
         }
 
+        
+
         private void GenerateRaport_Click(object sender, RoutedEventArgs e)
         {
-            Raport raport = new Raport(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].GetNursesWorkArrangementAsList());
-            raport.SaveRaport();
+            for (int i = 0; i < departmentsWorkArrangement.Count; i++)
+            {
+                RaportData raportData = new RaportData(
+                    departmentsWorkArrangement[i], 
+                    daysInMonth, 
+                    choosenMonth, 
+                    choosenYear,
+                    departmentList[i],
+                    159.15
+                );
+                Raport raport = new Raport(raportData);
+                raport.GenerateRaport();
+                raport.SaveRaport();
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace Nurses_Scheduler.Classes.Raport
@@ -33,6 +34,12 @@ namespace Nurses_Scheduler.Classes.Raport
             Content.Add(paragraphToAdd);
             Debug.WriteLine(paragraphToAdd);
         }
+        public void AddPre(string ParagraphText)
+        {
+            string paragraphToAdd = PutOnBrackets("pre", ParagraphText);
+            Content.Add(paragraphToAdd);
+            Debug.WriteLine(paragraphToAdd);
+        }
 
         public void AddTabele(List<List<string>> TabeleContent)
         {
@@ -40,22 +47,65 @@ namespace Nurses_Scheduler.Classes.Raport
             for (int i = 0; i < TabeleContent.Count; i++)
             {
                 string tableRow = "";
-                foreach (string item in TabeleContent[i])
+                for (int j = 0; j < TabeleContent[i].Count; j ++)
                 {
+                    string item = TabeleContent[i][j];
                     string tableData;
                     if (i == 0) // tabele headers
                     {
-                        tableData = PutOnBrackets("th", item);
+                        tableData = "th";
                     }
                     else // tabele data
                     {
-                        tableData = PutOnBrackets("td", item);
+                        tableData = "td";
+                    }
+
+                    if (j == 1 || j == TabeleContent[i].Count - 1)
+                    {
+                        string style = "width: 8%;";
+                        tableData = PutOnBracketsWithStyle(tableData, item, style);
+                    }
+                    else
+                    {
+                        tableData = PutOnBrackets(tableData, item);
                     }
                     tableRow += tableData;
                 }
                 tableString += PutOnBrackets("tr", tableRow);
             }
             Content.Add(PutOnBrackets("table", tableString));
+        }
+
+        public void AddFooterTabele(List<List<string>> TabeleContent)
+        {
+            string tableString = "";
+            for (int i = 0; i < TabeleContent.Count; i++)
+            {
+                string tableRow = "";
+                for (int j = 0; j < TabeleContent[i].Count; j++)
+                {
+                    string item = TabeleContent[i][j];
+                    string tableData = "td";
+
+                    if (i == 1 && j == 3)
+                    {
+                        string atribute = "rowspan=" + '"' + "6" + '"';
+                        tableData = PutOnBracketsWithArtibute(tableData, item, atribute);
+                    }
+                    else
+                    {
+                        tableData = PutOnBrackets(tableData, item);
+                    }                   
+                    tableRow += tableData;
+                }
+                tableString += PutOnBrackets("tr", tableRow);
+            }
+            Content.Add(PutOnBrackets("table", tableString));
+        }
+
+        public void AddBreakLine()
+        {
+            Content.Add(PutOnBrackets("br", ""));
         }
 
         public void AddStyle(string targetObject, string[] properties)
@@ -66,6 +116,16 @@ namespace Nurses_Scheduler.Classes.Raport
         private string PutOnBrackets(string Tag, string content)
         {
             return "<" + Tag + ">" + content + "</" + Tag + ">" + "\n";
+        }
+
+        private string PutOnBracketsWithStyle(string Tag, string content, string style)
+        {              
+            return "<" + Tag + " style=" + '"' + style + '"' + ">" + content + "</" + Tag + ">" + "\n";
+        }
+
+        private string PutOnBracketsWithArtibute(string Tag, string content, string atribute)
+        {
+            return "<" + Tag + " " + atribute + ">" + content + "</" + Tag + ">" + "\n";
         }
 
         public void AddStyleToContent()

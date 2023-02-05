@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nurses_Scheduler.Classes.RaportClases;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,44 +14,147 @@ namespace Nurses_Scheduler.Classes.Raport
     public class Raport
     {
         private HTML html;
-        
-        public Raport(List<List<string>> workArrangementList)
+        private List<List<string>> workArrangementList;
+        private RaportData raportData;
+        private string raportFileName;
+
+        private static List<List<string>> footer = new List<List<string>>()
+        {
+            new List<string>()
+            {
+                "Dzień (D)",
+                "7.00 - 19:00",
+                "Urlop (U)",
+                "Podpis Pielęgniarki Oddziałowej"
+            },
+            new List<string>()
+            {
+                "Noc (N)",
+                "19:00 - 7:00",
+                "Urlop macierzyński (Um)",
+                ""
+            },
+            new List<string>()
+            {
+                "Rano (r)",
+                "",
+                "Urlop szkoleniowy (Us)"
+            },
+            new List<string>()
+            {
+                "Popołudnie (p)",
+                "",
+                "Urlop okolicznościowy (Uo)"
+            },
+            new List<string>()
+            {
+                "",
+                "",
+                "Urlop na żądanie (Uż)"
+            },
+            new List<string>()
+            {
+                "",
+                "",
+                "Zwolnienie lekarskie (C)"
+            },
+            new List<string>()
+            {
+                "",
+                "",
+                "Opieka nad dzieckiem (Op)"
+            },
+        };
+
+        public Raport(RaportData raportData)
         {
             html = new HTML();
-            html.AddPage();
-            html.pages[0].AddHeader(1, "Harmonogram pracy (miesiąc, rok) ...");
-            
+            workArrangementList = InsertLpAndSignature(raportData.departmentWorkArrangement.GetNursesWorkArrangementAsList());
+            this.raportData = raportData;   
+            this.raportFileName = App.months[raportData.month - 1].ToUpper() + " " + raportData.year.ToString() + " " + raportData.department.DepartmentName;
+        }
 
-            html.pages[0].AddTabele(workArrangementList);
+        public void GenerateRaport()
+        {
+            HTMLpage page = new HTMLpage();
 
-            html.pages[0].AddStyle("table", new string[] 
+            page.AddStyle("HTML", new string[]
             {
-                "font-family: arial, sans-serif",
-                "border-collapse: collapse",
-                "width: 100%"
+                "font-family: arial, sans-serif"
             });
 
-            html.pages[0].AddStyle("td, th", new string[]
+            page.AddHeader(2, "Harmonogram pracy (miesiąc, rok) " +
+                                App.months[raportData.month - 1].ToUpper() + " " +
+                                raportData.year.ToString() + " " +
+                                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + 
+                                "Oddział: " + raportData.department.DepartmentName);
+            
+            page.AddParagraph("Norma miesięczna godzin: " + raportData.monthlyHours.ToString("N2"));
+
+
+            page.AddHeader(3, "Pielęgniarki");
+            page.AddStyle("h3", new string[]
+            {
+                "text-align: center"
+            });
+
+
+            page.AddTabele(workArrangementList);
+            page.AddStyle("table", new string[]
+            {
+                "border-collapse: collapse",
+                "width: 100%",
+                "table-layout: fixed",
+                "background-color: #dddddd"
+            });
+
+            page.AddStyle("td, th", new string[]
             {
                 "border: 1px solid #000000",
                 "text-align: left",
                 "padding: 8px"
             });
 
-            html.pages[0].AddStyle("tr:nth-child(even)", new string[]
+            page.AddStyle("tr:nth-child(even)", new string[]
             {
-                "background-color: #dddddd"
+                "background-color: #ffffff"
             });
+
+            page.AddBreakLine();
+
+            page.AddFooterTabele(footer);
+
+            
+
+            html.AddPage(page);
         }
 
         public async Task SaveRaport()
         {
-            await File.WriteAllLinesAsync("index.html", html.SavePage(0));
+            await File.WriteAllLinesAsync(raportFileName + ".html", html.SavePage(0));
             string messageBoxText = "Raport został wygenerowany.";
             string caption = "Raport";
             MessageBoxButton button = MessageBoxButton.OK;
             MessageBoxImage icon = MessageBoxImage.Information;
             MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
+        }
+
+        private static List<List<string>> InsertLpAndSignature(List<List<string>> toChange)
+        {
+            for (int i = 0; i < toChange.Count; i++)
+            {
+                if (i == 0)
+                {
+                    toChange[i].Insert(0, "Lp");
+                    toChange[i].Add("Podpis");
+                }
+                else
+                {
+                    toChange[i].Insert(0, i.ToString());
+                    toChange[i].Add("");
+                }
+            }
+            return toChange;
         }
     }
 }

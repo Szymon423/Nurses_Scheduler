@@ -15,9 +15,9 @@ namespace Nurses_Scheduler.Classes.Raport
             pages = new List<HTMLpage>();   
         }
 
-        public void AddPage()
+        public void AddPage(HTMLpage page)
         {
-            pages.Add(new HTMLpage());
+            pages.Add(page);
         }
 
         public List<string> SavePage(int pageNumber)

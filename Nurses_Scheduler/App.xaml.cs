@@ -17,5 +17,6 @@ namespace Nurses_Scheduler
         static string folderPath = Environment.CurrentDirectory;
         public static string databasePath = System.IO.Path.Combine(folderPath, databaseName);
         public static string[] AllowedOccupations = { "Pielęgniarka" , "Opiekun Medyczny", "Salowa lub Sanitariuszka", "Asystentka Pielęgniarki" };
+        public static string[] months = { "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień" };
     }
 }
