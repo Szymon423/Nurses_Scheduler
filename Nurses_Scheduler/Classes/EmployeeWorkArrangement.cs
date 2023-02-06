@@ -116,6 +116,85 @@ namespace Nurses_Scheduler.Classes
 
             return workArrangementAsList;
         }
+
+        public string GetSingleWorkArrangement(int dayInMonth)
+        {
+            switch (dayInMonth)
+            {
+                case 1: { return _1; }
+                case 2: { return _2; }
+                case 3: { return _3; }
+                case 4: { return _4; }
+                case 5: { return _5; }
+                case 6: { return _6; }
+                case 7: { return _7; }
+                case 8: { return _8; }
+                case 9: { return _9; }
+                case 10: { return _10; }
+                case 11: { return _11; }
+                case 12: { return _12; }
+                case 13: { return _13; }
+                case 14: { return _14; }
+                case 15: { return _15; }
+                case 16: { return _16; }
+                case 17: { return _17; }
+                case 18: { return _18; }
+                case 19: { return _19; }
+                case 20: { return _20; }
+                case 21: { return _21; }
+                case 22: { return _22; }
+                case 23: { return _23; }
+                case 24: { return _24; }
+                case 25: { return _25; }
+                case 26: { return _26; }
+                case 27: { return _27; }
+                case 28: { return _28; }
+                case 29: { return _29; }
+                case 30: { return _30; }
+                case 31: { return _31; }
+                default: { Debug.WriteLine("Wrong day: " + dayInMonth.ToString()); break; }
+            }
+            return "";
+        }
+
+        public void SetEmployeeWorkArrangement(int dayInMonth, string value)
+        {
+            switch (dayInMonth)
+            {
+                case 1: { _1 = value; break; }
+                case 2: { _2 = value; break; }
+                case 3: { _3 = value; break; }
+                case 4: { _4 = value; break; }
+                case 5: { _5 = value; break; }
+                case 6: { _6 = value; break; }
+                case 7: { _7 = value; break; }
+                case 8: { _8 = value; break; }
+                case 9: { _9 = value; break; }
+                case 10: { _10 = value; break; }
+                case 11: { _11 = value; break; }
+                case 12: { _12 = value; break; }
+                case 13: { _13 = value; break; }
+                case 14: { _14 = value; break; }
+                case 15: { _15 = value; break; }
+                case 16: { _16 = value; break; }
+                case 17: { _17 = value; break; }
+                case 18: { _18 = value; break; }
+                case 19: { _19 = value; break; }
+                case 20: { _20 = value; break; }
+                case 21: { _21 = value; break; }
+                case 22: { _22 = value; break; }
+                case 23: { _23 = value; break; }
+                case 24: { _24 = value; break; }
+                case 25: { _25 = value; break; }
+                case 26: { _26 = value; break; }
+                case 27: { _27 = value; break; }
+                case 28: { _28 = value; break; }
+                case 29: { _29 = value; break; }
+                case 30: { _30 = value; break; }
+                case 31: { _31 = value; break; }
+                default: { Debug.WriteLine("Wrong day: " + dayInMonth.ToString()); break; }
+            }
+        }
     }
 }
     

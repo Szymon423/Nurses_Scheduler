@@ -35,5 +35,10 @@ namespace Nurses_Scheduler.Classes
             }
             return result;
         }
+
+        public void SetNurseWorkArrangement(int nurseIndex, int dayInMonth, string value)
+        {
+            nursesWorkArrangement[nurseIndex].SetEmployeeWorkArrangement(dayInMonth, value);
+        }
     }
 }

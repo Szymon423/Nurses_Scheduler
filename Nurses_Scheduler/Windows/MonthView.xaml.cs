@@ -302,11 +302,31 @@ namespace Nurses_Scheduler.Windows
 
         private void MonthGrid_Pielegniarki_DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            EmployeeWorkArrangement selectedEmployee = (EmployeeWorkArrangement)MonthGrid_Pielegniarki_DataGrid.SelectedItem;
-            Debug.WriteLine(selectedEmployee._Pracownik);
-            Debug.WriteLine(MonthGrid_Pielegniarki_DataGrid.CurrentCell.Column.DisplayIndex);
-            
-            
+            int nurseIndex = MonthGrid_Pielegniarki_DataGrid.SelectedIndex;
+            int dayInMonth = MonthGrid_Pielegniarki_DataGrid.CurrentCell.Column.DisplayIndex;
+            EmployeeWorkArrangement selectedEmployeeWorkArrangemnent = (EmployeeWorkArrangement)MonthGrid_Pielegniarki_DataGrid.SelectedItem;
+
+            if (MonthGrid_Pielegniarki_DataGrid.SelectedItem != null)
+            {
+                switch (selectedEmployeeWorkArrangemnent.GetSingleWorkArrangement(dayInMonth))
+                {
+                    case "D":
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "N");
+                        break;
+                    case "N":
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "r");
+                        break;
+                    case "r":
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "p");
+                        break;
+                    default:
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "D");
+                        break;
+                }
+
+                this.MonthGrid_Pielegniarki_DataGrid.SelectedCells.Clear();
+
+            }  
         }
     }
 }
