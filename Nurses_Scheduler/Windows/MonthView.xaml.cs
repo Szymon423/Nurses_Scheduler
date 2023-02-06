@@ -184,6 +184,7 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pielegniarki_DataGrid.Columns[0].CellStyle = MonthGrid_Pielegniarki_DataGrid.TryFindResource("BoldNameStyle") as Style;
             MonthGrid_Pielegniarki_DataGrid.Columns[0].IsReadOnly = true;
             MonthGrid_Pielegniarki_DataGrid.Columns[0].Width = 250;
+            MonthGrid_Pielegniarki_DataGrid.SelectionMode = DataGridSelectionMode.Single;
 
             MonthGrid_Pozostali_DataGrid.CanUserResizeColumns = false;
             MonthGrid_Pozostali_DataGrid.CanUserResizeRows = false;
@@ -198,6 +199,7 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pozostali_DataGrid.Columns[0].CellStyle = MonthGrid_Pozostali_DataGrid.TryFindResource("BoldNameStyle") as Style;
             MonthGrid_Pozostali_DataGrid.Columns[0].IsReadOnly = true;
             MonthGrid_Pozostali_DataGrid.Columns[0].Width = 250;
+            MonthGrid_Pozostali_DataGrid.SelectionMode = DataGridSelectionMode.Single;
 
             foreach (int day in eventDays)
             {
@@ -296,6 +298,15 @@ namespace Nurses_Scheduler.Windows
             MessageBoxButton button = MessageBoxButton.OK;
             MessageBoxImage icon = MessageBoxImage.Information;
             MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
+        }
+
+        private void MonthGrid_Pielegniarki_DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            EmployeeWorkArrangement selectedEmployee = (EmployeeWorkArrangement)MonthGrid_Pielegniarki_DataGrid.SelectedItem;
+            Debug.WriteLine(selectedEmployee._Pracownik);
+            Debug.WriteLine(MonthGrid_Pielegniarki_DataGrid.CurrentCell.Column.DisplayIndex);
+            
+            
         }
     }
 }

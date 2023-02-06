@@ -55,7 +55,8 @@
             <TabItem Header="Pielęgniarki">
                 <DataGrid x:Name="MonthGrid_Pielegniarki_DataGrid"
                           FontSize="15"
-                          MinColumnWidth="30"/>
+                          MinColumnWidth="30"
+                          SelectionChanged="MonthGrid_Pielegniarki_DataGrid_SelectionChanged"/>
             </TabItem>
 
             <TabItem Header="Pozostali">

@@ -124,11 +124,21 @@ namespace Nurses_Scheduler
             ReadDatabase();
         }
 
-        private void ShowMonthWindow_Button(object sender, RoutedEventArgs e)
+        private void EnterRequests_Button(object sender, RoutedEventArgs e)
         {
             MonthView monthView = new MonthView();
 
             monthView.ShowDialog();
+        }
+
+        private void ModifyExistingSchedule_Button(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void GenerateSchedule_Button(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
