@@ -12,13 +12,19 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="300"/>
             <ColumnDefinition Width="15"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="15"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="15"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
@@ -26,33 +32,44 @@
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
         
-        <!-- ROW 1 -->
+        <!-- ROW 2 -->
         <Button Grid.Column="1"
-                Grid.Row="1"
+                Grid.Row="2"
                 Content="DODAJ ODDZIAŁ" 
                 Click="AddDepartmentWindow_Button"
                 Margin="0, 0, 0, 5"/>
 
-        <Button Grid.Column="3"
-                Grid.Row="1"
+        <Button Grid.Column="1"
+                Grid.Row="3"
                 Content="DODAJ PRACOWNIKA" 
                 Click="AddEmployeeWindow_Button"
                 Margin="0, 0, 0, 5"/>
-        
-        <!-- ROW 2 -->
-        <TextBox Grid.Column="1"
-                 Grid.Row="2"
+
+        <Label Content="Wyszukaj oddział:"
+               Grid.Column="3"
+               Grid.Row="2"
+               Margin="0 0 0 0"/>
+
+        <Label Content="Wyszukaj pracownika:"
+               Grid.Column="5"
+               Grid.Row="2"
+               Margin="0 0 0 0"/>
+
+        <!-- ROW 3 -->
+        <TextBox Grid.Column="3"
+                 Grid.Row="3"
                  Margin="0 0 0 0"
                  TextChanged="DepartmentTextBox_TextChanged"/>
 
-        <TextBox Grid.Column="3"
-                 Grid.Row="2"
+        <TextBox Grid.Column="5"
+                 Grid.Row="3"
                  Margin="0 0 0 0"
                  TextChanged="EmployeeTextBox_TextChanged"/>
 
-        <!-- ROW 3 -->
-        <ListView Grid.Column="1"
-                  Grid.Row="3"
+        <!-- ROW 4 -->
+        <ListView Grid.Column="3"
+                  Grid.Row="5"
+                  Grid.RowSpan="3"
                   x:Name="Department_ListView"
                   SelectionChanged="Department_ListView_SelectionChanged"
                   Margin="0 0 0 5">
@@ -70,9 +87,10 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <!-- ROW 3 -->
-        <ListView Grid.Column="3"
-                  Grid.Row="3"
+        <!-- ROW 4 -->
+        <ListView Grid.Column="5"
+                  Grid.Row="5"
+                  Grid.RowSpan="3"
                   x:Name="Employee_ListView"
                   SelectionChanged="Employee_ListView_SelectionChanged"
                   Margin="0 0 0 5">
@@ -94,14 +112,14 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <!-- ROW 4 -->
+        <!-- ROW 5 -->
         <Button Grid.Column="1"
                 Grid.Row="4"
-                Grid.ColumnSpan="3"
-                Content="MIESIĄC" 
+                Content="WPROWADŹ PROŚBY" 
                 Click="ShowMonthWindow_Button"
                 Margin="0, 0, 0, 5"/>
-        
+
+
     </Grid>
 
 </Window>
