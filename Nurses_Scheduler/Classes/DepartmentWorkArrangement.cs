@@ -40,5 +40,10 @@ namespace Nurses_Scheduler.Classes
         {
             nursesWorkArrangement[nurseIndex].SetEmployeeWorkArrangement(dayInMonth, value);
         }
+
+        public void SetOtherThanNurseWorkArrangement(int employeeIndex, int dayInMonth, string value)
+        {
+            otherThanNursesWorkArrangement[employeeIndex].SetEmployeeWorkArrangement(dayInMonth, value);
+        }
     }
 }
