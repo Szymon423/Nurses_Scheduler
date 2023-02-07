@@ -19,7 +19,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"/>
-            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="350" />
             <ColumnDefinition Width="15"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
@@ -37,6 +37,8 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
@@ -45,13 +47,15 @@
         <ComboBox Grid.Row="1"
                   Grid.Column="1"
                   x:Name="ChoosenMonth_ComboBox"
-                  SelectionChanged="ChoosenMonth_ComboBox_SelectionChanged"/>
+                  SelectionChanged="ChoosenMonth_ComboBox_SelectionChanged"
+                  MinHeight="35"
+                  FontSize="18"/>
 
 
         <TabControl Grid.Column="3" 
                     Grid.ColumnSpan="4"
                     Grid.Row="1"
-                    Grid.RowSpan="8">
+                    Grid.RowSpan="10">
             <TabItem Header="Pielęgniarki">
                 <DataGrid x:Name="MonthGrid_Pielegniarki_DataGrid"
                           FontSize="15"
@@ -69,12 +73,13 @@
         </TabControl>
 
         <!-- ROW 2 -->
-        <Button Content="Wybierz Miesiąc"
+        <Button Content="WYBIERZ MIESIĄC"
                 x:Name="MonthChoosed_Button"
                 Click="MonthChoosed_Click"
                 Grid.Column="1"
                 Grid.Row="2"
-                Margin="0 5 0 0"/>
+                Margin="0 5 0 0"
+                MinHeight="35"/>
 
         <!-- ROW 3 -->
         <Separator Grid.Row="3"
@@ -85,28 +90,46 @@
         <ComboBox Grid.Row="4"
                   Grid.Column="1"
                   x:Name="Department_ComboBox" 
-                  SelectionChanged="Department_ComboBox_SelectionChanged"/>
+                  SelectionChanged="Department_ComboBox_SelectionChanged"
+                  MinHeight="35"
+                  FontSize="18"/>
 
         <!-- ROW 5 -->
-        <Button Content="Wyświetl oddział"
+        <Button Content="WYŚWIETL ODDZIAŁ"
                 x:Name="ShowDepartment_Button"
                 Click="ShowDepartment_Click"
                 Grid.Column="1"
                 Grid.Row="5"
-                Margin="0 5 0 0"/>
+                Margin="0 5 0 0"
+                MinHeight="35"/>
 
         <!-- ROW 6 -->
         <Separator Grid.Row="6"
                    Grid.Column="1"
                    Margin="0, 15, 0, 15"/>
-        
+
         <!-- ROW 7 -->
-        <Button Content="Generuj raport"
+        <Button Content="GENERUJ HARMONOGRAM"
+                x:Name="GenerateSchedule_Button"
+                Click="GenerateSchedule_Click"
+                Grid.Column="1"
+                Grid.Row="7"
+                Margin="0 5 0 0"
+                MinHeight="35"/>
+
+        <!-- ROW 6 -->
+        <Separator Grid.Row="8"
+                   Grid.Column="1"
+                   Margin="0, 15, 0, 15"/>
+
+        <!-- ROW 8 -->
+        <Button Content="GENERUJ RAPORT"
                 x:Name="GenerateRaport_Button"
                 Click="GenerateRaport_Click"
                 Grid.Column="1"
-                Grid.Row="7"
-                Margin="0 5 0 0"/>
+                Grid.Row="9"
+                Margin="0 5 0 0"
+                MinHeight="35"/>
 
     </Grid>
 </Window>

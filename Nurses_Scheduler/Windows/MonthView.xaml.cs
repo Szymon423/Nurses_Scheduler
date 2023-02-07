@@ -74,6 +74,9 @@ namespace Nurses_Scheduler.Windows
             InitialiseMonthComboBox();
             InitialiseDepartmentComboBox();
             ShowDepartment_Button.IsEnabled = false;
+            GenerateSchedule_Button.IsEnabled = false;
+            GenerateRaport_Button.IsEnabled = false;
+            Department_ComboBox.IsEnabled = false;
         }
 
         private void InitialiseDepartmentComboBox()
@@ -257,6 +260,9 @@ namespace Nurses_Scheduler.Windows
             GetNumberOfDaysInMonth();
             GenerateNewMonthView();
             MonthChoosed_Button.IsEnabled = false;
+            GenerateSchedule_Button.IsEnabled = true;
+            GenerateRaport_Button.IsEnabled = true;
+            Department_ComboBox.IsEnabled = true;
         }
 
         private void ShowDepartment_Click(object sender, RoutedEventArgs e)
@@ -275,8 +281,6 @@ namespace Nurses_Scheduler.Windows
         {
             MonthChoosed_Button.IsEnabled = true;
         }
-
-        
 
         private void GenerateRaport_Click(object sender, RoutedEventArgs e)
         {
@@ -442,6 +446,15 @@ namespace Nurses_Scheduler.Windows
                 }
                 MonthGrid_Pozostali_DataGrid.Items.Refresh();
             }
+        }
+
+        private void GenerateSchedule_Click(object sender, RoutedEventArgs e)
+        {
+            string messageBoxText = "Tutaj zostanie wprowadzona funkcjonalność do układania grafiku.";
+            string caption = "Harmonogram";
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Information;
+            MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
         }
     }
 }
