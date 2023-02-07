@@ -185,6 +185,7 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pielegniarki_DataGrid.Columns[0].IsReadOnly = true;
             MonthGrid_Pielegniarki_DataGrid.Columns[0].Width = 250;
             MonthGrid_Pielegniarki_DataGrid.SelectionMode = DataGridSelectionMode.Single;
+            MonthGrid_Pielegniarki_DataGrid.IsReadOnly = true;
 
             MonthGrid_Pozostali_DataGrid.CanUserResizeColumns = false;
             MonthGrid_Pozostali_DataGrid.CanUserResizeRows = false;
@@ -200,6 +201,7 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pozostali_DataGrid.Columns[0].IsReadOnly = true;
             MonthGrid_Pozostali_DataGrid.Columns[0].Width = 250;
             MonthGrid_Pozostali_DataGrid.SelectionMode = DataGridSelectionMode.Single;
+            MonthGrid_Pozostali_DataGrid.IsReadOnly = true;
 
             foreach (int day in eventDays)
             {
@@ -305,11 +307,20 @@ namespace Nurses_Scheduler.Windows
             int nurseIndex = MonthGrid_Pielegniarki_DataGrid.SelectedIndex;
             int dayInMonth = MonthGrid_Pielegniarki_DataGrid.CurrentCell.Column.DisplayIndex;
             EmployeeWorkArrangement selectedEmployeeWorkArrangemnent = (EmployeeWorkArrangement)MonthGrid_Pielegniarki_DataGrid.SelectedItem;
+            
 
             if (MonthGrid_Pielegniarki_DataGrid.SelectedItem != null)
             {
+                MonthGrid_Pielegniarki_DataGrid.SelectedItem = null;
+                Debug.WriteLine(nurseIndex.ToString() + "   " + dayInMonth.ToString());
+                Debug.WriteLine("Shift type: " + selectedEmployeeWorkArrangemnent.GetSingleWorkArrangement(dayInMonth));
+
+
                 switch (selectedEmployeeWorkArrangemnent.GetSingleWorkArrangement(dayInMonth))
                 {
+                    default:
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "D");
+                        break;
                     case "D":
                         departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "N");
                         break;
@@ -319,12 +330,43 @@ namespace Nurses_Scheduler.Windows
                     case "r":
                         departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "p");
                         break;
-                    default:
-                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "D");
+                    case "p":
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "U");
                         break;
+                    case "U":
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "Um");
+                        break;
+                    case "Um":
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "Us");
+                        break;
+                    case "Us":
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "Uo");
+                        break;
+                    case "Uo":
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "Uż");
+                        break;
+                    case "Uż":
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "C");
+                        break;
+                    case "C":
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "Op");
+                        break;
+                    case "Op":
+                        departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, "");
+                        break;
+
                 }
 
-                this.MonthGrid_Pielegniarki_DataGrid.SelectedCells.Clear();
+                MonthGrid_Pielegniarki_DataGrid.Items.Refresh();
+
+                Debug.WriteLine("Shift type: " + selectedEmployeeWorkArrangemnent.GetSingleWorkArrangement(dayInMonth));
+                Debug.WriteLine("--------------------------");
+
+
+
+
+
+
 
             }  
         }
