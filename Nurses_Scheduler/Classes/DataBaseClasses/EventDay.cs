@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 namespace Nurses_Scheduler.Classes.DataBaseClasses
 {
     [Table("EventDay")]
-    internal class EventDay
+    public class EventDay
     {
         [PrimaryKey, AutoIncrement] 
         public int Id { get; set; }
+
 
         public int Day { get; set; }
 
