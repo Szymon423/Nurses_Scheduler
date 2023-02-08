@@ -10,7 +10,7 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
     [Table("EventDay")]
     internal class EventDay
     {
-        [PrimaryKey, AutoIncrement]
+        [PrimaryKey, AutoIncrement] 
         public int Id { get; set; }
 
         public int Day { get; set; }
