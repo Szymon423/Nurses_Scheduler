@@ -26,7 +26,7 @@ namespace Nurses_Scheduler.Windows
         {
             InitializeComponent();
 
-            EventDays_ListView.ItemsSource = EventDay.GetEventDaysFromDB();
+            ReadDatabase();
         }
 
         private void AddEventDay_Button(object sender, RoutedEventArgs e)
@@ -51,7 +51,7 @@ namespace Nurses_Scheduler.Windows
                     connection.CreateTable<EventDay>();
                     connection.Insert(eventDay);
                 }
-                EventDays_ListView.ItemsSource = EventDay.GetEventDaysFromDB();
+                ReadDatabase();
             }
         }
 
@@ -64,6 +64,39 @@ namespace Nurses_Scheduler.Windows
                 ChoosedDay_TextBox.Text = content;
             }
             
+        }
+
+        private void EventDays_ListView_DoubleClicked(object sender, MouseButtonEventArgs e)
+        {
+            EventDay eventDay = (EventDay)EventDays_ListView.SelectedItem;
+            if (eventDay != null)
+            {
+                string messageBoxText = "Czy chcesz usunąć dzień:\n" + eventDay.DayInfo;
+                string caption = "Usuwanie elementu";
+                MessageBoxButton button = MessageBoxButton.YesNo;
+                MessageBoxImage icon = MessageBoxImage.Warning;
+                var result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Debug.WriteLine("kurwa");
+                    using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
+                    {
+                        connection.CreateTable<EventDay>();
+                        connection.Delete(eventDay);
+                    }
+                }
+                ReadDatabase();
+            }
+        }
+
+        void ReadDatabase()
+        {
+            List<EventDay> eventDays = EventDay.GetEventDaysFromDB();
+            
+            if (eventDays != null)
+            {
+                EventDays_ListView.ItemsSource = eventDays;
+            }
         }
     }
 }
