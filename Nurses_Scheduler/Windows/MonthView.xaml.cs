@@ -153,13 +153,13 @@ namespace Nurses_Scheduler.Windows
                     {
                         if (occupation == "Pielęgniarka" || occupation == "Asystentka Pielęgniarki")
                         {
-                            departmentWorkArrangement.nursesWorkArrangement.Add(new EmployeeWorkArrangement(employee.FullName));
+                            departmentWorkArrangement.nursesWorkArrangement.Add(new EmployeeWorkArrangement(employee));
                         }
                         else
                         {
-                            departmentWorkArrangement.otherThanNursesWorkArrangement.Add(new EmployeeWorkArrangement(employee.FullName));
+                            departmentWorkArrangement.otherThanNursesWorkArrangement.Add(new EmployeeWorkArrangement(employee));
                         }
-                        departmentWorkArrangement.allEmployeeWorkArrangement.Add(new EmployeeWorkArrangement(employee.FullName));
+                        departmentWorkArrangement.allEmployeeWorkArrangement.Add(new EmployeeWorkArrangement(employee));
                     }
                 }  
                 departmentsWorkArrangement.Add(departmentWorkArrangement);
@@ -180,13 +180,13 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pielegniarki_DataGrid.CanUserSortColumns = false;
             MonthGrid_Pielegniarki_DataGrid.CanUserAddRows = false;
             MonthGrid_Pielegniarki_DataGrid.CanUserReorderColumns = false;
-            MonthGrid_Pielegniarki_DataGrid.MinColumnWidth = 40;
-            MonthGrid_Pielegniarki_DataGrid.MinRowHeight = 30;
+            MonthGrid_Pielegniarki_DataGrid.MinColumnWidth = 25;
+            MonthGrid_Pielegniarki_DataGrid.MinRowHeight = 25;
             MonthGrid_Pielegniarki_DataGrid.AutoGenerateColumns = false;
             MonthGrid_Pielegniarki_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
             MonthGrid_Pielegniarki_DataGrid.Columns[0].CellStyle = MonthGrid_Pielegniarki_DataGrid.TryFindResource("BoldNameStyle") as Style;
             MonthGrid_Pielegniarki_DataGrid.Columns[0].IsReadOnly = true;
-            MonthGrid_Pielegniarki_DataGrid.Columns[0].Width = 250;
+            MonthGrid_Pielegniarki_DataGrid.Columns[0].Width = 150;
             MonthGrid_Pielegniarki_DataGrid.SelectionMode = DataGridSelectionMode.Single;
             MonthGrid_Pielegniarki_DataGrid.IsReadOnly = true;
 
@@ -196,13 +196,13 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_Pozostali_DataGrid.CanUserSortColumns = false;
             MonthGrid_Pozostali_DataGrid.CanUserAddRows = false;
             MonthGrid_Pozostali_DataGrid.CanUserReorderColumns = false;
-            MonthGrid_Pozostali_DataGrid.MinColumnWidth = 40;
-            MonthGrid_Pozostali_DataGrid.MinRowHeight = 30;
+            MonthGrid_Pozostali_DataGrid.MinColumnWidth = 25;
+            MonthGrid_Pozostali_DataGrid.MinRowHeight = 25;
             MonthGrid_Pozostali_DataGrid.AutoGenerateColumns = false;
             MonthGrid_Pozostali_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
             MonthGrid_Pozostali_DataGrid.Columns[0].CellStyle = MonthGrid_Pozostali_DataGrid.TryFindResource("BoldNameStyle") as Style;
             MonthGrid_Pozostali_DataGrid.Columns[0].IsReadOnly = true;
-            MonthGrid_Pozostali_DataGrid.Columns[0].Width = 250;
+            MonthGrid_Pozostali_DataGrid.Columns[0].Width = 150;
             MonthGrid_Pozostali_DataGrid.SelectionMode = DataGridSelectionMode.Single;
             MonthGrid_Pozostali_DataGrid.IsReadOnly = true;
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nurses_Scheduler.Classes.DataBaseClasses;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Nurses_Scheduler.Classes
 {
     public class EmployeeWorkArrangement
     {
-        public EmployeeWorkArrangement(string employeeName)
+        public EmployeeWorkArrangement(Employee employee)
         {
-            this._Pracownik = employeeName;
+            this._Pracownik = employee.FullName;
             this._1 = "";
             this._2 = "";
             this._3 = "";
@@ -45,6 +46,7 @@ namespace Nurses_Scheduler.Classes
             this._31 = "";
         }
 
+        public Employee employee { get; set; }
         public string _Pracownik { get; set; }
         public string _1 { get; set; }
         public string _2 { get; set; }

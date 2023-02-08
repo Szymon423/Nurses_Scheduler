@@ -19,7 +19,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"/>
-            <ColumnDefinition Width="350" />
+            <ColumnDefinition Width="250" />
             <ColumnDefinition Width="15"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
@@ -66,7 +66,7 @@
             <TabItem Header="Pozostali">
                 <DataGrid x:Name="MonthGrid_Pozostali_DataGrid"
                           FontSize="15"
-                          MinColumnWidth="30"
+                          MinColumnWidth="20"
                           SelectionChanged="MonthGrid_Pozostali_DataGrid_SelectionChanged"/>
             </TabItem>
 
