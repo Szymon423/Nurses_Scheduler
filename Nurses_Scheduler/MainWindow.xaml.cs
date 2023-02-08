@@ -140,5 +140,12 @@ namespace Nurses_Scheduler
         {
 
         }
+
+        private void EventDays_Button(object sender, RoutedEventArgs e)
+        {
+            EventDaysWindow eventDaysWindow = new EventDaysWindow();
+            eventDaysWindow.ShowDialog();
+        }
+
     }
 }

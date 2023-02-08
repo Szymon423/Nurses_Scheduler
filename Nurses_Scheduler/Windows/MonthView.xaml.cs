@@ -40,12 +40,10 @@ namespace Nurses_Scheduler.Windows
         private int daysInMonth;
         private List<int> eventDays;
 
-
         private IDictionary<string, int> OccupationToIndex = new Dictionary<string, int>();
         private IDictionary<string, int> DepartmentToIndex = new Dictionary<string, int>();
         private List<Department> departmentList;
         private List<DepartmentWorkArrangement> departmentsWorkArrangement;
-
 
         public MonthView()
         {

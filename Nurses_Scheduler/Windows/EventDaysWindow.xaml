@@ -1,0 +1,91 @@
+﻿<Window x:Class="Nurses_Scheduler.Windows.EventDaysWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Nurses_Scheduler.Windows"
+        mc:Ignorable="d"
+        Title="EventDaysWindow" Height="480" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="15"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="15"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="15"/>
+        </Grid.RowDefinitions>        
+
+        <Calendar Grid.Column="1"
+                  Grid.Row="1"
+                  Margin="20" 
+                  SelectedDate="1/1/2023"
+                  DisplayDate="1/1/2023"
+                  x:Name="Kalendarz" 
+                  SelectedDatesChanged="Kalendarz_SelectedDatesChanges"/>
+
+        <Label Grid.Column="1"
+               Grid.Row="2"
+               Content="Wybrany dzień:"/>
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="3"
+                 x:Name="ChoosedDay_TextBox"
+                 MinHeight="25"
+                 Text=""/>
+
+        <Label Grid.Column="1"
+               Grid.Row="4"
+               Content="Dodatkowy opis:"/>
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="5"
+                 x:Name="Description_TextBox"
+                 MinHeight="25"/>
+
+        <CheckBox Grid.Column="1"
+                  Grid.Row="6"
+                  Content="Czy wydarzenie powatarza się co rok?"
+                  Margin="0, 15, 0, 0"
+                  x:Name="Repetability_CheckBox"/>
+        
+        <Button Grid.Column="1"
+                Grid.Row="7"
+                MinHeight="40"
+                Content="DODAJ DZIEŃ"
+                Margin="0, 15, 0, 0"
+                Click="AddEventDay_Button"/>
+
+        <ListView Grid.Column="3"
+                  Grid.Row="1"
+                  Grid.RowSpan="8"
+                  x:Name="EventDays_ListView"
+                  Margin="0 0 0 5">
+                  <!--SelectionChanged="EventDays_ListView_SelectionChanged"-->
+                  
+            <ListView.ItemTemplate >
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Description}"
+                                   FontSize="20"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="{Binding DayInfo}"
+                                   FontSize="15"
+                                   FontStyle="Italic"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Window>
