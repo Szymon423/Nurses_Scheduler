@@ -214,7 +214,7 @@ namespace Nurses_Scheduler.Windows
 
         private void FindEventDaysInMonth(int daysInMonth)
         {
-            eventDays = new List<int>();
+            eventDays = EventDay.GetEventDaysFromDBasDaysNumbers(choosenMonth, choosenYear);
 
             DateTime dt = new DateTime(choosenYear, choosenMonth, 1);
             Debug.Write(dt);

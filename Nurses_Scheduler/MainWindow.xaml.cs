@@ -25,6 +25,7 @@ namespace Nurses_Scheduler
     {
         List<Department> departmentList;
         List<Employee> employeeList;
+        List<EventDay> eventDays;
 
         public MainWindow()
         {
@@ -32,6 +33,7 @@ namespace Nurses_Scheduler
 
             departmentList = new List<Department>();
             employeeList = new List<Employee>();
+            eventDays = new List<EventDay>();
 
             ReadDatabase();
         }
@@ -71,6 +73,9 @@ namespace Nurses_Scheduler
 
                 conn.CreateTable<Employee>();
                 employeeList = (conn.Table<Employee>().ToList()).OrderBy(c => c.FirstName).ToList();
+
+                conn.CreateTable<EventDay>();
+                eventDays = conn.Table<EventDay>().ToList();
             }
 
             if (departmentList != null)
@@ -127,7 +132,6 @@ namespace Nurses_Scheduler
         private void EnterRequests_Button(object sender, RoutedEventArgs e)
         {
             MonthView monthView = new MonthView();
-
             monthView.ShowDialog();
         }
 
@@ -145,6 +149,7 @@ namespace Nurses_Scheduler
         {
             EventDaysWindow eventDaysWindow = new EventDaysWindow();
             eventDaysWindow.ShowDialog();
+            ReadDatabase();
         }
 
     }

@@ -77,7 +77,6 @@ namespace Nurses_Scheduler.Windows
                 var result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
                 if (result == MessageBoxResult.Yes)
                 {
-                    
                     using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
                     {
                         Debug.WriteLine("kurwa");
