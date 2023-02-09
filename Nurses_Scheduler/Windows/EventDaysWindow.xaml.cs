@@ -25,15 +25,28 @@ namespace Nurses_Scheduler.Windows
         public EventDaysWindow()
         {
             InitializeComponent();
-
+            Kalendarz.SelectedDate = DateTime.Now;
+            Kalendarz.DisplayDate = DateTime.Now;
             ReadDatabase();
         }
 
         private void AddEventDay_Button(object sender, RoutedEventArgs e)
         {
-            if (Description_TextBox.Text == "" || ChoosedDay_TextBox.Text == "")
+            if (ChoosedDay_TextBox.Text == "")
             {
-                Debug.WriteLine("nie wybrano dnia");
+                string messageBoxText = "Nie wybrano żadnego dnia. \nWybierz dzień za pomocą kalendarza by dodać go do systemu.";
+                string caption = "Nie wprowadzono wszystkich informacji";
+                MessageBoxButton button = MessageBoxButton.OK;
+                MessageBoxImage icon = MessageBoxImage.Warning;
+                var result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
+            }
+            else if (Description_TextBox.Text == "")
+            {
+                string messageBoxText = "Nie wprowadzono opisu dla wybranego dnia. \nWprowadź opis by dodać wybrany dzień";
+                string caption = "Nie wprowadzono wszystkich informacji";
+                MessageBoxButton button = MessageBoxButton.OK;
+                MessageBoxImage icon = MessageBoxImage.Warning;
+                var result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
             }
             else
             {
@@ -62,6 +75,7 @@ namespace Nurses_Scheduler.Windows
                 string content = Kalendarz.SelectedDate.ToString().Substring(0, 10);
                 Debug.WriteLine(content);
                 ChoosedDay_TextBox.Text = content;
+                Description_TextBox.Text = "";
             }
         }
 
