@@ -73,7 +73,6 @@ namespace Nurses_Scheduler.Windows
             if (this.Kalendarz.SelectedDate != null && ChoosedDay_TextBox != null) 
             {
                 string content = Kalendarz.SelectedDate.ToString().Substring(0, 10);
-                Debug.WriteLine(content);
                 ChoosedDay_TextBox.Text = content;
                 Description_TextBox.Text = "";
             }
@@ -93,7 +92,6 @@ namespace Nurses_Scheduler.Windows
                 {
                     using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
                     {
-                        Debug.WriteLine("kurwa");
                         connection.CreateTable<EventDay>();
                         connection.Delete(eventDay);
                     }
