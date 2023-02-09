@@ -223,7 +223,10 @@ namespace Nurses_Scheduler.Windows
                 Debug.Write(dt.DayOfWeek);
                 if (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday)
                 {
-                    eventDays.Add(i + 1);
+                    if (!eventDays.Contains(i + 1))
+                    {
+                        eventDays.Add(i + 1);
+                    }
                 }
                 dt = dt.AddDays(1);
             }
