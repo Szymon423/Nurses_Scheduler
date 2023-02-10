@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nurses_Scheduler.Windows"
         mc:Ignorable="d"
-        Title="Modyfikuj dane Pracownika" Height="350" Width="300"
+        Title="Modyfikuj dane Pracownika" Height="400" Width="300"
         WindowStartupLocation="CenterScreen">
     <StackPanel Margin="15">
         
@@ -20,6 +20,10 @@
 
         <Label>Stanowisko:</Label>
         <ComboBox x:Name="EmployeeOccupation_ComboBox"/>
+
+        <Label>Wymiar pracy:</Label>
+        <ComboBox x:Name="EmployeeWorkTime_ComboBox"/>
+
 
         <Button Content="ZATWIERDŹ" 
                 Click="ConfirmChangesEmployee_Button"

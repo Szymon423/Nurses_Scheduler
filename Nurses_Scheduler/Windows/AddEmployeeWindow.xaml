@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nurses_Scheduler.Windows"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="Dodaj pracownika" Height="300" Width="300">
+        Title="Dodaj pracownika" Height="350" Width="300">
     <StackPanel Margin="15">
         <Label>Imię:</Label>
         <TextBox x:Name="EmployeeName_TextBox"></TextBox>
@@ -18,7 +18,15 @@
         
         <Label>Stanowisko:</Label>
         <ComboBox x:Name="EmployeeOccupation_ComboBox"/>
-        
+
+        <Label>Wymiar pracy:</Label>
+        <ComboBox x:Name="EmployeeWorkTime_ComboBox">
+            <ComboBoxItem Content="Pełny etat"
+                          IsSelected="True"/>
+            <ComboBoxItem Content="1/2 etatu"/>
+            <ComboBoxItem Content="3/4 etatu"/>
+        </ComboBox>
+
         <Button Content="DODAJ PRACOWNIKA" 
             Click="AddEmployee_Button"
             Margin="0, 10, 0, 0"/>

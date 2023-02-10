@@ -28,12 +28,14 @@ namespace Nurses_Scheduler.Windows
 
             EmployeeOccupation_ComboBox.ItemsSource = App.AllowedOccupations;
             EmployeeDepartment_ComboBox.ItemsSource = Department.GetDepartmentsFromDB();
+            EmployeeWorkTime_ComboBox.ItemsSource = new List<string>() { "Pełny etat", "1/2 etatu", "3/4 etatu" };
             
             this.employee = employee;
             EmployeeFirstName_TextBox.Text = employee.FirstName;
             EmployeeLastName_TextBox.Text= employee.LastName;
             EmployeeOccupation_ComboBox.Text = employee.Occupation;
             EmployeeDepartment_ComboBox.Text = employee.Department;
+            EmployeeWorkTime_ComboBox.Text = employee.WorkingTime;
         }
 
         private void ConfirmChangesEmployee_Button(object sender, RoutedEventArgs e)
@@ -42,6 +44,7 @@ namespace Nurses_Scheduler.Windows
             employee.LastName = EmployeeLastName_TextBox.Text;
             employee.Occupation = EmployeeOccupation_ComboBox.Text;
             employee.Department = EmployeeDepartment_ComboBox.Text;
+            employee.WorkingTime = EmployeeWorkTime_ComboBox.Text;
 
             using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
             {

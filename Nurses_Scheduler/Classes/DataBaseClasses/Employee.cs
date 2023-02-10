@@ -21,6 +21,8 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
 
         public string Occupation { get; set; }
 
+        public string WorkingTime { get; set; } 
+
         [Ignore]
         public string FullName
         {
