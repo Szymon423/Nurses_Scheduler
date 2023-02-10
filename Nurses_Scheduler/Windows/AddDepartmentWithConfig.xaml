@@ -5,13 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nurses_Scheduler.Windows"
         mc:Ignorable="d"
-        Title="AddDepartmentWithConfig" Height="450" Width="800">
+        Title="AddDepartmentWithConfig" Height="650" Width="1000">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="15"/>
@@ -49,19 +46,181 @@
 
         <Separator Grid.Row="5"
                    Grid.Column="1"
-                   Margin="0, 15, 0, 0"/>
+                   Margin="0, 30, 0, 0"/>
 
         <Button Grid.Row="6"
                 Grid.Column="1"
                 Content="DODAJ ODDZIAŁ"
                 Click="AddDepartment_Button_Click"
-                Margin="0, 15, 0, 0"/>
+                Margin="0, 30, 0, 0"/>
 
         <Button Grid.Row="7"
                 Grid.Column="1"
                 Content="ANULUJ"
                 Click="Cancel_Button_Click"
                 Margin="0, 15, 0, 0"/>
+
+        <TabControl Grid.Row="1"
+                    Grid.RowSpan="9"
+                    Grid.Column="2"
+                    Margin="15, 0, 0, 0">
+            <TabItem Header="Dyżur dzienny">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="10"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="1"
+                           Grid.Column="1"
+                           Grid.ColumnSpan="4"
+                           Content="Łączna minimalna liczba pracowników na zmianie:"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"/>
+
+                    <Grid Grid.Row="1"
+                          Grid.Column="4"
+                          Grid.ColumnSpan="3"
+                          Margin="20, 0, 100, 0"
+                          MaxHeight="30">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBox Grid.Column="0"
+                                 Grid.Row="0"
+                                 Grid.RowSpan="2"
+                                 x:Name="TotalMinEmployeesNumber_TextBox"
+                                 IsReadOnly="True"/>
+                        <Button Grid.Column="1"
+                                Grid.Row="0"
+                                Content="5"
+                                FontFamily="Marlett"
+                                Click="IncreaseTotalEmployeesNumber_Button_Click"/>
+                        <Button Grid.Column="1"
+                                Grid.Row="1"
+                                Content="6"
+                                FontFamily="Marlett"
+                                Click="DecreaseTotalEmployeesNumber_Button_Click"/>
+                    </Grid>
+
+                    <Separator Grid.Row="2"
+                               Grid.Column="1"
+                               Grid.ColumnSpan="5"
+                               Margin="0, 15, 0, 10"/>
+
+                    <Label Grid.Row="4"
+                           Grid.Column="1"
+                           Grid.ColumnSpan="2"
+                           Content="Pracownicy podstawowi:"
+                           FontWeight="Bold"/>
+
+                    <Label Grid.Row="4"
+                           Grid.Column="4"
+                           Grid.ColumnSpan="2"
+                           Content="Pracownicy uzupełniający:"
+                           FontWeight="Bold"/>
+
+                    <ListView Grid.Row="5"
+                              Grid.Column="1"
+                              Grid.ColumnSpan="2"
+                              x:Name="BaseEmployees_ListView"
+                              Margin="0, 10, 0, 10">
+                        <ListView.ItemTemplate >
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding DepartmentName}"
+                                               FontSize="20"
+                                               FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding DepartmentShortName}"
+                                               FontSize="15"
+                                               FontStyle="Italic"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Label Grid.Row="6"
+                           Grid.Column="1"
+                           Content="Zawód pracownika:"
+                           Height="30"/>
+
+                    <ComboBox Grid.Row="6"
+                              Grid.Column="2"
+                              Height="30"/>
+
+                    <Label Grid.Row="7"
+                           Grid.Column="1"
+                           Content="Minimalna liczba pracowników:"
+                           Margin="0, 10, 0, 0"
+                           Height="30"/>
+
+                    <Grid Grid.Row="7"
+                          Grid.Column="2"
+                          Margin="0, 10, 0, 0"
+                          Height="30">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBox Grid.Column="0"
+                                 Grid.Row="0"
+                                 Grid.RowSpan="2"
+                                 x:Name="MinBasicEmployeesNumber_TextBox"
+                                 IsReadOnly="True"/>
+                        <Button Grid.Column="1"
+                                Grid.Row="0"
+                                Content="5"
+                                FontFamily="Marlett"
+                                Click="IncreaseBasicEmployeesNumber_Button_Click"/>
+                        <Button Grid.Column="1"
+                                Grid.Row="1"
+                                Content="6"
+                                FontFamily="Marlett"
+                                Click="DecreaseBasicEmployeesNumber_Button_Click"/>
+                    </Grid>
+
+                    <Button Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Grid.Row="8"
+                            Content="DODAJ USTAWIENIE"
+                            Click="AddConfiguration_Button_Click"
+                            Height="30"
+                            Margin="0, 10, 0, 0"/>
+
+
+
+                </Grid>
+            </TabItem>
+        </TabControl>
+                    
 
     </Grid>
 </Window>
