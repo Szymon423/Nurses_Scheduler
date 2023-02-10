@@ -23,5 +23,15 @@ namespace Nurses_Scheduler.Windows
         {
             InitializeComponent();
         }
+
+        private void AddDepartment_Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Cancel_Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

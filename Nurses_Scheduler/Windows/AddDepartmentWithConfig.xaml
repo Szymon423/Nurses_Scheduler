@@ -23,11 +23,45 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
+
+        <Label Grid.Row="1"
+               Grid.Column="1"
+               Content="Pełna nazwa oddziału"/>
         
-        
-        
+        <TextBox Grid.Row="2"
+                 Grid.Column="1"
+                 x:Name="DepartmentFullName_TextBox"/>
+
+        <Label Grid.Row="3"
+               Grid.Column="1"
+               Content="Skrótowa nazwa oddziału"
+               Margin="0, 15, 0, 0"/>
+
+        <TextBox Grid.Row="4"
+                 Grid.Column="1"
+                 x:Name="DepartmentShortName_TextBox"/>
+
+        <Separator Grid.Row="5"
+                   Grid.Column="1"
+                   Margin="0, 15, 0, 0"/>
+
+        <Button Grid.Row="6"
+                Grid.Column="1"
+                Content="DODAJ ODDZIAŁ"
+                Click="AddDepartment_Button_Click"
+                Margin="0, 15, 0, 0"/>
+
+        <Button Grid.Row="7"
+                Grid.Column="1"
+                Content="ANULUJ"
+                Click="Cancel_Button_Click"
+                Margin="0, 15, 0, 0"/>
+
     </Grid>
 </Window>
