@@ -9,7 +9,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="15"/>
         </Grid.ColumnDefinitions>
@@ -34,7 +34,8 @@
         
         <TextBox Grid.Row="2"
                  Grid.Column="1"
-                 x:Name="DepartmentFullName_TextBox"/>
+                 x:Name="DepartmentFullName_TextBox"
+                 Height="30"/>
 
         <Label Grid.Row="3"
                Grid.Column="1"
@@ -43,7 +44,8 @@
 
         <TextBox Grid.Row="4"
                  Grid.Column="1"
-                 x:Name="DepartmentShortName_TextBox"/>
+                 x:Name="DepartmentShortName_TextBox"
+                 Height="30"/>
 
         <Separator Grid.Row="5"
                    Grid.Column="1"
@@ -54,28 +56,32 @@
                 Content="DODAJ ODDZIAŁ"
                 Click="AddDepartment_Button_Click"
                 x:Name="AddDepartment_Button"
-                Margin="0, 30, 0, 0"/>
+                Margin="0, 30, 0, 0"
+                Height="30"/>
 
         <Button Grid.Row="7"
                 Grid.Column="1"
                 Content="ANULUJ"
                 Click="Cancel_Button_Click"
-                Margin="0, 15, 0, 0"/>
+                Margin="0, 15, 0, 0"
+                Height="30"/>
 
         <Button Grid.Row="8"
                 Grid.Column="1"
                 Content="AKTUALIZUJ ODDZIAŁ"
                 x:Name="Update_Button"
                 Click="Update_Button_Click"
-                Margin="0, 15, 0, 0"/>
+                Margin="0, 15, 0, 0"
+                Height="30"/>
         
         <Button Grid.Row="9"
                 Grid.Column="1"
                 Content="USUŃ ODDZIAŁ"
                 x:Name="Delete_Button"
-                Click="Delte_Button_Click"
+                Click="Delete_Button_Click"
                 Margin="0, 15, 0, 0"
-                Background="red"/>
+                Background="red"
+                Height="30"/>
 
         <TabControl Grid.Row="1"
                     Grid.RowSpan="10"
@@ -153,19 +159,22 @@
                            Grid.Column="1"
                            Grid.ColumnSpan="2"
                            Content="Pracownicy podstawowi:"
+                           FontSize="15"
                            FontWeight="Bold"/>
 
                     <Label Grid.Row="4"
                            Grid.Column="4"
                            Grid.ColumnSpan="2"
                            Content="Pracownicy uzupełniający:"
+                           FontSize="15"
                            FontWeight="Bold"/>
 
                     <ListView Grid.Row="5"
                               Grid.Column="1"
                               Grid.ColumnSpan="2"
                               x:Name="FundamentalEmployees_ListView"
-                              Margin="0, 10, 0, 10">
+                              Margin="0, 10, 0, 10"
+                              SelectionChanged="FundamentalEmployees_ListView_SelectionChanged">
                         <ListView.ItemTemplate >
                             <DataTemplate>
                                 <StackPanel>
@@ -242,7 +251,8 @@
                               Grid.Column="4"
                               Grid.ColumnSpan="2"
                               x:Name="ComplementaryEmployees_ListView"
-                              Margin="0, 10, 0, 10">
+                              Margin="0, 10, 0, 10"
+                              SelectionChanged="ComplementaryEmployees_ListView_SelectionChanged">
                         <ListView.ItemTemplate >
                             <DataTemplate>
                                 <StackPanel>
@@ -272,6 +282,202 @@
                             Height="30"
                             Margin="0, 10, 0, 0"/>
 
+                </Grid>
+            </TabItem>
+            <TabItem Header="Dyżur nocny">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="10"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="1"
+                           Grid.Column="1"
+                           Grid.ColumnSpan="4"
+                           Content="Łączna minimalna liczba pracowników na zmianie:"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"/>
+
+                    <Grid Grid.Row="1"
+                          Grid.Column="4"
+                          Grid.ColumnSpan="3"
+                          Margin="20, 0, 100, 0"
+                          MaxHeight="30">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBox Grid.Column="0"
+                                 Grid.Row="0"
+                                 Grid.RowSpan="2"
+                                 x:Name="TotalMinEmployeesNumber_Night_TextBox"
+                                 IsReadOnly="True"
+                                 FontSize="15"/>
+                        <Button Grid.Column="1"
+                                Grid.Row="0"
+                                Content="5"
+                                FontFamily="Marlett"
+                                Click="IncreaseTotalEmployeesNumber_Night_Button_Click"/>
+                        <Button Grid.Column="1"
+                                Grid.Row="1"
+                                Content="6"
+                                FontFamily="Marlett"
+                                Click="DecreaseTotalEmployeesNumber_Night_Button_Click"/>
+                    </Grid>
+
+                    <Separator Grid.Row="2"
+                               Grid.Column="1"
+                               Grid.ColumnSpan="5"
+                               Margin="0, 15, 0, 10"/>
+
+                    <Label Grid.Row="4"
+                           Grid.Column="1"
+                           Grid.ColumnSpan="2"
+                           Content="Pracownicy podstawowi:"
+                           FontSize="15"
+                           FontWeight="Bold"/>
+
+                    <Label Grid.Row="4"
+                           Grid.Column="4"
+                           Grid.ColumnSpan="2"
+                           Content="Pracownicy uzupełniający:"
+                           FontSize="15"
+                           FontWeight="Bold"/>
+
+                    <ListView Grid.Row="5"
+                              Grid.Column="1"
+                              Grid.ColumnSpan="2"
+                              x:Name="FundamentalEmployees_Night_ListView"
+                              Margin="0, 10, 0, 10"
+                              SelectionChanged="FundamentalEmployees_Night_ListView_SelectionChanged">
+                        <ListView.ItemTemplate >
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Occupation}"
+                                               FontSize="20"
+                                               FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding MinEmployeesNumber}"
+                                               FontSize="15"
+                                               FontStyle="Italic"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Label Grid.Row="6"
+                           Grid.Column="1"
+                           Content="Zawód pracownika:"
+                           Height="30"/>
+
+                    <ComboBox Grid.Row="6"
+                              Grid.Column="2"
+                              Height="30"
+                              x:Name="FundamentalEmployeeOccupation_Night_ComboBox"/>
+
+                    <Label Grid.Row="7"
+                           Grid.Column="1"
+                           Content="Minimalna liczba pracowników:"
+                           Margin="0, 10, 0, 0"
+                           Height="30"/>
+
+                    <Grid Grid.Row="7"
+                          Grid.Column="2"
+                          Margin="0, 10, 0, 0"
+                          Height="30">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBox Grid.Column="0"
+                                 Grid.Row="0"
+                                 Grid.RowSpan="2"
+                                 x:Name="MinFundamentalEmployeesNumber_Night_TextBox"
+                                 IsReadOnly="True"
+                                 FontSize="15"/>
+                        <Button Grid.Column="1"
+                                Grid.Row="0"
+                                Content="5"
+                                FontFamily="Marlett"
+                                Click="IncreaseFundamentalEmployeesNumber_Night_Button_Click"/>
+                        <Button Grid.Column="1"
+                                Grid.Row="1"
+                                Content="6"
+                                FontFamily="Marlett"
+                                Click="DecreaseFundamentalEmployeesNumber_Night_Button_Click"/>
+                    </Grid>
+
+                    <Button Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Grid.Row="8"
+                            Content="DODAJ USTAWIENIE"
+                            Click="AddFundamentalConfiguration_Night_Button_Click"
+                            Height="30"
+                            Margin="0, 10, 0, 0"/>
+
+
+                    <!-- druga kolumna -->
+
+                    <ListView Grid.Row="5"
+                              Grid.Column="4"
+                              Grid.ColumnSpan="2"
+                              x:Name="ComplementaryEmployees_Night_ListView"
+                              Margin="0, 10, 0, 10"
+                              SelectionChanged="ComplementaryEmployees_Night_ListView_SelectionChanged">
+                        <ListView.ItemTemplate >
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Occupation}"
+                                               FontSize="20"
+                                               FontWeight="Bold"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Label Grid.Row="6"
+                           Grid.Column="4"
+                           Content="Zawód pracownika:"
+                           Height="30"/>
+
+                    <ComboBox Grid.Row="6"
+                              Grid.Column="5"
+                              Height="30"
+                              x:Name="ComplementaryEmployeeOccupation_Night_ComboBox"/>
+
+                    <Button Grid.Column="4"
+                            Grid.ColumnSpan="2"
+                            Grid.Row="8"
+                            Content="DODAJ USTAWIENIE"
+                            Click="AddComplementaryConfiguration_Night_Button_Click"
+                            Height="30"
+                            Margin="0, 10, 0, 0"/>
                 </Grid>
             </TabItem>
         </TabControl>
