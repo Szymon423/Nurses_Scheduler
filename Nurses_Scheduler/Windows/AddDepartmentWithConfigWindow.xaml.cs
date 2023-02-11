@@ -3,6 +3,7 @@ using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -67,6 +68,9 @@ namespace Nurses_Scheduler.Windows
             TotalMinEmployeesNumber_TextBox.Text = department.MinimalEmployeePerDayShift.ToString();
             MinFundamentalEmployeesNumber_TextBox.Text = "0";
 
+            DepartmentFullName_TextBox.Text = department.DepartmentName;
+            DepartmentShortName_TextBox.Text = department.DepartmentShortName;
+
             AddDepartment_Button.IsEnabled = false;
             AddDepartment_Button.Visibility = Visibility.Hidden;
 
@@ -82,16 +86,20 @@ namespace Nurses_Scheduler.Windows
             department.MinimalEmployeePerDayShift = Int32.Parse(TotalMinEmployeesNumber_TextBox.Text);
             // do poprawy na odpowiednią zmienną
             department.MinimalEmployeePerNightShift = Int32.Parse(TotalMinEmployeesNumber_TextBox.Text);
-
+            
             using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
             {
+                connection.CreateTable<Department>();
+                connection.Insert(department);
+
+                int Id = connection.Table<Department>().OrderBy(d => d.Id).Last().Id;
+
                 foreach (FundamentalEmployee fundamentalEmployee in fundamentalEmployees)
                 {
+                    fundamentalEmployee.DepartmentId = Id;
                     connection.CreateTable<FundamentalEmployee>();
                     connection.Insert(fundamentalEmployee);
                 }
-                connection.CreateTable<Department>();
-                connection.Insert(department);
             }
             Close();
         }
