@@ -14,7 +14,7 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Department_ { get; set; }
+        public int DepartmentId { get; set; }
 
         public string ShiftType { get; set; }
 
@@ -22,7 +22,7 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
 
         public int MinEmployeesNumber { get; set; }
 
-        public static List<FundamentalEmployee> GetFundamentalEmployeesDB(string EmployeesDepartment, string EmployeeShiftType)
+        public static List<FundamentalEmployee> GetFundamentalEmployeesDB(int _DepartmentId, string EmployeeShiftType)
         {
             List<FundamentalEmployee> fundamentalEmployees = new List<FundamentalEmployee>();
 
@@ -30,8 +30,23 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
             {
                 conn.CreateTable<FundamentalEmployee>();
                 fundamentalEmployees = conn.Table<FundamentalEmployee>().ToList()
-                                                                        .Where(c => c.Department_.Equals(EmployeesDepartment))
+                                                                        .Where(c => c.DepartmentId.Equals(_DepartmentId))
                                                                         .Where(c => c.ShiftType.Equals(EmployeeShiftType))
+                                                                        .OrderBy(c => c.Occupation)
+                                                                        .ToList();
+            }
+            return fundamentalEmployees;
+        }
+
+        public static List<FundamentalEmployee> GetFundamentalEmployeesDB(int _DepartmentId)
+        {
+            List<FundamentalEmployee> fundamentalEmployees = new List<FundamentalEmployee>();
+
+            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
+            {
+                conn.CreateTable<FundamentalEmployee>();
+                fundamentalEmployees = conn.Table<FundamentalEmployee>().ToList()
+                                                                        .Where(c => c.DepartmentId.Equals(_DepartmentId))
                                                                         .OrderBy(c => c.Occupation)
                                                                         .ToList();
             }

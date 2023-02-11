@@ -23,6 +23,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
@@ -52,6 +53,7 @@
                 Grid.Column="1"
                 Content="DODAJ ODDZIAŁ"
                 Click="AddDepartment_Button_Click"
+                x:Name="AddDepartment_Button"
                 Margin="0, 30, 0, 0"/>
 
         <Button Grid.Row="7"
@@ -60,8 +62,23 @@
                 Click="Cancel_Button_Click"
                 Margin="0, 15, 0, 0"/>
 
+        <Button Grid.Row="8"
+                Grid.Column="1"
+                Content="AKTUALIZUJ ODDZIAŁ"
+                x:Name="Update_Button"
+                Click="Update_Button_Click"
+                Margin="0, 15, 0, 0"/>
+        
+        <Button Grid.Row="9"
+                Grid.Column="1"
+                Content="USUŃ ODDZIAŁ"
+                x:Name="Delete_Button"
+                Click="Delte_Button_Click"
+                Margin="0, 15, 0, 0"
+                Background="red"/>
+
         <TabControl Grid.Row="1"
-                    Grid.RowSpan="9"
+                    Grid.RowSpan="10"
                     Grid.Column="2"
                     Margin="15, 0, 0, 0">
             <TabItem Header="Dyżur dzienny">

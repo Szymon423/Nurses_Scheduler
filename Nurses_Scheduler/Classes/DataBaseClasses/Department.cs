@@ -19,6 +19,10 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
 
         public string DepartmentShortName { get; set; }
 
+        public int MinimalEmployeePerDayShift { get; set; }
+
+        public int MinimalEmployeePerNightShift { get; set; }
+
         public override string ToString()
         {
             return $"{DepartmentName} - ({DepartmentShortName})";

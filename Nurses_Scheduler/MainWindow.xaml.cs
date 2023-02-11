@@ -40,8 +40,11 @@ namespace Nurses_Scheduler
 
         private void AddDepartmentWindow_Button(object sender, RoutedEventArgs e)
         {
-            AddDepartmentWindow addDepartmentWindow = new AddDepartmentWindow();
-            addDepartmentWindow.ShowDialog();
+            AddDepartmentWithConfigWindow addDepartmentWithConfigWindow = new AddDepartmentWithConfigWindow();
+            addDepartmentWithConfigWindow.ShowDialog();
+
+            //AddDepartmentWindow addDepartmentWindow = new AddDepartmentWindow();
+            //addDepartmentWindow.ShowDialog();
             ReadDatabase();
         }
 
@@ -111,8 +114,12 @@ namespace Nurses_Scheduler
 
             if (selectedDepartment != null)
             {
-                ModifyDepartmentWindow modifyDepartmentWindow = new ModifyDepartmentWindow(selectedDepartment);
-                modifyDepartmentWindow.ShowDialog();
+                AddDepartmentWithConfigWindow addDepartmentWithConfigWindow = new AddDepartmentWithConfigWindow(selectedDepartment);
+                addDepartmentWithConfigWindow.ShowDialog();
+
+
+                //ModifyDepartmentWindow modifyDepartmentWindow = new ModifyDepartmentWindow(selectedDepartment);
+                //modifyDepartmentWindow.ShowDialog();
             }
             ReadDatabase();
         }
