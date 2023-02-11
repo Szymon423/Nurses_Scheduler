@@ -13,7 +13,7 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string DepartmentId { get; set; }
+        public int DepartmentId { get; set; }
 
         public string ShiftType { get; set; }
 

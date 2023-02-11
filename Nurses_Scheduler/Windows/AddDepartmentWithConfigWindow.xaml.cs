@@ -70,20 +70,37 @@ namespace Nurses_Scheduler.Windows
             AddDepartment_Button.IsEnabled = false;
             AddDepartment_Button.Visibility = Visibility.Hidden;
 
-            FundamentalEmployees_ListView.ItemsSource = FundamentalEmployee.GetFundamentalEmployeesDB(department.Id).Where(c => c.ShiftType.Equals("D")).ToList();
-            ComplementaryEmployees_ListView.ItemsSource = ComplementaryEmployee.GetComplementaryEmployeesDB(department.Id).Where(c => c.ShiftType.Equals("D")).ToList();
+            FundamentalEmployees_ListView.ItemsSource = FundamentalEmployee.GetFundamentalEmployeesDB(department.Id, "D");
+            ComplementaryEmployees_ListView.ItemsSource = ComplementaryEmployee.GetComplementaryEmployeesDB(department.Id, "D");
 
         }
 
         private void AddDepartment_Button_Click(object sender, RoutedEventArgs e)
         {
+            department.DepartmentName = DepartmentFullName_TextBox.Text;
+            department.DepartmentShortName = DepartmentShortName_TextBox.Text;
+            department.MinimalEmployeePerDayShift = Int32.Parse(TotalMinEmployeesNumber_TextBox.Text);
+            // do poprawy na odpowiednią zmienną
+            department.MinimalEmployeePerNightShift = Int32.Parse(TotalMinEmployeesNumber_TextBox.Text);
 
+            using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
+            {
+                foreach (FundamentalEmployee fundamentalEmployee in fundamentalEmployees)
+                {
+                    connection.CreateTable<FundamentalEmployee>();
+                    connection.Insert(fundamentalEmployee);
+                }
+                connection.CreateTable<Department>();
+                connection.Insert(department);
+            }
+            Close();
         }
 
         private void Cancel_Button_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
+
 
         private void IncreaseTotalEmployeesNumber_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -109,18 +126,22 @@ namespace Nurses_Scheduler.Windows
                 Occupation = FundamentalEmployeeOccupation_ComboBox.Text,
                 MinEmployeesNumber = Int32.Parse(MinFundamentalEmployeesNumber_TextBox.Text)
             };
-
-            using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
-            {
-                connection.CreateTable<FundamentalEmployee>();
-                connection.Insert(fundamentalEmployee);
-            }
-            FundamentalEmployees_ListView.ItemsSource = FundamentalEmployee.GetFundamentalEmployeesDB(department.Id, "D");
+            fundamentalEmployees.Add(fundamentalEmployee);
+            FundamentalEmployees_ListView.ItemsSource = fundamentalEmployees;
+            FundamentalEmployees_ListView.Items.Refresh();
         }
 
         private void AddComplementaryConfiguration_Button_Click(object sender, RoutedEventArgs e)
         {
-
+            ComplementaryEmployee complementaryEmployee = new ComplementaryEmployee()
+            {
+                ShiftType = "D",
+                DepartmentId = department.Id,
+                Occupation = ComplementaryEmployeeOccupation_ComboBox.Text
+            };
+            complementaryEmployees.Add(complementaryEmployee);
+            ComplementaryEmployees_ListView.ItemsSource = complementaryEmployees;
+            ComplementaryEmployees_ListView.Items.Refresh();
         }
 
         private void DecreaseFundamentalEmployeesNumber_Button_Click(object sender, RoutedEventArgs e)
