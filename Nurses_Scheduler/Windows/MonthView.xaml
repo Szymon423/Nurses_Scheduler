@@ -57,10 +57,10 @@
                   Grid.ColumnSpan="4"
                   Grid.Row="1"
                   Grid.RowSpan="10"
-                  x:Name="MonthGrid_Pielegniarki_DataGrid"
+                  x:Name="MonthGrid_DataGrid"
                   FontSize="15"
                   MinColumnWidth="30"
-                  SelectionChanged="MonthGrid_Pielegniarki_DataGrid_SelectionChanged"/>
+                  SelectionChanged="MonthGrid_DataGrid_SelectionChanged"/>
           
             
 

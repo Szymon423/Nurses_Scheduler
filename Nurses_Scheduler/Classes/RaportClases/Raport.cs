@@ -72,7 +72,7 @@ namespace Nurses_Scheduler.Classes.Raport
         public Raport(RaportData raportData)
         {
             html = new HTML();
-            workArrangementList = InsertLpAndSignature(raportData.departmentWorkArrangement.GetNursesWorkArrangementAsList());
+            workArrangementList = InsertLpAndSignature(raportData.departmentWorkArrangement.GetEmployeeWorkArrangementAsList());
             this.raportData = raportData;   
             this.raportFileName = App.months[raportData.month - 1].ToUpper() + " " + raportData.year.ToString() + " " + raportData.department.DepartmentName;
         }

@@ -168,7 +168,7 @@
                         <TextBlock Text="{Binding Occupation}"
                                    FontSize="15"
                                    FontStyle="Italic"/>
-                        <TextBlock Text="{Binding Department}"
+                        <TextBlock Text="{Binding DepartmentName}"
                                    FontSize="15"
                                    FontStyle="Italic"
                                    Foreground="Blue"/>

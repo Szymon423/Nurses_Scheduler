@@ -47,7 +47,7 @@ namespace Nurses_Scheduler.Windows
             {
                 FirstName = EmployeeName_TextBox.Text,
                 LastName = EmployeeLastName_TextBox.Text,
-                DepartmentId = (EmployeeDepartment_ComboBox.SelectedItem as Department).Id,
+                DepartmentId = ((Department)EmployeeDepartment_ComboBox.SelectedItem).Id,
                 Occupation = EmployeeOccupation_ComboBox.Text,
                 WorkingTime = EmployeeWorkTime_ComboBox.Text                
             };

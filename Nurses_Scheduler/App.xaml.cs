@@ -19,5 +19,6 @@ namespace Nurses_Scheduler
         public static string[] AllowedOccupations = { "Pielęgniarka" , "Opiekun Medyczny", "Salowa", "Sanitariuszka", "Asystentka Pielęgniarki" };
         public static string[] months = { "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień" };
         public static string[] shiftTypes = { "D", "N", "/", "r", "p", "U", "Um", "Us", "Uo", "Uż", "C", "Op" };
+        public static IDictionary<int, string> DepartmentIdToName = new Dictionary<int, string>();
     }
 }

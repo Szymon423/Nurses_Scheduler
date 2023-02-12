@@ -39,6 +39,7 @@ namespace Nurses_Scheduler.Windows
         private int choosenYear;
         private int daysInMonth;
         private List<int> eventDays;
+        private List<int> forbiddenClickRows;
 
         private IDictionary<string, int> OccupationToIndex = new Dictionary<string, int>();
         private IDictionary<string, int> DepartmentToIndex = new Dictionary<string, int>();
@@ -55,6 +56,7 @@ namespace Nurses_Scheduler.Windows
             eventDays = new List<int>();
             howManyMonthToShow = 3;
             monthsToChoose = new List<string>();
+            forbiddenClickRows = new List<int>();
 
             departmentList = Department.GetDepartmentsFromDB();
             for (int i = 0; i < departmentList.Count; i++)
@@ -116,8 +118,8 @@ namespace Nurses_Scheduler.Windows
             }
 
             // clear dataGrid before inserting new month view
-            MonthGrid_Pielegniarki_DataGrid.ItemsSource = null;
-            MonthGrid_Pielegniarki_DataGrid.Columns.Clear();
+            MonthGrid_DataGrid.ItemsSource = null;
+            MonthGrid_DataGrid.Columns.Clear();
 
             // make proper collumns basing on prevoiusly made headers list
             for (int i = 0; i < headers.Count; i++)
@@ -126,9 +128,12 @@ namespace Nurses_Scheduler.Windows
                 t1.Header = headers[i];
                 t1.Binding = new Binding("_" + headers[i]);
 
-                MonthGrid_Pielegniarki_DataGrid.Columns.Add(t1);
+                MonthGrid_DataGrid.Columns.Add(t1);
             }
- 
+
+            forbiddenClickRows = new List<int>();
+
+
             foreach (Department department in departmentList)
             {
                 DepartmentWorkArrangement departmentWorkArrangement = new DepartmentWorkArrangement();
@@ -137,6 +142,7 @@ namespace Nurses_Scheduler.Windows
                     List<Employee> employeeList = Employee.GetEmployeesFromDB(occupation, department.Id);
                     if (employeeList.Count > 0)
                     {
+                        forbiddenClickRows.Add(departmentWorkArrangement.allEmployeeWorkArrangement.Count);
                         departmentWorkArrangement.allEmployeeWorkArrangement.Add(new EmployeeWorkArrangement(occupation));
                         List<EmployeeWorkArrangement> employeeWorkArrangement = new List<EmployeeWorkArrangement>();
                         foreach (Employee employee in employeeList)
@@ -148,7 +154,7 @@ namespace Nurses_Scheduler.Windows
                 departmentsWorkArrangement.Add(departmentWorkArrangement);
             }
 
-            MonthGrid_Pielegniarki_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
+            MonthGrid_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
 
             FindEventDaysInMonth(daysInMonth);
             SetPropertiesForDataGrids();
@@ -156,25 +162,25 @@ namespace Nurses_Scheduler.Windows
 
         private void SetPropertiesForDataGrids()
         {
-            MonthGrid_Pielegniarki_DataGrid.CanUserResizeColumns = false;
-            MonthGrid_Pielegniarki_DataGrid.CanUserResizeRows = false;
-            MonthGrid_Pielegniarki_DataGrid.CanUserDeleteRows = false;
-            MonthGrid_Pielegniarki_DataGrid.CanUserSortColumns = false;
-            MonthGrid_Pielegniarki_DataGrid.CanUserAddRows = false;
-            MonthGrid_Pielegniarki_DataGrid.CanUserReorderColumns = false;
-            MonthGrid_Pielegniarki_DataGrid.MinColumnWidth = 25;
-            MonthGrid_Pielegniarki_DataGrid.MinRowHeight = 25;
-            MonthGrid_Pielegniarki_DataGrid.AutoGenerateColumns = false;
-            MonthGrid_Pielegniarki_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
-            MonthGrid_Pielegniarki_DataGrid.Columns[0].CellStyle = MonthGrid_Pielegniarki_DataGrid.TryFindResource("BoldNameStyle") as Style;
-            MonthGrid_Pielegniarki_DataGrid.Columns[0].IsReadOnly = true;
-            MonthGrid_Pielegniarki_DataGrid.Columns[0].Width = 150;
-            MonthGrid_Pielegniarki_DataGrid.SelectionMode = DataGridSelectionMode.Single;
-            MonthGrid_Pielegniarki_DataGrid.IsReadOnly = true;
+            MonthGrid_DataGrid.CanUserResizeColumns = false;
+            MonthGrid_DataGrid.CanUserResizeRows = false;
+            MonthGrid_DataGrid.CanUserDeleteRows = false;
+            MonthGrid_DataGrid.CanUserSortColumns = false;
+            MonthGrid_DataGrid.CanUserAddRows = false;
+            MonthGrid_DataGrid.CanUserReorderColumns = false;
+            MonthGrid_DataGrid.MinColumnWidth = 25;
+            MonthGrid_DataGrid.MinRowHeight = 25;
+            MonthGrid_DataGrid.AutoGenerateColumns = false;
+            MonthGrid_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
+            MonthGrid_DataGrid.Columns[0].CellStyle = MonthGrid_DataGrid.TryFindResource("BoldNameStyle") as Style;
+            MonthGrid_DataGrid.Columns[0].IsReadOnly = true;
+            MonthGrid_DataGrid.Columns[0].Width = 150;
+            MonthGrid_DataGrid.SelectionMode = DataGridSelectionMode.Single;
+            MonthGrid_DataGrid.IsReadOnly = true;
 
             foreach (int day in eventDays)
             {
-                MonthGrid_Pielegniarki_DataGrid.Columns[day].CellStyle = MonthGrid_Pielegniarki_DataGrid.TryFindResource("WeekendStyle") as Style;
+                MonthGrid_DataGrid.Columns[day].CellStyle = MonthGrid_DataGrid.TryFindResource("WeekendStyle") as Style;
             }            
         }
 
@@ -234,7 +240,7 @@ namespace Nurses_Scheduler.Windows
 
         private void ShowDepartment_Click(object sender, RoutedEventArgs e)
         {
-            MonthGrid_Pielegniarki_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
+            MonthGrid_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
             ShowDepartment_Button.IsEnabled = false;
         }
 
@@ -272,19 +278,22 @@ namespace Nurses_Scheduler.Windows
             MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
         }
 
-        private void MonthGrid_Pielegniarki_DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void MonthGrid_DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int nurseIndex = MonthGrid_Pielegniarki_DataGrid.SelectedIndex;
-            int dayInMonth = MonthGrid_Pielegniarki_DataGrid.CurrentCell.Column.DisplayIndex;
-            EmployeeWorkArrangement selectedEmployeeWorkArrangemnent = (EmployeeWorkArrangement)MonthGrid_Pielegniarki_DataGrid.SelectedItem;
+            int nurseIndex = MonthGrid_DataGrid.SelectedIndex;
+            int dayInMonth = MonthGrid_DataGrid.CurrentCell.Column.DisplayIndex;
+            EmployeeWorkArrangement selectedEmployeeWorkArrangemnent = (EmployeeWorkArrangement)MonthGrid_DataGrid.SelectedItem;
 
-            if (MonthGrid_Pielegniarki_DataGrid.SelectedItem != null)
+            if (MonthGrid_DataGrid.SelectedItem != null)
             {
-                MonthGrid_Pielegniarki_DataGrid.SelectedItem = null;
-                bool cntrlKeyDown = Keyboard.IsKeyDown(Key.LeftCtrl) | Keyboard.IsKeyDown(Key.RightCtrl);
-                string nextShitfType = NextShiftType(selectedEmployeeWorkArrangemnent.GetSingleWorkArrangement(dayInMonth), cntrlKeyDown);
-                departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, nextShitfType);
-                MonthGrid_Pielegniarki_DataGrid.Items.Refresh();
+                MonthGrid_DataGrid.SelectedItem = null;
+                if (!forbiddenClickRows.Contains(nurseIndex))
+                {
+                    bool cntrlKeyDown = Keyboard.IsKeyDown(Key.LeftCtrl) | Keyboard.IsKeyDown(Key.RightCtrl);
+                    string nextShitfType = NextShiftType(selectedEmployeeWorkArrangemnent.GetSingleWorkArrangement(dayInMonth), cntrlKeyDown);
+                    departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].SetNurseWorkArrangement(nurseIndex, dayInMonth, nextShitfType);
+                }
+                MonthGrid_DataGrid.Items.Refresh();
             }  
         }
 

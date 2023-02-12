@@ -83,6 +83,11 @@ namespace Nurses_Scheduler
 
             if (departmentList != null)
             {
+                App.DepartmentIdToName.Clear();
+                foreach (Department department in departmentList)
+                {
+                    App.DepartmentIdToName.Add(department.Id, department.DepartmentShortName);
+                }
                 Department_ListView.ItemsSource = departmentList;
             }
             if (employeeList != null)

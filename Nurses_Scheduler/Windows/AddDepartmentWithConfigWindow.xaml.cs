@@ -244,7 +244,7 @@ namespace Nurses_Scheduler.Windows
                     connection.Delete(complementaryEmployee);
                 }
             }
-            Close();
+           Close();
         }
 
         private void Update_Button_Click(object sender, RoutedEventArgs e)

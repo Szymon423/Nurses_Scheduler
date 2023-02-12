@@ -31,6 +31,23 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
                 return LastName + " " + FirstName;
             }
         }
+
+        [Ignore]
+        public string DepartmentName
+        {
+            get
+            {
+                if (App.DepartmentIdToName.ContainsKey(DepartmentId))
+                {
+                    return App.DepartmentIdToName[DepartmentId];
+                }
+                else
+                {
+                    return "coś poszło nie tak";
+                }
+            }
+        }
+
         public static List<Employee> GetEmployeesFromDB(string Occupation, int Id)
         {
             List<Employee> employees = new List<Employee>();
