@@ -168,13 +168,13 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_DataGrid.CanUserSortColumns = false;
             MonthGrid_DataGrid.CanUserAddRows = false;
             MonthGrid_DataGrid.CanUserReorderColumns = false;
-            MonthGrid_DataGrid.MinColumnWidth = 25;
-            MonthGrid_DataGrid.MinRowHeight = 25;
+            MonthGrid_DataGrid.MinColumnWidth = 30;
+            MonthGrid_DataGrid.MinRowHeight = 30;
             MonthGrid_DataGrid.AutoGenerateColumns = false;
             MonthGrid_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
             MonthGrid_DataGrid.Columns[0].CellStyle = MonthGrid_DataGrid.TryFindResource("BoldNameStyle") as Style;
             MonthGrid_DataGrid.Columns[0].IsReadOnly = true;
-            MonthGrid_DataGrid.Columns[0].Width = 150;
+            MonthGrid_DataGrid.Columns[0].Width = 250;
             MonthGrid_DataGrid.SelectionMode = DataGridSelectionMode.Single;
             MonthGrid_DataGrid.IsReadOnly = true;
 

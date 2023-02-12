@@ -20,7 +20,6 @@ namespace Nurses_Scheduler.Classes.Raport
         private List<List<string>> workArrangementList;
         private RaportData raportData;
         private string raportFileName;
-
         private static List<List<string>> footer = new List<List<string>>()
         {
             new List<string>()
