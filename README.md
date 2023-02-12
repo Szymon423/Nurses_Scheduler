@@ -4,19 +4,18 @@
 Glównym celem projektu jest stworzenie systemu wspomagającego tworzenie grafiku dla peronelu medycznego. 
 
 ### Bieżąca lista ToDo
-1. Wprowadzić rozróżnienie: Salowa / Sanitariuszka
-2. Poprawić generowanie raportów: 
+1. Poprawić generowanie raportów: 
     - Wprowadzić dynamiczne generowanie raportów dla każedej grupy pracowników oddziału,
     - wprowadzić generowanie *.HTML -> *.pdf.
-3. Połączyć Pracownika z Oddziałem w bazie danych,
-4. Określić, oraz przyjąć konwencję dotyczącą wprowadzania próśb pracowników przez użytkownika,
+3. Określić konwencję dotyczącą wprowadzania poziomu ważnośći próśb - bardzo ważne - mało ważne,
 5. Zebrać wszelkie informacje prawne, dotyczące harmonogramowania pracy.
 
 ### Mile stones
 
-1. Stworzenie zamysłu projektu
-2. Dobór odpowiednich narzędzi
-3. Szkic aplikacji
+1. Stworzenie zamysłu projektu ✔️
+2. Dobór odpowiednich narzędzi ✔️
+3. Szkic aplikacji ✔️
+4. Projekt interfejsu oraz testy
 
 
 ### Tutoriale z których Korzystam:
