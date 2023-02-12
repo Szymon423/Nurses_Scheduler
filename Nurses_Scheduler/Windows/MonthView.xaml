@@ -52,25 +52,17 @@
                   FontSize="18"/>
 
 
-        <TabControl Grid.Column="3" 
-                    Grid.ColumnSpan="4"
-                    Grid.Row="1"
-                    Grid.RowSpan="10">
-            <TabItem Header="Pielęgniarki">
-                <DataGrid x:Name="MonthGrid_Pielegniarki_DataGrid"
-                          FontSize="15"
-                          MinColumnWidth="30"
-                          SelectionChanged="MonthGrid_Pielegniarki_DataGrid_SelectionChanged"/>
-            </TabItem>
 
-            <TabItem Header="Pozostali">
-                <DataGrid x:Name="MonthGrid_Pozostali_DataGrid"
-                          FontSize="15"
-                          MinColumnWidth="20"
-                          SelectionChanged="MonthGrid_Pozostali_DataGrid_SelectionChanged"/>
-            </TabItem>
-
-        </TabControl>
+        <DataGrid Grid.Column="3" 
+                  Grid.ColumnSpan="4"
+                  Grid.Row="1"
+                  Grid.RowSpan="10"
+                  x:Name="MonthGrid_Pielegniarki_DataGrid"
+                  FontSize="15"
+                  MinColumnWidth="30"
+                  SelectionChanged="MonthGrid_Pielegniarki_DataGrid_SelectionChanged"/>
+          
+            
 
         <!-- ROW 2 -->
         <Button Content="WYBIERZ MIESIĄC"
