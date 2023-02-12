@@ -47,10 +47,12 @@ namespace Nurses_Scheduler.Windows
             {
                 FirstName = EmployeeName_TextBox.Text,
                 LastName = EmployeeLastName_TextBox.Text,
-                Department = EmployeeDepartment_ComboBox.Text,
+                DepartmentId = (EmployeeDepartment_ComboBox.SelectedItem as Department).Id,
                 Occupation = EmployeeOccupation_ComboBox.Text,
                 WorkingTime = EmployeeWorkTime_ComboBox.Text                
             };
+            
+            
 
             using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
             {

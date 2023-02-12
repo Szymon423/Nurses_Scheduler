@@ -143,6 +143,13 @@ namespace Nurses_Scheduler.Windows
                     connection.CreateTable<FundamentalEmployee>();
                     connection.Insert(fundamentalEmployee);
                 }
+
+                foreach (ComplementaryEmployee complementaryEmployee in complementaryEmployees)
+                {
+                    complementaryEmployee.DepartmentId = Id;
+                    connection.CreateTable<ComplementaryEmployee>();
+                    connection.Insert(complementaryEmployee);
+                }
             }
             Close();
         }

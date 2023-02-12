@@ -145,7 +145,7 @@ namespace Nurses_Scheduler.Windows
                 DepartmentWorkArrangement departmentWorkArrangement = new DepartmentWorkArrangement();
                 foreach (String occupation in App.AllowedOccupations)
                 {
-                    List<Employee> employeeList = Employee.GetEmployeesFromDB(occupation, department.DepartmentName);
+                    List<Employee> employeeList = Employee.GetEmployeesFromDB(occupation, department.Id);
                     List<EmployeeWorkArrangement> employeeWorkArrangement = new List<EmployeeWorkArrangement>();
                     foreach (Employee employee in employeeList)
                     {

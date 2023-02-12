@@ -17,7 +17,7 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
 
         public string LastName { get; set; }
 
-        public string Department { get; set; }
+        public int DepartmentId { get; set; }
 
         public string Occupation { get; set; }
 
@@ -31,14 +31,14 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
                 return LastName + " " + FirstName;
             }
         }
-        public static List<Employee> GetEmployeesFromDB(string Occupation, string DepartmentName)
+        public static List<Employee> GetEmployeesFromDB(string Occupation, int Id)
         {
             List<Employee> employees = new List<Employee>();
 
             using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
             {
                 conn.CreateTable<Employee>();
-                employees = conn.Table<Employee>().ToList().Where(c => c.Occupation.Contains(Occupation)).Where(c => c.Department.Contains(DepartmentName)).OrderBy(c => c.LastName).ToList();
+                employees = conn.Table<Employee>().ToList().Where(c => c.Occupation.Contains(Occupation)).Where(c => c.DepartmentId.Equals(Id)).OrderBy(c => c.LastName).ToList();
             }
             return employees;
         }

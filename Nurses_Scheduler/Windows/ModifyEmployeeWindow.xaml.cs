@@ -27,14 +27,15 @@ namespace Nurses_Scheduler.Windows
             InitializeComponent();
 
             EmployeeOccupation_ComboBox.ItemsSource = App.AllowedOccupations;
-            EmployeeDepartment_ComboBox.ItemsSource = Department.GetDepartmentsFromDB();
+            List <Department> departments = Department.GetDepartmentsFromDB();
+            EmployeeDepartment_ComboBox.ItemsSource = departments;
             EmployeeWorkTime_ComboBox.ItemsSource = new List<string>() { "Pełny etat", "1/2 etatu", "3/4 etatu" };
             
             this.employee = employee;
             EmployeeFirstName_TextBox.Text = employee.FirstName;
             EmployeeLastName_TextBox.Text= employee.LastName;
             EmployeeOccupation_ComboBox.Text = employee.Occupation;
-            EmployeeDepartment_ComboBox.Text = employee.Department;
+            EmployeeDepartment_ComboBox.SelectedItem = departments.Where(c => c.Id.Equals(employee.DepartmentId));
             EmployeeWorkTime_ComboBox.Text = employee.WorkingTime;
         }
 
@@ -43,7 +44,7 @@ namespace Nurses_Scheduler.Windows
             employee.FirstName = EmployeeFirstName_TextBox.Text;
             employee.LastName = EmployeeLastName_TextBox.Text;
             employee.Occupation = EmployeeOccupation_ComboBox.Text;
-            employee.Department = EmployeeDepartment_ComboBox.Text;
+            employee.DepartmentId = (EmployeeDepartment_ComboBox.SelectedItem as Department).Id;
             employee.WorkingTime = EmployeeWorkTime_ComboBox.Text;
 
             using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
