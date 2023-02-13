@@ -10,7 +10,8 @@ using System.Windows;
 using System.Windows.Shapes;
 using System.Printing;
 using System.Windows.Documents;
-
+using System.Drawing.Printing;
+using Path = System.IO.Path;
 
 namespace Nurses_Scheduler.Classes.Raport
 {
@@ -179,7 +180,7 @@ namespace Nurses_Scheduler.Classes.Raport
         private async Task SavePageOfRaport(int i)
         {
             Debug.WriteLine("I am here, i: " + i.ToString());
-            string raportFileName = App.months[raportData.month - 1].ToUpper() + " " + raportData.year.ToString() + " " + occupationsOnList[i] + " " + raportData.department.DepartmentName;
+            string raportFileName = App.months[raportData.month - 1].ToUpper() + "-" + raportData.year.ToString() + "-" + occupationsOnList[i] + "-" + raportData.department.DepartmentName;
             await File.WriteAllLinesAsync(raportFileName + ".html", html.SavePage(i));
         }
         public async void SaveRaport()
@@ -207,7 +208,5 @@ namespace Nurses_Scheduler.Classes.Raport
             }
             return toChange.ToList();
         }
-
-
     }
 }
