@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -269,7 +270,8 @@ namespace Nurses_Scheduler.Windows
                 );
                 Raport raport = new Raport(raportData);
                 raport.GenerateRaport();
-                raport.SaveRaport();
+                var task = raport.SaveRaport();   
+                task.Wait();
             }
             string messageBoxText = "Raport został wygenerowany.";
             string caption = "Raport";
