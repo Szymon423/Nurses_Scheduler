@@ -270,8 +270,7 @@ namespace Nurses_Scheduler.Windows
                 );
                 Raport raport = new Raport(raportData);
                 raport.GenerateRaport();
-                var task = raport.SaveRaport();   
-                task.Wait();
+                raport.SaveRaport();
             }
             string messageBoxText = "Raport został wygenerowany.";
             string caption = "Raport";
