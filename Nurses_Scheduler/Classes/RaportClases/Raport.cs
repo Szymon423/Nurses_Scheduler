@@ -172,8 +172,6 @@ namespace Nurses_Scheduler.Classes.Raport
 
                 page.AddFooterTabele(footer);
 
-
-
                 html.AddPage(page);
             }
         }
@@ -184,12 +182,11 @@ namespace Nurses_Scheduler.Classes.Raport
             string raportFileName = App.months[raportData.month - 1].ToUpper() + " " + raportData.year.ToString() + " " + occupationsOnList[i] + " " + raportData.department.DepartmentName;
             await File.WriteAllLinesAsync(raportFileName + ".html", html.SavePage(i));
         }
-        public void SaveRaport()
+        public async void SaveRaport()
         {
             for (int i = 0; i < html.pages.Count; i++)
             {
-                var task = SavePageOfRaport(i);
-                task.Wait();
+                await SavePageOfRaport(i);
             }
         }
 
