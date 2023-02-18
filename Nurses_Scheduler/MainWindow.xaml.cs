@@ -17,7 +17,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.Diagnostics;
-using Python;
 
 namespace Nurses_Scheduler
 {
@@ -157,8 +156,7 @@ namespace Nurses_Scheduler
 
         private void GenerateSchedule_Button(object sender, RoutedEventArgs e)
         {
-            AddDepartmentWithConfigWindow test = new AddDepartmentWithConfigWindow();
-            test.ShowDialog();  
+
         }
 
         private void EventDays_Button(object sender, RoutedEventArgs e)
