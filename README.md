@@ -52,4 +52,25 @@ Glównym celem projektu jest stworzenie systemu wspomagającego tworzenie grafik
     <img width="1000" src="https://user-images.githubusercontent.com/96399051/209864283-d164a71d-be58-4da8-9dc6-d60022bc5143.png">
 </p>
 
+## Schemat działania podczas układania grafiku:
+
+UŁÓŻ GRAFIK(przycisk w menu głównym)      
+&emsp;&emsp;&emsp;| --> WPROWADŹ PROŚBY(pierwszy z etapów układania grafiku)  
+&emsp;&emsp;&emsp;|  
+&emsp;&emsp;&emsp;| --> sprawdź, czy na ten miesiąc nie zostały wprowadzone już prośby  
+&emsp;&emsp;&emsp;|&emsp;&emsp;&emsp;|  
+&emsp;&emsp;&emsp;|&emsp;&emsp;&emsp;| --> zapytaj użytkownika, czy chce wprowadzić nowe prośby, czy modifikować istniejące, postępuj zgodnie z wyborem  
+&emsp;&emsp;&emsp;|  
+&emsp;&emsp;&emsp;|--> UŁÓŻ GRAFIK (przycisk do układania grafiku na podstawie próśb)    
+&emsp;&emsp;&emsp;|&emsp;&emsp;&emsp;|  
+&emsp;&emsp;&emsp;|&emsp;&emsp;&emsp;| --> UŁÓŻ GRAFIK NA PODSTAWIE KODEKSU PRACY ORAZ OBOWIĄZUJĄCEGO PRAWA W SZPITALU  
+&emsp;&emsp;&emsp;|&emsp;&emsp;&emsp;|  
+&emsp;&emsp;&emsp;|&emsp;&emsp;&emsp;|--> Popraw grafik tak, by spełnić jak najwięcej próśb pracowników  
+&emsp;&emsp;&emsp;|&emsp;&emsp;&emsp;|  
+&emsp;&emsp;&emsp;|&emsp;&emsp;&emsp;| --> Wyświetl gotowy grafik, w okienku zawierającym LOGI przedstaw niespełnione prośby  
+&emsp;&emsp;&emsp;|  
+&emsp;&emsp;&emsp;|--> ZAPISZ GRAFIK (w odpowiednim folderze)  
+&emsp;&emsp;&emsp;|&emsp;&emsp;&emsp;|  
+&emsp;&emsp;&emsp;|&emsp;&emsp;&emsp;|--> Użytkownik wprowadza nazwę
+
 
