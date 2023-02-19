@@ -43,6 +43,21 @@ namespace Nurses_Scheduler.Classes
             AddDataToContentFile(scheduleData.Month.ToString());
             AddDataToContentFile(scheduleData.Year.ToString());
             AddDataToContentFile(scheduleData.WorkingHours.ToString("0.00"));
+
+            foreach (DepartmentWorkArrangement dwa in scheduleData.ListOfDepartmentsWorkArrangements)
+            {
+                AddDataToContentFile("");
+                AddDataToContentFile(dwa.department.ToString());
+                foreach (var ewa in dwa.GetEmployeeWorkArrangementAsList())
+                {
+                    string Line = "";
+                    foreach (string part in ewa)
+                    {
+                        Line += part + ", ";
+                    }
+                    AddDataToContentFile(Line);
+                }
+            }
         }
 
         private void AddDataToContentFile(string dataToAdd)
@@ -56,8 +71,14 @@ namespace Nurses_Scheduler.Classes
 
         public async Task Save()
         {
-            string raportFileName = "someFile";
-            await File.WriteAllLinesAsync(raportFileName + ".txt", FileContent);
+            string raportFileName = scheduleData.Month.ToString() + "_" +
+                                    scheduleData.Year.ToString() + "_" +
+                                    "grafik";
+
+
+            Directory.CreateDirectory("Schedules");
+
+            await File.WriteAllLinesAsync("Schedules\\" + raportFileName + ".txt", FileContent);
         }
 
 
