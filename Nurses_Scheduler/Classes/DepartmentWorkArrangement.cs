@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nurses_Scheduler.Classes.DataBaseClasses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,10 +10,12 @@ namespace Nurses_Scheduler.Classes
     public class DepartmentWorkArrangement
     {
         public List<EmployeeWorkArrangement> allEmployeeWorkArrangement;
+        public Department department;
 
-        public DepartmentWorkArrangement()
+        public DepartmentWorkArrangement(Department department)
         {
             allEmployeeWorkArrangement = new List<EmployeeWorkArrangement>();
+            this.department = department;
         }
 
         public List<List<string>> GetEmployeeWorkArrangementAsList()

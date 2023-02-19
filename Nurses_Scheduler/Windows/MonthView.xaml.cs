@@ -78,6 +78,7 @@ namespace Nurses_Scheduler.Windows
             GenerateSchedule_Button.IsEnabled = false;
             GenerateRaport_Button.IsEnabled = false;
             Department_ComboBox.IsEnabled = false;
+            SaveSchedule_Button.IsEnabled = false;
         }
 
         private void InitialiseDepartmentComboBox()
@@ -137,7 +138,7 @@ namespace Nurses_Scheduler.Windows
 
             foreach (Department department in departmentList)
             {
-                DepartmentWorkArrangement departmentWorkArrangement = new DepartmentWorkArrangement();
+                DepartmentWorkArrangement departmentWorkArrangement = new DepartmentWorkArrangement(department);
                 foreach (String occupation in App.AllowedOccupations)
                 {
                     List<Employee> employeeList = Employee.GetEmployeesFromDB(occupation, department.Id);
@@ -237,6 +238,7 @@ namespace Nurses_Scheduler.Windows
             GenerateSchedule_Button.IsEnabled = true;
             GenerateRaport_Button.IsEnabled = true;
             Department_ComboBox.IsEnabled = true;
+            SaveSchedule_Button.IsEnabled = true;
         }
 
         private void ShowDepartment_Click(object sender, RoutedEventArgs e)
@@ -371,6 +373,25 @@ namespace Nurses_Scheduler.Windows
         {
             string messageBoxText = "Tutaj zostanie wprowadzona funkcjonalność do układania grafiku.";
             string caption = "Harmonogram";
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Information;
+            MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
+        }
+
+        private async void SaveSchedule_Click(object sender, RoutedEventArgs e)
+        {
+            ScheduleData scheduleData = new ScheduleData()
+            {
+                Month = choosenMonth,
+                Year = choosenYear,
+                WorkingHours = 123.56,
+                ListOfDepartmentsWorkArrangements = departmentsWorkArrangement,
+            };
+            ScheduleFile scheduleFile = new ScheduleFile(scheduleData);
+            await scheduleFile.Save();
+
+            string messageBoxText = "Grafik został zapisany";
+            string caption = "Zapisywanie";
             MessageBoxButton button = MessageBoxButton.OK;
             MessageBoxImage icon = MessageBoxImage.Information;
             MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);

@@ -13,29 +13,44 @@ namespace Nurses_Scheduler.Classes
 {
     public struct ScheduleData
     {
-        int Month;
-        int Year;
-        double WorkingHours;
-        List<List<string>> ListOfEmployeeWorkArrangements;
+        public int Month;
+        public int Year;
+        public double WorkingHours;
+        public List<DepartmentWorkArrangement> ListOfDepartmentsWorkArrangements;
         
-        public ScheduleData(int month, int year, double workingHours, List<List<string>> listOfEmployeeWorkArrangements)
+        public ScheduleData(int month, int year, double workingHours, List<DepartmentWorkArrangement> ListOfDepartmentsWorkArrangements)
         {
             this.Month = month;
             this.Year = year;
             this.WorkingHours = workingHours;
-            this.ListOfEmployeeWorkArrangements = new List<List<string>>(listOfEmployeeWorkArrangements);
+            this.ListOfDepartmentsWorkArrangements = new List<DepartmentWorkArrangement>(ListOfDepartmentsWorkArrangements);
         }
     }
     
-    
     public class ScheduleFile
     {
-        private ScheduleData Data;
+        private ScheduleData scheduleData;
         private List<string> FileContent;
-        public ScheduleFile(int month, int year, double workingHours, List<List<string>> listOfEmployeeWorkArrangements)
+        public ScheduleFile(ScheduleData scheduleData)
         {
-            Data = new ScheduleData(month, year, workingHours, listOfEmployeeWorkArrangements); 
+            this.scheduleData = scheduleData;
+            FileContent = new List<string>();
+            WriteAllDataToContentFile();
         }
+
+        private void WriteAllDataToContentFile()
+        {
+            AddDataToContentFile(scheduleData.Month.ToString());
+            AddDataToContentFile(scheduleData.Year.ToString());
+            AddDataToContentFile(scheduleData.WorkingHours.ToString("0.00"));
+        }
+
+        private void AddDataToContentFile(string dataToAdd)
+        {
+            FileContent.Add(dataToAdd);
+        }
+
+
 
 
 
@@ -48,8 +63,8 @@ namespace Nurses_Scheduler.Classes
 
         public static ScheduleData ReadExistingSchedule()
         {
-            // todo
-            Debug.WriteLine("dupa");
+            ScheduleData test = new ScheduleData();
+            return test;
         }
     }
 }

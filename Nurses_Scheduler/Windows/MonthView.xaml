@@ -39,6 +39,8 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
@@ -56,7 +58,7 @@
         <DataGrid Grid.Column="3" 
                   Grid.ColumnSpan="4"
                   Grid.Row="1"
-                  Grid.RowSpan="10"
+                  Grid.RowSpan="12"
                   x:Name="MonthGrid_DataGrid"
                   FontSize="15"
                   MinColumnWidth="30"
@@ -120,6 +122,20 @@
                 Click="GenerateRaport_Click"
                 Grid.Column="1"
                 Grid.Row="9"
+                Margin="0 5 0 0"
+                MinHeight="35"/>
+
+        <!-- ROW 6 -->
+        <Separator Grid.Row="10"
+                   Grid.Column="1"
+                   Margin="0, 15, 0, 15"/>
+
+        <!-- ROW 8 -->
+        <Button Content="ZAPISZ GRAFIK"
+                x:Name="SaveSchedule_Button"
+                Click="SaveSchedule_Click"
+                Grid.Column="1"
+                Grid.Row="11"
                 Margin="0 5 0 0"
                 MinHeight="35"/>
 
