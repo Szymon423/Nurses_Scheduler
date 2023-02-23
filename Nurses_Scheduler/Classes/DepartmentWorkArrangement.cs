@@ -35,6 +35,20 @@ namespace Nurses_Scheduler.Classes
             return result;
         }
 
+        public List<List<string>> GetEmployeeWorkArrangementAsListWithEmployeeData()
+        {
+            List<List<string>> result = new List<List<string>>();            
+            foreach (EmployeeWorkArrangement emp in allEmployeeWorkArrangement)
+            {
+                var recievedData = emp.GetWorkArrangementAsListWithEmployeeData();
+                if (recievedData != null)
+                {
+                    result.Add(recievedData);
+                }
+            }
+            return result;
+        }
+
         public void SetNurseWorkArrangement(int nurseIndex, int dayInMonth, string value)
         {
             allEmployeeWorkArrangement[nurseIndex].SetEmployeeWorkArrangement(dayInMonth, value);

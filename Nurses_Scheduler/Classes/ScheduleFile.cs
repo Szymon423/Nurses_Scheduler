@@ -47,8 +47,9 @@ namespace Nurses_Scheduler.Classes
             foreach (DepartmentWorkArrangement dwa in scheduleData.ListOfDepartmentsWorkArrangements)
             {
                 AddDataToContentFile("");
-                AddDataToContentFile(dwa.department.ToString());
-                foreach (var ewa in dwa.GetEmployeeWorkArrangementAsList())
+                AddDataToContentFile(dwa.department.Id.ToString());
+                AddDataToContentFile("");
+                foreach (var ewa in dwa.GetEmployeeWorkArrangementAsListWithEmployeeData())
                 {
                     string Line = "";
                     foreach (string part in ewa)
