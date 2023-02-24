@@ -163,6 +163,69 @@ namespace Nurses_Scheduler.Windows
             SetPropertiesForDataGrids();
         }
 
+        private void GenerateNewMonthView(ScheduleData scheduleData)
+        {
+            departmentsWorkArrangement = new List<DepartmentWorkArrangement>();
+
+            // create datagrid headers according to days in month
+            List<string> headers = new List<string>();
+            headers.Add("Pracownik");
+            for (int i = 0; i < daysInMonth; i++)
+            {
+                headers.Add((i + 1).ToString());
+            }
+
+            // clear dataGrid before inserting new month view
+            MonthGrid_DataGrid.ItemsSource = null;
+            MonthGrid_DataGrid.Columns.Clear();
+
+            // make proper collumns basing on prevoiusly made headers list
+            for (int i = 0; i < headers.Count; i++)
+            {
+                DataGridTextColumn t1 = new DataGridTextColumn();
+                t1.Header = headers[i];
+                t1.Binding = new Binding("_" + headers[i]);
+
+                MonthGrid_DataGrid.Columns.Add(t1);
+            }
+
+            forbiddenClickRows = new List<int>();
+
+            
+            // here I need to finish translating ScheduleData into monthView
+            foreach (DepartmentWorkArrangement dwa in scheduleData.ListOfDepartmentsWorkArrangements)
+            {
+
+            }
+            
+            
+            
+            //foreach (Department department in departmentList)
+            //{
+            //    DepartmentWorkArrangement departmentWorkArrangement = new DepartmentWorkArrangement(department);
+            //    foreach (String occupation in App.AllowedOccupations)
+            //    {
+            //        List<Employee> employeeList = Employee.GetEmployeesFromDB(occupation, department.Id);
+            //        if (employeeList.Count > 0)
+            //        {
+            //            forbiddenClickRows.Add(departmentWorkArrangement.allEmployeeWorkArrangement.Count);
+            //            departmentWorkArrangement.allEmployeeWorkArrangement.Add(new EmployeeWorkArrangement(occupation));
+            //            List<EmployeeWorkArrangement> employeeWorkArrangement = new List<EmployeeWorkArrangement>();
+            //            foreach (Employee employee in employeeList)
+            //            {
+            //                departmentWorkArrangement.allEmployeeWorkArrangement.Add(new EmployeeWorkArrangement(employee));
+            //            }
+            //        }
+            //    }
+            //    departmentsWorkArrangement.Add(departmentWorkArrangement);
+            //}
+
+            MonthGrid_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
+
+            FindEventDaysInMonth(daysInMonth);
+            SetPropertiesForDataGrids();
+        }
+
         private void SetPropertiesForDataGrids()
         {
             MonthGrid_DataGrid.CanUserResizeColumns = false;
@@ -261,8 +324,7 @@ namespace Nurses_Scheduler.Windows
 
                     // part for getting data from file
                     ScheduleData data = ScheduleFile.ReadExistingSchedule("Requests\\" + fileToCompare);
-
-
+                    GenerateNewMonthView(data);
                 }
                 else
                 {
@@ -275,8 +337,6 @@ namespace Nurses_Scheduler.Windows
                 GenerateNewMonthView();
             }
 
-            
-            
             MonthChoosed_Button.IsEnabled = false;
             GenerateSchedule_Button.IsEnabled = true;
             GenerateRaport_Button.IsEnabled = true;
