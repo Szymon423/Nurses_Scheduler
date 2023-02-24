@@ -9,6 +9,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -233,7 +234,42 @@ namespace Nurses_Scheduler.Windows
         private void MonthChoosed_Click(object sender, RoutedEventArgs e)
         {
             GetNumberOfDaysInMonth();
-            GenerateNewMonthView();
+
+            string path = System.IO.Path.Combine(App.folderPath, "Requests");
+
+            var requestFiles = Directory.EnumerateFiles(path, "*.txt");
+            if (requestFiles.Any())
+            {
+                bool requestForChoosenMonthExist = false;
+                foreach (string file in requestFiles)
+                {
+                    string shortFileName = file.Replace(path + "\\", "");
+                    int year = Int32.Parse(shortFileName.Split("_")[1]);
+                    int month = Int32.Parse(shortFileName.Split("_")[0]);
+                    if (choosenMonth == month && choosenYear == year)
+                    {
+                        requestForChoosenMonthExist = true;
+                    }
+                    // Debug.WriteLine();
+                }
+                if (requestForChoosenMonthExist)
+                {
+                    string messageBoxText = "Prośby na: " + App.months[choosenMonth - 1] + " " + choosenYear.ToString() + " już istnieją \n" +
+                                            "Otworzone zostaną ostatnio wprowadzone prośby";
+                    string caption = "Harmonogram";
+                    MessageBoxButton button = MessageBoxButton.OK;
+                    MessageBoxImage icon = MessageBoxImage.Information;
+                    MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
+                }
+            }
+            else
+            {
+                Debug.WriteLine("No requests at all");
+                GenerateNewMonthView();
+            }
+
+            
+            
             MonthChoosed_Button.IsEnabled = false;
             GenerateSchedule_Button.IsEnabled = true;
             GenerateRaport_Button.IsEnabled = true;

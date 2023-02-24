@@ -38,6 +38,9 @@ namespace Nurses_Scheduler
             eventDays = new List<EventDay>();
 
             ReadDatabase();
+
+            Directory.CreateDirectory("Requests");
+            Directory.CreateDirectory("Schedules");
         }
 
         private void AddDepartmentWindow_Button(object sender, RoutedEventArgs e)

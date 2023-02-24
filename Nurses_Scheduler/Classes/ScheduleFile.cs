@@ -48,7 +48,6 @@ namespace Nurses_Scheduler.Classes
             {
                 AddDataToContentFile("");
                 AddDataToContentFile(dwa.department.Id.ToString());
-                AddDataToContentFile("");
                 foreach (var ewa in dwa.GetEmployeeWorkArrangementAsListWithEmployeeData())
                 {
                     string Line = "";
@@ -58,6 +57,7 @@ namespace Nurses_Scheduler.Classes
                     }
                     AddDataToContentFile(Line);
                 }
+                AddDataToContentFile("");
             }
         }
 
@@ -66,10 +66,6 @@ namespace Nurses_Scheduler.Classes
             FileContent.Add(dataToAdd);
         }
 
-
-
-
-
         public async Task Save()
         {
             string raportFileName = scheduleData.Month.ToString() + "_" +
@@ -77,11 +73,10 @@ namespace Nurses_Scheduler.Classes
                                     "grafik";
 
 
-            Directory.CreateDirectory("Schedules");
+            Directory.CreateDirectory("Requests");
 
-            await File.WriteAllLinesAsync("Schedules\\" + raportFileName + ".txt", FileContent);
+            await File.WriteAllLinesAsync("Requests\\" + raportFileName + ".txt", FileContent);
         }
-
 
         public static ScheduleData ReadExistingSchedule()
         {
