@@ -1,4 +1,5 @@
-﻿using Nurses_Scheduler.Classes.Raport;
+﻿using Nurses_Scheduler.Classes.DataBaseClasses;
+using Nurses_Scheduler.Classes.Raport;
 using Nurses_Scheduler.Classes.RaportClases;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Media.TextFormatting;
 
 namespace Nurses_Scheduler.Classes
 {
@@ -24,6 +26,14 @@ namespace Nurses_Scheduler.Classes
             this.Year = year;
             this.WorkingHours = workingHours;
             this.ListOfDepartmentsWorkArrangements = new List<DepartmentWorkArrangement>(ListOfDepartmentsWorkArrangements);
+        }
+
+        public ScheduleData()
+        {
+            this.Month = 0;
+            this.Year = 0;
+            this.WorkingHours = 0.0;
+            this.ListOfDepartmentsWorkArrangements = new List<DepartmentWorkArrangement>();
         }
     }
     
@@ -47,7 +57,7 @@ namespace Nurses_Scheduler.Classes
             foreach (DepartmentWorkArrangement dwa in scheduleData.ListOfDepartmentsWorkArrangements)
             {
                 AddDataToContentFile("");
-                AddDataToContentFile(dwa.department.Id.ToString());
+                AddDataToContentFile("d: " + dwa.department.Id.ToString());
                 foreach (var ewa in dwa.GetEmployeeWorkArrangementAsListWithEmployeeData())
                 {
                     string Line = "";
@@ -78,10 +88,56 @@ namespace Nurses_Scheduler.Classes
             await File.WriteAllLinesAsync("Requests\\" + raportFileName + ".txt", FileContent);
         }
 
-        public static ScheduleData ReadExistingSchedule()
+        public static ScheduleData ReadExistingSchedule(string path)
         {
-            ScheduleData test = new ScheduleData();
-            return test;
+            string[] lines = File.ReadAllLines(path);
+            ScheduleData data = new ScheduleData();
+            DepartmentWorkArrangement dwa = new DepartmentWorkArrangement(new Department());
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                Debug.WriteLine(line);
+
+                if      (i == 0) data.Month = Int32.Parse(line);
+                else if (i == 1) data.Year = Int32.Parse(line);
+                else if (i == 2) data.WorkingHours = float.Parse(line);
+                else
+                {
+                    if (line == "")
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        if (line.StartsWith("d: "))
+                        {
+                            if (i != 4)
+                            {
+                                data.ListOfDepartmentsWorkArrangements.Add(dwa);
+                            }
+                            int departmentId = int.Parse(line.Substring(3));
+                            Department department = Department.GetDepartmentById(departmentId);  
+                            dwa = new DepartmentWorkArrangement(department); 
+                        }
+                        else
+                        {
+                            string[] subLines = line.Split(",");
+                            int employeeId = Int32.Parse(subLines[0]);
+                            Employee employee = Employee.GetEmployeeById(employeeId);
+                            EmployeeWorkArrangement ewa = new EmployeeWorkArrangement(employee);
+                            for (int j = 1; j < subLines.Length; j++)
+                            {
+                                ewa.SetEmployeeWorkArrangement(j, subLines[j]);
+                            }
+                            dwa.allEmployeeWorkArrangement.Add(ewa);
+                        }
+
+                    }
+                }
+            }
+            data.ListOfDepartmentsWorkArrangements.Add(dwa);
+            return data;
         }
     }
 }

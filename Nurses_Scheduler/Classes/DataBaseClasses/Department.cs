@@ -40,5 +40,16 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
             return departments;
         }
 
+        static public Department GetDepartmentById(int Id)
+        {
+            List<Department> departments = new List<Department>();
+
+            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
+            {
+                conn.CreateTable<Employee>();
+                departments = conn.Table<Department>().ToList().Where(d => d.Id.Equals(Id)).ToList();
+            }
+            return departments[0];
+        }
     }
 }

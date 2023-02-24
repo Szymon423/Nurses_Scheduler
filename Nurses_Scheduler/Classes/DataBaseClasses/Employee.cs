@@ -59,5 +59,17 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
             }
             return employees;
         }
+
+        static public Employee GetEmployeeById(int Id)
+        {
+            List<Employee> employees = new List<Employee>();
+
+            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
+            {
+                conn.CreateTable<Employee>();
+                employees = conn.Table<Employee>().ToList().Where(c => c.Id.Equals(Id)).ToList();
+            }
+            return employees[0];
+        }
     }
 }

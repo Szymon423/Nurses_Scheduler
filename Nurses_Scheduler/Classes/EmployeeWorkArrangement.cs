@@ -122,7 +122,6 @@ namespace Nurses_Scheduler.Classes
             List<string> workArrangementAsList = new List<string>();
             if (employee == null)
             {
-                // workArrangementAsList.Add(_Pracownik);
                 return workArrangementAsList;
             }
             else

@@ -241,16 +241,14 @@ namespace Nurses_Scheduler.Windows
             if (requestFiles.Any())
             {
                 bool requestForChoosenMonthExist = false;
+                string fileToCompare = choosenMonth.ToString() + "_" + choosenYear.ToString() + "_grafik.txt";
                 foreach (string file in requestFiles)
                 {
-                    string shortFileName = file.Replace(path + "\\", "");
-                    int year = Int32.Parse(shortFileName.Split("_")[1]);
-                    int month = Int32.Parse(shortFileName.Split("_")[0]);
-                    if (choosenMonth == month && choosenYear == year)
+                    string shortFileName = file.Replace(path + "\\", "");             
+                    if (shortFileName.Equals(fileToCompare))
                     {
                         requestForChoosenMonthExist = true;
                     }
-                    // Debug.WriteLine();
                 }
                 if (requestForChoosenMonthExist)
                 {
@@ -260,6 +258,15 @@ namespace Nurses_Scheduler.Windows
                     MessageBoxButton button = MessageBoxButton.OK;
                     MessageBoxImage icon = MessageBoxImage.Information;
                     MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
+
+                    // part for getting data from file
+                    ScheduleData data = ScheduleFile.ReadExistingSchedule("Requests\\" + fileToCompare);
+
+
+                }
+                else
+                {
+                    GenerateNewMonthView();
                 }
             }
             else
@@ -416,13 +423,7 @@ namespace Nurses_Scheduler.Windows
 
         private async void SaveSchedule_Click(object sender, RoutedEventArgs e)
         {
-            ScheduleData scheduleData = new ScheduleData()
-            {
-                Month = choosenMonth,
-                Year = choosenYear,
-                WorkingHours = 123.56,
-                ListOfDepartmentsWorkArrangements = departmentsWorkArrangement,
-            };
+            ScheduleData scheduleData = new ScheduleData(choosenMonth, choosenYear, 123.56, departmentsWorkArrangement);
             ScheduleFile scheduleFile = new ScheduleFile(scheduleData);
             await scheduleFile.Save();
 
