@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 
@@ -80,12 +81,47 @@ namespace Nurses_Scheduler.Classes
         {
             string raportFileName = scheduleData.Month.ToString() + "_" +
                                     scheduleData.Year.ToString() + "_" +
-                                    "grafik";
+                                    "grafik.txt";
 
+            // need to implement whether given file allready exist, it yes, ask user if he really wants to overrwite it
 
+            string path = System.IO.Path.Combine(App.folderPath, "Requests");
+
+            var requestFiles = Directory.EnumerateFiles(path, "*.txt");
+            if (requestFiles.Any())
+            {
+                bool requestForChoosenMonthExist = false;
+                foreach (string file in requestFiles)
+                {
+                    string shortFileName = file.Replace(path + "\\", "");
+                    if (shortFileName.Equals(raportFileName))
+                    {
+                        requestForChoosenMonthExist = true;
+                    }
+                }
+                if (requestForChoosenMonthExist)
+                {
+                    string messageBoxText = "Próbujesz nadpisać istniejący zapis? \n" + 
+                                            "Stare dane zostaną utracone, czy chcesz to wykonać?";
+                    string caption = "Zapisywanie";
+                    MessageBoxButton button = MessageBoxButton.YesNo;
+                    MessageBoxImage icon = MessageBoxImage.Question;
+                    var answer = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+
+                    if (answer == MessageBoxResult.No)
+                    {
+                        return;
+                    }   
+                }  
+            }
             Directory.CreateDirectory("Requests");
+            await File.WriteAllLinesAsync("Requests\\" + raportFileName, FileContent);
 
-            await File.WriteAllLinesAsync("Requests\\" + raportFileName + ".txt", FileContent);
+            string messageBoxText1 = "Grafik został zapisany";
+            string caption1 = "Zapisywanie";
+            MessageBoxButton button1 = MessageBoxButton.OK;
+            MessageBoxImage icon1 = MessageBoxImage.Information;
+            MessageBox.Show(messageBoxText1, caption1, button1, icon1, MessageBoxResult.None);
         }
 
         public static ScheduleData ReadExistingSchedule(string path)

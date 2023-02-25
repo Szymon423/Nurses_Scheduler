@@ -496,12 +496,6 @@ namespace Nurses_Scheduler.Windows
             ScheduleData scheduleData = new ScheduleData(choosenMonth, choosenYear, 123.56, departmentsWorkArrangement);
             ScheduleFile scheduleFile = new ScheduleFile(scheduleData);
             await scheduleFile.Save();
-
-            string messageBoxText = "Grafik został zapisany";
-            string caption = "Zapisywanie";
-            MessageBoxButton button = MessageBoxButton.OK;
-            MessageBoxImage icon = MessageBoxImage.Information;
-            MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
         }
     }
 }
