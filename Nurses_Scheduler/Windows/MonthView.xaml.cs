@@ -224,14 +224,8 @@ namespace Nurses_Scheduler.Windows
                 }
             }
             departmentsWorkArrangement = scheduleData.ListOfDepartmentsWorkArrangements;
-
-
-
             InitialiseDepartmentComboBox(departmentList);
-
             MonthGrid_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
-            // MonthGrid_DataGrid.ItemsSource = scheduleData.ListOfDepartmentsWorkArrangements[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
-
             FindEventDaysInMonth(daysInMonth);
             SetPropertiesForDataGrids();
         }
