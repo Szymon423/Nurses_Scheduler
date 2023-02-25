@@ -88,6 +88,11 @@ namespace Nurses_Scheduler.Windows
             Department_ComboBox.ItemsSource = departmentToChoose;
             Department_ComboBox.SelectedIndex = 0;
         }
+        private void InitialiseDepartmentComboBox(List<Department> departments)
+        {
+            Department_ComboBox.ItemsSource = departments;
+            Department_ComboBox.SelectedIndex = 0;
+        }
 
         private void InitialiseMonthComboBox()
         {
@@ -191,36 +196,41 @@ namespace Nurses_Scheduler.Windows
 
             forbiddenClickRows = new List<int>();
 
-            
-            // here I need to finish translating ScheduleData into monthView
-            foreach (DepartmentWorkArrangement dwa in scheduleData.ListOfDepartmentsWorkArrangements)
-            {
+            List<Department> departmentList = new List<Department>();
+            DepartmentToIndex.Clear();
 
+
+            // here I need to finish translating ScheduleData into monthView
+            for (int j = 0; j < scheduleData.ListOfDepartmentsWorkArrangements.Count; j++)
+            {
+                DepartmentToIndex.Add(scheduleData.ListOfDepartmentsWorkArrangements[j].department.ToString(), j);
+                departmentList.Add(scheduleData.ListOfDepartmentsWorkArrangements[j].department);
+
+                List<EmployeeWorkArrangement> AllEmployeeWorkArrangement = scheduleData.ListOfDepartmentsWorkArrangements[j].allEmployeeWorkArrangement;
+                string previousOccupation = AllEmployeeWorkArrangement[0].employee.Occupation;
+
+                scheduleData.ListOfDepartmentsWorkArrangements[j].allEmployeeWorkArrangement.Insert(0, new EmployeeWorkArrangement(previousOccupation));
+                forbiddenClickRows.Add(0);
+
+                for (int i = 1; i < scheduleData.ListOfDepartmentsWorkArrangements[j].allEmployeeWorkArrangement.Count; i++)
+                {
+                    EmployeeWorkArrangement ewa = scheduleData.ListOfDepartmentsWorkArrangements[j].allEmployeeWorkArrangement[i];
+                    if (ewa.employee.Occupation != previousOccupation)
+                    {
+                        scheduleData.ListOfDepartmentsWorkArrangements[j].allEmployeeWorkArrangement.Insert(i, new EmployeeWorkArrangement(previousOccupation));
+                        forbiddenClickRows.Add(i);
+                    }
+                    previousOccupation = ewa.employee.Occupation;
+                }
             }
-            
-            
-            
-            //foreach (Department department in departmentList)
-            //{
-            //    DepartmentWorkArrangement departmentWorkArrangement = new DepartmentWorkArrangement(department);
-            //    foreach (String occupation in App.AllowedOccupations)
-            //    {
-            //        List<Employee> employeeList = Employee.GetEmployeesFromDB(occupation, department.Id);
-            //        if (employeeList.Count > 0)
-            //        {
-            //            forbiddenClickRows.Add(departmentWorkArrangement.allEmployeeWorkArrangement.Count);
-            //            departmentWorkArrangement.allEmployeeWorkArrangement.Add(new EmployeeWorkArrangement(occupation));
-            //            List<EmployeeWorkArrangement> employeeWorkArrangement = new List<EmployeeWorkArrangement>();
-            //            foreach (Employee employee in employeeList)
-            //            {
-            //                departmentWorkArrangement.allEmployeeWorkArrangement.Add(new EmployeeWorkArrangement(employee));
-            //            }
-            //        }
-            //    }
-            //    departmentsWorkArrangement.Add(departmentWorkArrangement);
-            //}
+            departmentsWorkArrangement = scheduleData.ListOfDepartmentsWorkArrangements;
+
+
+
+            InitialiseDepartmentComboBox(departmentList);
 
             MonthGrid_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
+            // MonthGrid_DataGrid.ItemsSource = scheduleData.ListOfDepartmentsWorkArrangements[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
 
             FindEventDaysInMonth(daysInMonth);
             SetPropertiesForDataGrids();

@@ -126,7 +126,7 @@ namespace Nurses_Scheduler.Classes
                             int employeeId = Int32.Parse(subLines[0]);
                             Employee employee = Employee.GetEmployeeById(employeeId);
                             EmployeeWorkArrangement ewa = new EmployeeWorkArrangement(employee);
-                            for (int j = 1; j < subLines.Length; j++)
+                            for (int j = 1; j < subLines.Length - 1; j++)
                             {
                                 ewa.SetEmployeeWorkArrangement(j, subLines[j]);
                             }
