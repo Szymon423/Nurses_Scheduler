@@ -126,10 +126,6 @@ namespace Nurses_Scheduler
             {
                 AddDepartmentWithConfigWindow addDepartmentWithConfigWindow = new AddDepartmentWithConfigWindow(selectedDepartment);
                 addDepartmentWithConfigWindow.ShowDialog();
-
-
-                //ModifyDepartmentWindow modifyDepartmentWindow = new ModifyDepartmentWindow(selectedDepartment);
-                //modifyDepartmentWindow.ShowDialog();
             }
             ReadDatabase();
         }
@@ -159,7 +155,8 @@ namespace Nurses_Scheduler
 
         private void GenerateSchedule_Button(object sender, RoutedEventArgs e)
         {
-
+            AddVacationWindow avw = new AddVacationWindow(new Employee());
+            avw.ShowDialog();
         }
 
         private void EventDays_Button(object sender, RoutedEventArgs e)
