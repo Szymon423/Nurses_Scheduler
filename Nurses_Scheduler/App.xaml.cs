@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -23,5 +24,6 @@ namespace Nurses_Scheduler
                                           "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień" };
         public static string[] shiftTypes = { "D", "N", "/", "r", "p", "U", "Um", "Us", "Uo", "Uż", "C", "Op" };
         public static IDictionary<int, string> DepartmentIdToName = new Dictionary<int, string>();
+        public static string[] vacationTypes = { "Urlop", "Urlop macierzyński", "Urlop szkoleniowy", "Opieka nad dzieckiem", "Chrobowe" };
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nurses_Scheduler.Classes.DataBaseClasses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,14 +20,15 @@ namespace Nurses_Scheduler.Windows
     /// </summary>
     public partial class AddVacationWindow : Window
     {
-        public AddVacationWindow()
+        private Employee employee;
+        
+        public AddVacationWindow(Employee _employee)
         {
+            employee = _employee;
             InitializeComponent();
-        }
-
-        private void finishCallendar_SelectedDatesChanges(object sender, SelectionChangedEventArgs e)
-        {
-
+            VacationType_ComboBox.ItemsSource = App.vacationTypes.ToList();
+            Employee_Label.Content = employee.FullName;
+            Vacations_ListView.ItemsSource = Vacation.GetVacationsFromDB(employee.Id);
         }
 
         private void EventDays_ListView_DoubleClicked(object sender, MouseButtonEventArgs e)

@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nurses_Scheduler.Windows"
         mc:Ignorable="d"
-        Title="AddVacationWindow" Height="450" Width="600">
+        Title="AddVacationWindow" Height="400" Width="600"
+        WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"/>
@@ -30,6 +31,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
 
@@ -81,7 +83,7 @@
         
 
         <!--Zatwierdzanie-->
-        <Button Grid.Row="11"
+        <Button Grid.Row="15"
                 Grid.Column="1"
                 Content="Zatwierdź"/>
         
@@ -93,17 +95,20 @@
 
         <ListView Grid.Column="3"
                   Grid.Row="2"
-                  Grid.RowSpan="12"
+                  Grid.RowSpan="14"
                   x:Name="Vacations_ListView"
                   MouseDoubleClick="EventDays_ListView_DoubleClicked">
 
             <ListView.ItemTemplate >
                 <DataTemplate>
                     <StackPanel>
-                        <TextBlock Text="{Binding DayInfo}"
+                        <TextBlock Text="{Binding vacationType}"
                                    FontSize="20"
                                    FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Description}"
+                        <TextBlock Text="{Binding startDateTime}"
+                                   FontSize="15"
+                                   FontStyle="Italic"/>
+                        <TextBlock Text="{Binding finishDateTime}"
                                    FontSize="15"
                                    FontStyle="Italic"/>
                     </StackPanel>

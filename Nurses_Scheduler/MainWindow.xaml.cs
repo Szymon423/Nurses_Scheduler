@@ -136,8 +136,8 @@ namespace Nurses_Scheduler
 
             if (selectedEmployee != null)
             {
-                ModifyEmployeeWindow modifyDepartmentWindow = new ModifyEmployeeWindow(selectedEmployee);
-                modifyDepartmentWindow.ShowDialog();
+                EditEmployeeDataOrVacationsWindow test = new EditEmployeeDataOrVacationsWindow(selectedEmployee);
+                test.ShowDialog();  
             }
             ReadDatabase();
         }
@@ -155,8 +155,7 @@ namespace Nurses_Scheduler
 
         private void GenerateSchedule_Button(object sender, RoutedEventArgs e)
         {
-            AddVacationWindow avw = new AddVacationWindow(new Employee());
-            avw.ShowDialog();
+            
         }
 
         private void EventDays_Button(object sender, RoutedEventArgs e)
