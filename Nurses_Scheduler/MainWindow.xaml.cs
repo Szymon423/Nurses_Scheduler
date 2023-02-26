@@ -47,9 +47,6 @@ namespace Nurses_Scheduler
         {
             AddDepartmentWithConfigWindow addDepartmentWithConfigWindow = new AddDepartmentWithConfigWindow();
             addDepartmentWithConfigWindow.ShowDialog();
-
-            //AddDepartmentWindow addDepartmentWindow = new AddDepartmentWindow();
-            //addDepartmentWindow.ShowDialog();
             ReadDatabase();
         }
 

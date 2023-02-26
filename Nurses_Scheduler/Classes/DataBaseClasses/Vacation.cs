@@ -30,20 +30,20 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
         public string vacationType { get; set; }
 
         [Ignore]
-        public DateTime startDateTime
+        public string startDateTime
         {
             get
             {
-                return new DateTime(startYear, startMonth, startDay);
+                return startDay.ToString() + "." + startMonth.ToString() + "." + startYear.ToString();
             }
         }
 
         [Ignore]
-        public DateTime finishDateTime
+        public string finishDateTime
         {
             get
             {
-                return new DateTime(finishYear, finishMonth, finishDay);
+                return finishDay.ToString() + "." + finishMonth.ToString() + "." + finishYear.ToString();
             }
         }
 

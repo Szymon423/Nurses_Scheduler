@@ -48,7 +48,8 @@
                Content="Dzień rozpoczęcia:"/>
         
         <DatePicker Grid.Row="3"
-                    Grid.Column="1"/>
+                    Grid.Column="1"
+                    x:Name="startDay_DatePicker"/>
 
         <Separator Grid.Column="1"
                    Grid.Row="4"
@@ -61,7 +62,8 @@
                Content="Dzień zakończenia:"/>
 
         <DatePicker Grid.Row="6"
-                    Grid.Column="1"/>
+                    Grid.Column="1"
+                    x:Name="finishDay_DatePicker"/>
 
         <Separator Grid.Column="1"
                    Grid.Row="7"
@@ -85,7 +87,8 @@
         <!--Zatwierdzanie-->
         <Button Grid.Row="15"
                 Grid.Column="1"
-                Content="Zatwierdź"/>
+                Content="Zatwierdź"
+                Click="Confirm_Button_Click"/>
         
         
         <!--Lista istniejących urlopów-->
@@ -97,7 +100,7 @@
                   Grid.Row="2"
                   Grid.RowSpan="14"
                   x:Name="Vacations_ListView"
-                  MouseDoubleClick="EventDays_ListView_DoubleClicked">
+                  MouseDoubleClick="Vacation_ListView_DoubleClicked">
 
             <ListView.ItemTemplate >
                 <DataTemplate>
