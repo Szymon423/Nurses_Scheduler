@@ -53,8 +53,6 @@
                   MinHeight="35"
                   FontSize="18"/>
 
-
-
         <DataGrid Grid.Column="3" 
                   Grid.ColumnSpan="4"
                   Grid.Row="1"
@@ -63,8 +61,6 @@
                   FontSize="15"
                   MinColumnWidth="30"
                   SelectionChanged="MonthGrid_DataGrid_SelectionChanged"/>
-          
-            
 
         <!-- ROW 2 -->
         <Button Content="WYBIERZ MIESIĄC"
@@ -78,7 +74,8 @@
         <!-- ROW 3 -->
         <Separator Grid.Row="3"
                    Grid.Column="1"
-                   Margin="0, 15, 0, 15"/>
+                   Margin="0, 15, 0, 15"
+                   x:Name="separator_1"/>
         
         <!-- ROW 4 -->
         <ComboBox Grid.Row="4"
@@ -100,44 +97,47 @@
         <!-- ROW 6 -->
         <Separator Grid.Row="6"
                    Grid.Column="1"
-                   Margin="0, 15, 0, 15"/>
+                   Margin="0, 15, 0, 15"
+                   x:Name="separator_2"/>
 
         <!-- ROW 7 -->
-        <Button Content="GENERUJ HARMONOGRAM"
-                x:Name="GenerateSchedule_Button"
-                Click="GenerateSchedule_Click"
+        <Button Content="ZAPISZ GRAFIK"
+                x:Name="SaveSchedule_Button"
+                Click="SaveSchedule_Click"
                 Grid.Column="1"
                 Grid.Row="7"
                 Margin="0 5 0 0"
                 MinHeight="35"/>
 
-        <!-- ROW 6 -->
+        <!-- ROW 8 -->
         <Separator Grid.Row="8"
                    Grid.Column="1"
-                   Margin="0, 15, 0, 15"/>
+                   Margin="0, 15, 0, 15"
+                   x:Name="separator_3"/>
 
-        <!-- ROW 8 -->
-        <Button Content="GENERUJ RAPORT"
-                x:Name="GenerateRaport_Button"
-                Click="GenerateRaport_Click"
+        <!-- ROW 9 -->
+        <Button Content="GENERUJ HARMONOGRAM"
+                x:Name="GenerateSchedule_Button"
+                Click="GenerateSchedule_Click"
                 Grid.Column="1"
                 Grid.Row="9"
                 Margin="0 5 0 0"
                 MinHeight="35"/>
 
-        <!-- ROW 6 -->
+        <!-- ROW 10 -->
         <Separator Grid.Row="10"
                    Grid.Column="1"
-                   Margin="0, 15, 0, 15"/>
+                   Margin="0, 15, 0, 15"
+                   x:Name="separator_4"/>
 
-        <!-- ROW 8 -->
-        <Button Content="ZAPISZ GRAFIK"
-                x:Name="SaveSchedule_Button"
-                Click="SaveSchedule_Click"
+        <!-- ROW 11 -->
+        <Button Content="GENERUJ RAPORT"
+                x:Name="GenerateRaport_Button"
+                Click="GenerateRaport_Click"
                 Grid.Column="1"
                 Grid.Row="11"
                 Margin="0 5 0 0"
                 MinHeight="35"/>
-
+        
     </Grid>
 </Window>

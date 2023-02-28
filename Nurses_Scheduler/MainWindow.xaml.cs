@@ -141,7 +141,7 @@ namespace Nurses_Scheduler
 
         private void EnterRequests_Button(object sender, RoutedEventArgs e)
         {
-            MonthView monthView = new MonthView();
+            MonthView monthView = new MonthView(true);
             monthView.ShowDialog();
         }
 

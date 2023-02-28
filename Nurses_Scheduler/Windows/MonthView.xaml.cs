@@ -32,6 +32,8 @@ namespace Nurses_Scheduler.Windows
     /// </summary>
     public partial class MonthView : Window
     {
+        private bool isUserEnteringRequests;
+        
         private int currentMonth;
         private int currentYear;
         private int howManyMonthToShow;
@@ -48,9 +50,32 @@ namespace Nurses_Scheduler.Windows
         private List<Department> departmentList;
         private List<DepartmentWorkArrangement> departmentsWorkArrangement;
 
-        public MonthView()
+        public MonthView(bool isUserEnteringRequests)
         {
+            this.isUserEnteringRequests = isUserEnteringRequests;
             InitializeComponent();
+
+            if (isUserEnteringRequests)
+            {
+                SaveSchedule_Button.Content = "ZAPISZ PROŚBY";
+                GenerateSchedule_Button.IsEnabled = false;
+                GenerateSchedule_Button.Visibility = Visibility.Hidden;
+                GenerateRaport_Button.IsEnabled = false;
+                GenerateRaport_Button.Visibility = Visibility.Hidden;
+                separator_3.Visibility = Visibility.Hidden;
+                separator_4.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                SaveSchedule_Button.Content = "ZAPISZ GRAFIK";
+                GenerateSchedule_Button.IsEnabled = true;
+                GenerateSchedule_Button.Visibility = Visibility.Visible;
+                GenerateRaport_Button.IsEnabled = true;
+                GenerateRaport_Button.Visibility = Visibility.Visible;
+                separator_3.Visibility = Visibility.Visible;
+                separator_4.Visibility = Visibility.Visible;
+            }
+
             currentMonth = DateTime.Now.Month;
             currentYear = DateTime.Now.Year;
             choosenMonth = currentMonth;
