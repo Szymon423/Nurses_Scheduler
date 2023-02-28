@@ -31,15 +31,15 @@ namespace Nurses_Scheduler.Windows
         private void ModifyEmployeeData_Button_Click(object sender, RoutedEventArgs e)
         {
             ModifyEmployeeWindow modifyDepartmentWindow = new ModifyEmployeeWindow(employee);
-            modifyDepartmentWindow.ShowDialog();
             Close();
+            modifyDepartmentWindow.ShowDialog();
         }
 
         private void EmployeeVacation_Button_Click(object sender, RoutedEventArgs e)
         {
             AddVacationWindow avw = new AddVacationWindow(employee);
+            Close(); 
             avw.ShowDialog();
-            Close();
         }
     }
 }

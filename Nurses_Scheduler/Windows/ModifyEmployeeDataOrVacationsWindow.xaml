@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nurses_Scheduler.Windows"
         mc:Ignorable="d"
-        Title="EditEmployeeDataOrVacationsWindow" Height="120" Width="400"
+        Title="Wybierz działanie" Height="110" Width="400"
         WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -16,24 +16,24 @@
             <ColumnDefinition Width="15"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="15"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
 
         <Label Grid.Column="1"
-               Grid.Row="1"
+               Grid.Row="0"
                Grid.ColumnSpan="3"
-               Content="Co chcesz zrobić?"/>
+               Content="Co chcesz zrobić?"
+               FontSize="15"/>
 
         <Button Grid.Column="1"
-                Grid.Row="2"
+                Grid.Row="1"
                 Content="Edytuj dane pracownika"
                 Click="ModifyEmployeeData_Button_Click"/>
 
         <Button Grid.Column="3"
-                Grid.Row="2"
+                Grid.Row="1"
                 Content="Urlopy pracownika"
                 Click="EmployeeVacation_Button_Click"/>
 
