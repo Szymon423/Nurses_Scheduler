@@ -152,7 +152,8 @@ namespace Nurses_Scheduler
 
         private void GenerateSchedule_Button(object sender, RoutedEventArgs e)
         {
-            
+            MonthView monthView = new MonthView(false);
+            monthView.ShowDialog();
         }
 
         private void EventDays_Button(object sender, RoutedEventArgs e)

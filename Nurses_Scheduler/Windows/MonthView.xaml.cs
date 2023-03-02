@@ -326,8 +326,8 @@ namespace Nurses_Scheduler.Windows
         private void MonthChoosed_Click(object sender, RoutedEventArgs e)
         {
             GetNumberOfDaysInMonth();
-
             string path = System.IO.Path.Combine(App.folderPath, "Requests");
+
 
             var requestFiles = Directory.EnumerateFiles(path, "*.txt");
             if (requestFiles.Any())
@@ -352,7 +352,7 @@ namespace Nurses_Scheduler.Windows
                     MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
 
                     // part for getting data from file
-                    ScheduleData data = ScheduleFile.ReadExistingSchedule("Requests\\" + fileToCompare);
+                    ScheduleData data = ScheduleFile.ReadExistingSchedule("Requests\\" + fileToCompare);                    
                     GenerateNewMonthView(data);
                 }
                 else
