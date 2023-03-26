@@ -33,7 +33,6 @@ namespace Nurses_Scheduler.Windows
     public partial class MonthView : Window
     {
         private bool isUserEnteringRequests;
-        
         private int currentMonth;
         private int currentYear;
         private int howManyMonthToShow;
@@ -162,8 +161,17 @@ namespace Nurses_Scheduler.Windows
                 t1.Binding = new Binding("_" + headers[i]);
 
                 MonthGrid_DataGrid.Columns.Add(t1);
-            }
 
+                if (i == 0)
+                {
+                    MonthGrid_DataGrid.Columns[i].Width = new DataGridLength(20, DataGridLengthUnitType.Star);
+                }
+                else
+                {
+                    MonthGrid_DataGrid.Columns[i].Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+                }
+            }
+            
             forbiddenClickRows = new List<int>();
 
 
@@ -217,8 +225,17 @@ namespace Nurses_Scheduler.Windows
                 t1.Binding = new Binding("_" + headers[i]);
 
                 MonthGrid_DataGrid.Columns.Add(t1);
+                
+                if (i == 0)
+                {
+                    MonthGrid_DataGrid.Columns[i].Width = new DataGridLength(20, DataGridLengthUnitType.Star);
+                }
+                else
+                {
+                    MonthGrid_DataGrid.Columns[i].Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+                }
             }
-
+            
             forbiddenClickRows = new List<int>();
 
             List<Department> departmentList = new List<Department>();
@@ -266,7 +283,7 @@ namespace Nurses_Scheduler.Windows
             MonthGrid_DataGrid.MinColumnWidth = 30;
             MonthGrid_DataGrid.MinRowHeight = 30;
             MonthGrid_DataGrid.AutoGenerateColumns = false;
-            MonthGrid_DataGrid.AlternatingRowBackground = new SolidColorBrush(Colors.AliceBlue);
+            MonthGrid_DataGrid.AlternatingRowBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ffffff"));
             MonthGrid_DataGrid.Columns[0].CellStyle = MonthGrid_DataGrid.TryFindResource("BoldNameStyle") as Style;
             MonthGrid_DataGrid.Columns[0].IsReadOnly = true;
             MonthGrid_DataGrid.Columns[0].Width = 250;

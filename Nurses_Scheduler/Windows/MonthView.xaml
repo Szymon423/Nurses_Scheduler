@@ -15,6 +15,7 @@
         <Style x:Key="BoldNameStyle" TargetType="DataGridCell">
             <Setter Property="TextBlock.FontWeight" Value="Bold"/>
         </Style>
+        
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -60,7 +61,46 @@
                   x:Name="MonthGrid_DataGrid"
                   FontSize="15"
                   MinColumnWidth="30"
-                  SelectionChanged="MonthGrid_DataGrid_SelectionChanged"/>
+                  SelectionChanged="MonthGrid_DataGrid_SelectionChanged">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="#d6eaff"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding _Pracownik}" Value="Pielęgniarka">
+                            <Setter Property="Background" Value="#007afc"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding _Pracownik}" Value="Opiekun Medyczny">
+                            <Setter Property="Background" Value="#007afc"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding _Pracownik}" Value="Salowa">
+                            <Setter Property="Background" Value="#007afc"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding _Pracownik}" Value="Sanitariuszka">
+                            <Setter Property="Background" Value="#007afc"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding _Pracownik}" Value="Asystentka Pielęgniarki">
+                            <Setter Property="Background" Value="#007afc"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding _Pracownik}" Value="Sekretarka">
+                            <Setter Property="Background" Value="#007afc"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding _Pracownik}" Value="Terapeuta zajęciowy">
+                            <Setter Property="Background" Value="#007afc"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding _Pracownik}" Value="Oddziałowa">
+                            <Setter Property="Background" Value="#007afc"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
+        </DataGrid>
 
         <!-- ROW 2 -->
         <Button Content="WYBIERZ MIESIĄC"

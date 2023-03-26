@@ -227,23 +227,39 @@ namespace Nurses_Scheduler.Windows
 
         private void Delete_Button_Click(object sender, RoutedEventArgs e)
         {
-            using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
+            List<Employee> deletedDepartemntEmployees = Employee.GetEmployeeByDepartment(department);
+
+            if (deletedDepartemntEmployees.Count == 0)
             {
-                connection.CreateTable<Department>();
-                connection.Delete(department);
-
-                connection.CreateTable<FundamentalEmployee>();
-                foreach (FundamentalEmployee fundamentalEmployee in fundamentalEmployees)
+                using (SQLiteConnection connection = new SQLiteConnection(App.databasePath))
                 {
-                    connection.Delete(fundamentalEmployee);
-                }
+                    connection.CreateTable<Department>();
+                    connection.Delete(department);
 
-                connection.CreateTable<ComplementaryEmployee>();
-                foreach (ComplementaryEmployee complementaryEmployee in complementaryEmployees)
-                {
-                    connection.Delete(complementaryEmployee);
+                    connection.CreateTable<FundamentalEmployee>();
+                    foreach (FundamentalEmployee fundamentalEmployee in fundamentalEmployees)
+                    {
+                        connection.Delete(fundamentalEmployee);
+                    }
+
+                    connection.CreateTable<ComplementaryEmployee>();
+                    foreach (ComplementaryEmployee complementaryEmployee in complementaryEmployees)
+                    {
+                        connection.Delete(complementaryEmployee);
+                    }
                 }
             }
+            else
+            {
+                string messageBoxText = "Nie można usunąć oddziału:\n" +
+                                        department.DepartmentName + "\n" +
+                                        "ponieważ istnieją pracowicy przypisani do tego oddziału.";
+                string caption = "Nie można usunąć oddziału";
+                MessageBoxButton button = MessageBoxButton.OK;
+                MessageBoxImage icon = MessageBoxImage.Warning;
+                MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
+            }
+
            Close();
         }
 

@@ -60,7 +60,7 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
             return employees;
         }
 
-        static public Employee GetEmployeeById(int Id)
+        public static Employee GetEmployeeById(int Id)
         {
             List<Employee> employees = new List<Employee>();
 
@@ -70,6 +70,18 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
                 employees = conn.Table<Employee>().ToList().Where(c => c.Id.Equals(Id)).ToList();
             }
             return employees[0];
+        }
+
+        public static List<Employee> GetEmployeeByDepartment(Department dep)
+        {
+            List<Employee> employees = new List<Employee>();
+
+            using (SQLiteConnection conn = new SQLiteConnection(App.databasePath))
+            {
+                conn.CreateTable<Employee>();
+                employees = conn.Table<Employee>().ToList().Where(c => c.DepartmentId.Equals(dep.Id)).ToList();
+            }
+            return employees;
         }
     }
 }
