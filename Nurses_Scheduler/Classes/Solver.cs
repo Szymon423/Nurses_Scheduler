@@ -12,48 +12,36 @@ namespace Nurses_Scheduler.Classes
     public struct shiftData
     {
 
-        //       "Pielęgniarka", "Opiekun Medyczny", "Salowa", "Sanitariuszka", "Asystentka Pielęgniarki"
-        //       "Sekretarka", "Terapeuta zajęciowy", "Oddziałowa", 
+        // "Pielęgniarka", "Opiekun Medyczny", "Salowa", "Sanitariuszka", "Asystentka Pielęgniarki"
+        // "Sekretarka", "Terapeuta zajęciowy", "Oddziałowa", 
 
-        //        |--> first byte:
-        //        |     |--> bit 0 is employy working on day shift
-        //        |     |--> bit 1 is employy working on night shift
-        //        |     |--> bit 2 is this a short shift
-        //        |     |--> bit 3 is this some king of vacation - non working shitf
-        //        |     |--> bit 4
-        //        |     |--> bit 5
-        //        |     |--> bit 6
-        //        |     |--> bit 7 Error
-        //        |--> second byte - error code
+        //  |--> first byte:
+        //  |     |--> bit 0 is employy working on day shift
+        //  |     |--> bit 1 is employy working on night shift
+        //  |     |--> bit 2 is this a short shift
+        //  |     |--> bit 3 is this some king of vacation - non working shitf
+        //  |     |--> bit 4
+        //  |     |--> bit 5
+        //  |     |--> bit 6
+        //  |     |--> bit 7 Error
+        //  |--> second byte - error code
 
         public BitArray Data;
         public byte Error;
-        private int employeeId;
-        private int occupation;
-        // orrder as shown in App.AllowedOcupattions
-        //  0 - Pielęgniarka
-        //  1 - Opiekun Medyczny
-        //  2 - Salowa
-        //  3 - Sanitariuszka
-        //  4 - Asystentka Pielęgniarki
 
 
-
-        public shiftData(Employee employee)
+        public shiftData(bool dayShift = false, bool nightShift = false, bool shortShift = false, bool vacationDay = false)
         {
             Data = new BitArray(8, false);
+            Data[0] = dayShift;
+            Data[1] = nightShift;
+            Data[2] = shortShift;
+            Data[3] = vacationDay;
+            // Data[4] = ...;
+            // Data[5] = ...;
+            // Data[6] = ...;
             Data[7] = true; // starting with error corresponging to wrong occupation
             Error = 0x01; 
-            employeeId = employee.Id;
-            occupation = int.MaxValue; // max value meaning not found
-            for (int i = 0; i < App.AllowedOccupations.Length; i++)
-            {
-                if (employee.Occupation == App.AllowedOccupations[i])
-                {
-                    occupation = i;
-                    break;
-                }
-            } 
         }
 
 
@@ -61,23 +49,45 @@ namespace Nurses_Scheduler.Classes
 
     public class Solver
     {
-        private List<Employee> employeeList;
+        private List<EmployeeWorkArrangement> ewa;
         private List<int> eventDays;
         private int daysInMonth;
-        private shiftData[/* All_workers */, /* days_in_month */] monthSchedule;
+        private int employeeCount;
+        private shiftData[/* employeeCount */, /* daysInMonth */] monthSchedule;
+        private List<Employee> employeeList;
 
 
-
-
-
-
-
-        public Solver (List<Employee> _employeeList, List<int> _eventDays, int _daysInMonth) 
-        {       
-            employeeList = _employeeList;
+        public Solver (List<EmployeeWorkArrangement> _ewa, List<int> _eventDays, int _daysInMonth) 
+        {
+            ewa = _ewa;
             eventDays = _eventDays;
             daysInMonth = _daysInMonth;
-            monthSchedule = new shiftData[employeeList.Count, daysInMonth];
+            employeeCount = ewa.Count;
+            monthSchedule = new shiftData[employeeCount, daysInMonth];
+            employeeList = new List<Employee>();
+
+            // assing proper shift data for all employees
+            for (int employeeNumber = 0; employeeNumber < employeeCount; employeeNumber++)
+            {
+                employeeList.Add(ewa[employeeNumber].employee);
+                List<string> temporaryEmployeeScheduleData = new List<string>(ewa[employeeNumber].GetWorkArrangementAsList());
+                for (int day = 0; day < daysInMonth; day++)
+                {                   
+                    bool dayShift = temporaryEmployeeScheduleData[day].Equals("D");
+                    bool nightShift = temporaryEmployeeScheduleData[day].Equals("N");
+                    bool shortShift = temporaryEmployeeScheduleData[day].Equals("d");
+                    bool vacationDay = temporaryEmployeeScheduleData[day].Equals("U")  |
+                                        temporaryEmployeeScheduleData[day].Equals("Um") |
+                                        temporaryEmployeeScheduleData[day].Equals("Us") |
+                                        temporaryEmployeeScheduleData[day].Equals("Uo") |
+                                        temporaryEmployeeScheduleData[day].Equals("Uż") |
+                                        temporaryEmployeeScheduleData[day].Equals("C")  |
+                                        temporaryEmployeeScheduleData[day].Equals("Op");
+
+                    monthSchedule[employeeNumber, day] = new shiftData(dayShift, nightShift, shortShift, vacationDay);
+                    
+                }
+            }
 
         }
 
