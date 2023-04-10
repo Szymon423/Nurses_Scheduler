@@ -73,19 +73,22 @@ namespace Nurses_Scheduler.Classes
                 List<string> temporaryEmployeeScheduleData = new List<string>(ewa[employeeNumber].GetWorkArrangementAsList());
                 for (int day = 0; day < daysInMonth; day++)
                 {                   
-                    bool dayShift = temporaryEmployeeScheduleData[day].Equals("D");
+                    bool dayShift = temporaryEmployeeScheduleData[day].Equals("D") | temporaryEmployeeScheduleData[day].Equals("d");
                     bool nightShift = temporaryEmployeeScheduleData[day].Equals("N");
                     bool shortShift = temporaryEmployeeScheduleData[day].Equals("d");
-                    bool vacationDay = temporaryEmployeeScheduleData[day].Equals("U")  |
-                                        temporaryEmployeeScheduleData[day].Equals("Um") |
-                                        temporaryEmployeeScheduleData[day].Equals("Us") |
-                                        temporaryEmployeeScheduleData[day].Equals("Uo") |
-                                        temporaryEmployeeScheduleData[day].Equals("Uż") |
-                                        temporaryEmployeeScheduleData[day].Equals("C")  |
-                                        temporaryEmployeeScheduleData[day].Equals("Op");
+                    bool vacationDay = false;
+                    if (!(dayShift || nightShift || shortShift))
+                    {
+                        vacationDay = temporaryEmployeeScheduleData[day].Equals("U")  |
+                                      temporaryEmployeeScheduleData[day].Equals("Um") |
+                                      temporaryEmployeeScheduleData[day].Equals("Us") |
+                                      temporaryEmployeeScheduleData[day].Equals("Uo") |
+                                      temporaryEmployeeScheduleData[day].Equals("Uż") |
+                                      temporaryEmployeeScheduleData[day].Equals("C")  |
+                                      temporaryEmployeeScheduleData[day].Equals("Op");
+                    }
 
                     monthSchedule[employeeNumber, day] = new shiftData(dayShift, nightShift, shortShift, vacationDay);
-                    
                 }
             }
 
