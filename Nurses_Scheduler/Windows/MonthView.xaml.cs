@@ -226,6 +226,7 @@ namespace Nurses_Scheduler.Windows
 
                 MonthGrid_DataGrid.Columns.Add(t1);
                 
+                // to make it look okay on different screen sizes
                 if (i == 0)
                 {
                     MonthGrid_DataGrid.Columns[i].Width = new DataGridLength(20, DataGridLengthUnitType.Star);
@@ -242,7 +243,7 @@ namespace Nurses_Scheduler.Windows
             DepartmentToIndex.Clear();
 
 
-            // here I need to finish translating ScheduleData into monthView
+            // here I need to finish translating ScheduleData into monthView - propably done - check it
             for (int j = 0; j < scheduleData.ListOfDepartmentsWorkArrangements.Count; j++)
             {
                 DepartmentToIndex.Add(scheduleData.ListOfDepartmentsWorkArrangements[j].department.ToString(), j);
