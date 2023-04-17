@@ -66,7 +66,7 @@ namespace Nurses_Scheduler.Classes
             monthSchedule = new shiftData[employeeCount, daysInMonth];
             employeeList = new List<Employee>();
 
-            // assing proper shift data for all employees
+            // asigninging proper shift data for all employees
             for (int employeeNumber = 0; employeeNumber < employeeCount; employeeNumber++)
             {
                 employeeList.Add(ewa[employeeNumber].employee);
@@ -91,6 +91,25 @@ namespace Nurses_Scheduler.Classes
                     monthSchedule[employeeNumber, day] = new shiftData(dayShift, nightShift, shortShift, vacationDay);
                 }
             }
+
+        }
+
+
+        /// <summary>
+        /// Function responsible for generating schedule which takes into consideration all hard constrains
+        /// Those constrains are:
+        ///     - ...
+        /// </summary>
+        private void generateHardCoistrainsCorrectSchedule()
+        {
+
+        }
+
+        /// <summary>
+        /// Function responsible ammending allready existing schedule according to employees wishes
+        /// </summary>
+        private void ammendScheduleAccordingToSoftConstrains()
+        {
 
         }
 
