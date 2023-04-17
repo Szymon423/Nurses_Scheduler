@@ -43,11 +43,13 @@ namespace Nurses_Scheduler.Windows
         private int daysInMonth;
         private List<int> eventDays;
         private List<int> forbiddenClickRows;
+        private double workingHoures;
 
         private IDictionary<string, int> OccupationToIndex = new Dictionary<string, int>();
         private IDictionary<string, int> DepartmentToIndex = new Dictionary<string, int>();
         private List<Department> departmentList;
         private List<DepartmentWorkArrangement> departmentsWorkArrangement;
+
 
         public MonthView(bool isUserEnteringRequests)
         {
@@ -104,6 +106,8 @@ namespace Nurses_Scheduler.Windows
             GenerateRaport_Button.IsEnabled = false;
             Department_ComboBox.IsEnabled = false;
             SaveSchedule_Button.IsEnabled = false;
+            workingHoures_TextBox.IsReadOnly = true;
+            workingHoures_TextBox.TextWrapping = TextWrapping.Wrap;
         }
 
         private void InitialiseDepartmentComboBox()
@@ -315,6 +319,8 @@ namespace Nurses_Scheduler.Windows
                 }
                 dt = dt.AddDays(1);
             }
+            workingHoures = CalculateWorkingHoures(eventDays.Count, daysInMonth);
+            workingHoures_TextBox.Text = RaportData.convertWorkingHoures(workingHoures).Replace("(", "\n(");
             return;
         }
 
@@ -417,7 +423,7 @@ namespace Nurses_Scheduler.Windows
                     choosenMonth, 
                     choosenYear,
                     departmentList[i],
-                    159.15,
+                    workingHoures,
                     eventDays
                 );
                 Raport raport = new Raport(raportData);
@@ -530,9 +536,19 @@ namespace Nurses_Scheduler.Windows
 
         private async void SaveSchedule_Click(object sender, RoutedEventArgs e)
         {
-            ScheduleData scheduleData = new ScheduleData(choosenMonth, choosenYear, 123.56, departmentsWorkArrangement);
+            ScheduleData scheduleData = new ScheduleData(choosenMonth, choosenYear, workingHoures, departmentsWorkArrangement);
             ScheduleFile scheduleFile = new ScheduleFile(scheduleData);
             await scheduleFile.Save();
+        }
+
+        private double CalculateWorkingHoures(int eventDaysNumber, int daysInMonth)
+        {
+            int workingDays = daysInMonth - eventDaysNumber;
+            double workingHoures = workingDays * 455.0 / 60.0;
+            Debug.WriteLine("\neventDaysNumber: " + eventDaysNumber.ToString());
+            Debug.WriteLine("daysInMonth: " + daysInMonth.ToString());
+            Debug.WriteLine("Working houres: " + workingHoures.ToString());
+            return workingHoures;
         }
     }
 }

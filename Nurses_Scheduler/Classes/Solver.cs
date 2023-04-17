@@ -91,7 +91,6 @@ namespace Nurses_Scheduler.Classes
                     monthSchedule[employeeNumber, day] = new shiftData(dayShift, nightShift, shortShift, vacationDay);
                 }
             }
-
         }
 
 
@@ -100,7 +99,7 @@ namespace Nurses_Scheduler.Classes
         /// Those constrains are:
         ///     - ...
         /// </summary>
-        private void generateHardCoistrainsCorrectSchedule()
+        private void GenerateHardCoistrainsCorrectSchedule()
         {
 
         }
@@ -108,7 +107,7 @@ namespace Nurses_Scheduler.Classes
         /// <summary>
         /// Function responsible ammending allready existing schedule according to employees wishes
         /// </summary>
-        private void ammendScheduleAccordingToSoftConstrains()
+        private void AmmendScheduleAccordingToSoftConstrains()
         {
 
         }

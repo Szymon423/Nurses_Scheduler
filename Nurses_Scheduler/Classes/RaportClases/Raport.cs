@@ -138,7 +138,7 @@ namespace Nurses_Scheduler.Classes.Raport
                                     "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
                                     "Oddział: " + raportData.department.DepartmentName);
 
-                page.AddParagraph("Norma miesięczna godzin: " + raportData.monthlyHours.ToString("N2"));
+                page.AddParagraph("Norma miesięczna godzin: " + raportData.workingHoures);
 
 
                 page.AddHeader(3, occupationsOnList[i]);
