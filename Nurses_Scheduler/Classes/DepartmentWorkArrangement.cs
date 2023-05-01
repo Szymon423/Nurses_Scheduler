@@ -18,6 +18,16 @@ namespace Nurses_Scheduler.Classes
             this.department = department;
         }
 
+        public DepartmentWorkArrangement(DepartmentWorkArrangement dwa)
+        {
+            this.department = dwa.department;
+            this.allEmployeeWorkArrangement = new List<EmployeeWorkArrangement>();
+            foreach (EmployeeWorkArrangement e in dwa.allEmployeeWorkArrangement)
+            {
+                this.allEmployeeWorkArrangement.Add(new EmployeeWorkArrangement(e));
+            }
+        }
+
         public List<List<string>> GetEmployeeWorkArrangementAsList()
         {
             List<List<string>> result = new List<List<string>>();

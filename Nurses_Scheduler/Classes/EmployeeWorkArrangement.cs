@@ -47,6 +47,45 @@ namespace Nurses_Scheduler.Classes
             this._31 = "";
         }
 
+
+        public EmployeeWorkArrangement(EmployeeWorkArrangement ewa)
+        {
+            this.employee = ewa.employee;
+            this._Pracownik = ewa._Pracownik;
+            this._1 = ewa._1;
+            this._2 = ewa._2;
+            this._3 = ewa._3;
+            this._4 = ewa._4;
+            this._5 = ewa._5;
+            this._6 = ewa._6;
+            this._7 = ewa._7;
+            this._8 = ewa._8;
+            this._9 = ewa._9;
+            this._10 = ewa._10;
+            this._11 = ewa._11;
+            this._12 = ewa._12;
+            this._13 = ewa._13;
+            this._14 = ewa._14;
+            this._15 = ewa._15;
+            this._16 = ewa._16;
+            this._17 = ewa._17;
+            this._18 = ewa._18;
+            this._19 = ewa._19;
+            this._20 = ewa._20;
+            this._21 = ewa._21;
+            this._22 = ewa._22;
+            this._23 = ewa._23;
+            this._24 = ewa._24;
+            this._25 = ewa._25;
+            this._26 = ewa._26;
+            this._27 = ewa._27;
+            this._28 = ewa._28;
+            this._29 = ewa._29;
+            this._30 = ewa._30;
+            this._31 = ewa._31;
+        }
+
+
         public EmployeeWorkArrangement(string employeeGroup)
         {
             this._Pracownik = employeeGroup;

@@ -527,7 +527,9 @@ namespace Nurses_Scheduler.Windows
         
         private void GenerateSchedule_Click(object sender, RoutedEventArgs e)
         {
-            Solver test = new Solver(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]], eventDays, daysInMonth, 12, true);
+            Solver test = new Solver(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]], eventDays, choosenYear, choosenMonth, 12, true);
+
+            MonthGrid_DataGrid.ItemsSource = test.getSchedule().allEmployeeWorkArrangement;
 
 
 
