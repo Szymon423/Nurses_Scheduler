@@ -102,15 +102,15 @@ namespace Nurses_Scheduler.Classes
         }
     }
 
-    /// <summary>
-    /// Short def of this class
-    /// </summary>
+
     public class Solver
     {
         private Department department;
         private List<EmployeeWorkArrangement> ewa;
         private List<int> eventDays;
         private int daysInMonth;
+        private int year;
+        private int month;
         private int employeeCount;
         private shiftData[/* employeeCount */, /* daysInMonth */] monthSchedule;
         private List<Employee> employeeList;
@@ -128,12 +128,14 @@ namespace Nurses_Scheduler.Classes
         private List<employeeGroupIndex> employeeGroupIndices;        
 
 
-        public  Solver (DepartmentWorkArrangement dwa, List<int> _eventDays, int _daysInMonth, int _requiredFullTimeShifts, bool _requiredPartTimeShift) 
+        public  Solver (DepartmentWorkArrangement dwa, List<int> _eventDays, int _year, int _month, int _requiredFullTimeShifts, bool _requiredPartTimeShift) 
         {
             department = dwa.department;
             ewa = dwa.allEmployeeWorkArrangement;
             eventDays = _eventDays;
-            daysInMonth = _daysInMonth;
+            year = _year;
+            month = _month;
+            daysInMonth = DateTime.DaysInMonth(_year, _month);
             employeeCount = ewa.Count;
             monthSchedule = new shiftData[employeeCount, daysInMonth];
             employeeList = new List<Employee>();
@@ -238,6 +240,10 @@ namespace Nurses_Scheduler.Classes
 
             // make it so it takes data from previous schedules
             numberOfRecentlyWorkedSundays = new List<int>(employeeCount);
+            for (int i = 0; i < employeeCount; i++)
+            {
+                numberOfRecentlyWorkedSundays.Add(0);
+            }
 
 
 
@@ -246,23 +252,17 @@ namespace Nurses_Scheduler.Classes
         }
 
 
-        /// <summary>
-        /// Function responsible for generating schedule which takes into consideration all hard constrains
-        /// Those constrains are:
-        ///     - ...
-        /// </summary>
         private void GenerateHardCoistrainsCorrectSchedule()
         {
             Random rand = new Random();
             for (int day = 0; day < daysInMonth; day++)
-            {
-                
+            { 
                 // if on given day are missing complementary employees of type 1 (pielęgniarki)
-                if (my_fundamentalEmplyees[day].employees_Day[0].employeeCount < expected_fundamentalEmplyees.employees_Day[0].employeeCount)
+                while (my_fundamentalEmplyees[day].employees_Day[0].employeeCount < expected_fundamentalEmplyees.employees_Day[0].employeeCount)
                 {
                     // random chose number of employee froom group of 1 (pielęgniarki)
                     int employeeNumFrom1stGroup = rand.Next(employeeGroupIndices[0].start, employeeGroupIndices[0].end + 1);
-                    if ( CheckIfNotFourthSunday(employeeNumFrom1stGroup, "D", day) && 
+                    if ( CheckIfNotFourthSunday(employeeNumFrom1stGroup, day) && 
                          CheckIf_12h_BetweenShifts(employeeNumFrom1stGroup, "D", day) && 
                          CheckIfExistAllreadyAssignedShift(employeeNumFrom1stGroup, day) )
                     {
@@ -278,42 +278,58 @@ namespace Nurses_Scheduler.Classes
             }
         }
 
-        /// <summary>
-        /// Function responsible ammending allready existing schedule according to employees wishes
-        /// </summary>
+
         private void AmmendScheduleAccordingToSoftConstrains()
         {
 
         }
 
 
-        /// <summary>
-        /// Function to check if this day is 4th in row sunday for given employee
-        /// </summary>
-        /// <param name="EmployeeIndex"> Employee index in employeeList </param>
-        /// <returns> True - Everything is OK, False - can't proceed </returns>
-        private bool CheckIfNotFourthSunday(int EmployeeIndex, string ShifrType, int day)
+        private bool CheckIfNotFourthSunday(int EmployeeIndex , int day)
         {
-            return true;
+            DateTime dt = new DateTime(this.year, this.month, day + 1);
+            return dt.DayOfWeek == DayOfWeek.Sunday & numberOfRecentlyWorkedSundays[EmployeeIndex] > 3;
         }
 
 
-        /// <summary>
-        /// Function to check if this this Shift wont break 12h between shitts rule
-        /// True - Everything is OK
-        /// False - can't accept
-        /// </summary>
-        /// <param name="EmployeeIndex"></param>
-        /// <returns></returns>
         private bool CheckIf_12h_BetweenShifts(int EmployeeIndex, string ShiftType, int day)
         {
-            return true;
+            if (day > 0)
+            {
+                if (ShiftType.Equals("D"))
+                {
+                    bool nightBefore = this.monthSchedule[EmployeeIndex, day - 1].Data[1];
+                    return !nightBefore;
+                }
+                if (ShiftType.Equals("N"))
+                {
+                    bool currentDay = this.monthSchedule[EmployeeIndex, day].Data[0];
+                    return !currentDay;
+                }
+                if (ShiftType.Equals("d"))
+                {
+                    bool nightBefore = this.monthSchedule[EmployeeIndex, day - 1].Data[1];
+                    return !nightBefore;
+                }
+            }
+            else
+            {
+                // to do, get data from previous month, and basing on them determine shifts approval
+                return true;
+            }
+            
+
+
+
+            return false;
         }
 
 
         private bool CheckIfExistAllreadyAssignedShift(int EmployeeIndex, int day)
         {
-            return true;
+            bool currentDay = this.monthSchedule[EmployeeIndex, day].Data[0];
+            bool currentNight = this.monthSchedule[EmployeeIndex, day].Data[1];   
+            return !(currentDay & currentNight);
         }
 
     }
