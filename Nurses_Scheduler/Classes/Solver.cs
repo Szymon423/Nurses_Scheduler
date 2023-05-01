@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,8 +45,48 @@ namespace Nurses_Scheduler.Classes
         }
     }
 
+
+    public class shiftEmployees
+    {
+        public int employeeCount;
+        public string occupation;
+
+        public shiftEmployees(int _count, string _occupation)
+        {
+            employeeCount = _count;
+            occupation = _occupation;
+        }
+    }
+
+    public class dayEmployees
+    {
+        public List<shiftEmployees> employees_Day;
+        public List<shiftEmployees> employees_Night;
+
+        public dayEmployees()
+        {
+            employees_Day = new List<shiftEmployees>();
+            employees_Night = new List<shiftEmployees>();
+        }
+
+        public dayEmployees(dayEmployees old)
+        {
+            employees_Day = new List<shiftEmployees>(old.employees_Day.Count);
+            for (int i = 0; i < old.employees_Day.Count; i++)
+            {
+                employees_Day[i] = new shiftEmployees(old.employees_Day[i].employeeCount, old.employees_Day[i].occupation);
+            }
+
+            employees_Night = new List<shiftEmployees>(old.employees_Night.Count);
+            for (int i = 0; i < old.employees_Night.Count; i++)
+            {
+                employees_Night[i] = new shiftEmployees(old.employees_Night[i].employeeCount, old.employees_Night[i].occupation);
+            }
+        }
+    }
+
     /// <summary>
-    /// Shirt def of this class
+    /// Short def of this class
     /// </summary>
     public class Solver
     {
@@ -65,7 +106,11 @@ namespace Nurses_Scheduler.Classes
         private List<ComplementaryEmployee> complementaryEmployess_Night;
         private int followingWeeksInMonth;
         private bool[/* employeeCount */, /* weeksInMonth */] exisingBreakInFollowinng7DaysOfMonth;
-
+        // const for entire month
+        private dayEmployees expected_fundamentalEmplyees;
+        // custom for each day
+        private List<dayEmployees> my_fundamentalEmplyees;
+        
 
 
         public Solver (DepartmentWorkArrangement dwa, List<int> _eventDays, int _daysInMonth, int _requiredFullTimeShifts, bool _requiredPartTimeShift) 
@@ -109,9 +154,39 @@ namespace Nurses_Scheduler.Classes
             }
 
             // get data about all necessary emloyees types for given departement by shift type
-            fundamentalEmployees_Day = FundamentalEmployee.GetFundamentalEmployeesDB(department.Id, "D");
-            fundamentalEmployees_Day = FundamentalEmployee.GetFundamentalEmployeesDB(department.Id, "D");
-            complementaryEmployess_Day = ComplementaryEmployee.GetComplementaryEmployeesDB(department.Id, "N");
+
+            expected_fundamentalEmplyees = new dayEmployees();
+
+            // fill all employees for day shifts
+            foreach (FundamentalEmployee FE_D in FundamentalEmployee.GetFundamentalEmployeesDB(department.Id, "D"))
+            {
+                expected_fundamentalEmplyees.employees_Day.Add(new shiftEmployees(FE_D.MinEmployeesNumber, FE_D.Occupation));
+            }
+
+            // fill all employees for night shifts
+            foreach (FundamentalEmployee FE_N in FundamentalEmployee.GetFundamentalEmployeesDB(department.Id, "N"))
+            {
+                expected_fundamentalEmplyees.employees_Night.Add(new shiftEmployees(FE_N.MinEmployeesNumber, FE_N.Occupation));
+            }
+
+            // prepare lists for each day in moonth for future complete
+            my_fundamentalEmplyees = new List<dayEmployees>(daysInMonth);
+            for (int i = 0; i < my_fundamentalEmplyees.Count; i++)
+            {
+                my_fundamentalEmplyees[i] = new dayEmployees(expected_fundamentalEmplyees);
+
+                for (int j = 0; j < my_fundamentalEmplyees[i].employees_Day.Count; j++)
+                {
+                    my_fundamentalEmplyees[i].employees_Day[j].employeeCount = 0;
+                }
+
+                for (int j = 0; j < my_fundamentalEmplyees[i].employees_Night.Count; j++)
+                {
+                    my_fundamentalEmplyees[i].employees_Night[j].employeeCount = 0;
+                }
+            }
+
+            complementaryEmployess_Day = ComplementaryEmployee.GetComplementaryEmployeesDB(department.Id, "D");
             complementaryEmployess_Night = ComplementaryEmployee.GetComplementaryEmployeesDB(department.Id, "N");
 
             // określ ile bieżących tygodni będzie w miesiącu
@@ -139,7 +214,11 @@ namespace Nurses_Scheduler.Classes
         /// </summary>
         private void GenerateHardCoistrainsCorrectSchedule()
         {
+            for (int day = 0; day < daysInMonth; day++)
+            {
 
+                
+            }
         }
 
         /// <summary>

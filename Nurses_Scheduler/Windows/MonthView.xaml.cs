@@ -524,10 +524,10 @@ namespace Nurses_Scheduler.Windows
             }
             return toRetuurn;
         }
-
+        
         private void GenerateSchedule_Click(object sender, RoutedEventArgs e)
         {
-            Solver test = new Solver(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]], eventDays, daysInMonth);
+            Solver test = new Solver(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]], eventDays, daysInMonth, 12, true);
 
 
             
