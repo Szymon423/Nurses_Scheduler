@@ -62,8 +62,7 @@
                   Grid.Row="1"
                   Grid.RowSpan="15"
                   x:Name="MonthGrid_DataGrid"
-                  FontSize="15"
-                  MinColumnWidth="30"
+                  FontSize="15"                
                   SelectionChanged="MonthGrid_DataGrid_SelectionChanged">
             <DataGrid.Resources>
                 <Style TargetType="DataGridRow">
@@ -187,7 +186,7 @@
                  Grid.Column="1"
                  Height="70"
                  x:Name="workingHoures_TextBox"
-                 Text="Godziny pracy"
+                 Text="Norma miesięczna godzin"
                  TextAlignment="Center"
                  FontSize="15"
                  VerticalContentAlignment="Center"/>

@@ -527,6 +527,10 @@ namespace Nurses_Scheduler.Windows
 
         private void GenerateSchedule_Click(object sender, RoutedEventArgs e)
         {
+            Solver test = new Solver(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]], eventDays, daysInMonth);
+
+
+            
             string messageBoxText = "Tutaj zostanie wprowadzona funkcjonalność do układania grafiku.";
             string caption = "Harmonogram";
             MessageBoxButton button = MessageBoxButton.OK;
