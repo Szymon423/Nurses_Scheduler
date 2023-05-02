@@ -473,8 +473,8 @@ namespace Nurses_Scheduler.Classes
             // when having the schedule look for correct department
             // gather data about last day in previous month
             // gather data about last not working sunday in month.
-
-            string prevoiusMonthFileName = "Schedules\\" + getPreviousMonthFileName(2023, 1);
+            DateTime prevoiusMonth = getPreviousMonthFileName(year, month);
+            string prevoiusMonthFileName = "Schedules\\" + prevoiusMonth.Month.ToString() + "_" + prevoiusMonth.Year.ToString() + "_grafik.txt";
             bool fileExist = File.Exists(prevoiusMonthFileName);
 
             if (!fileExist)
@@ -493,16 +493,15 @@ namespace Nurses_Scheduler.Classes
                 ScheduleData data = ScheduleFile.ReadExistingSchedule(prevoiusMonthFileName);
                 prevoiusMonth_dwa = findMy_dwa(data.ListOfDepartmentsWorkArrangements, department.Id);
                 getDataAboutLastDayOfPrevoiusMonth();
+                getDataAboutSundaysInPrevoiusMonth();
             }
         }
 
-        private string getPreviousMonthFileName(int year, int month)
+        private DateTime getPreviousMonthFileName(int year, int month)
         {
             DateTime dt = new DateTime(year, month, 1);
-            Debug.WriteLine("current month: " + dt.Month.ToString());
             dt = dt.AddMonths(-1);
-            Debug.WriteLine("prevoius month: " + dt.Month.ToString());
-            return dt.Month.ToString() + "_" + dt.Year.ToString() + "_grafik.txt";
+            return dt;
         }
 
 
@@ -528,12 +527,74 @@ namespace Nurses_Scheduler.Classes
 
         private void getDataAboutLastDayOfPrevoiusMonth()
         {
-            // employeeList
-            // lastDayOfPreviousMonthSchedule[]
-            // prevoiusMonth_dwa.allEmployeeWorkArrangement;
+            DateTime prevoiusMonth = getPreviousMonthFileName(year, month);
+            for (int i = 0; i < employeeCount; i++)
+            {
+                Employee empl = employeeList[i];
+                List<EmployeeWorkArrangement> _ewa = prevoiusMonth_dwa.allEmployeeWorkArrangement.Where(e => e.employee.Id.Equals(empl.Id)).ToList();
+                if (_ewa.Count > 0)
+                {
+                    string lastDayShift = _ewa.First().GetSingleWorkArrangement(DateTime.DaysInMonth(prevoiusMonth.Year, prevoiusMonth.Month));
+                    if (lastDayShift == "D")
+                    {
+                        lastDayOfPreviousMonthSchedule[i].Data[0] = true;
+                    }
+                    else if (lastDayShift == "d")
+                    {
+                        lastDayOfPreviousMonthSchedule[i].Data[0] = true;
+                        lastDayOfPreviousMonthSchedule[i].Data[2] = true;
+                    }
+                    else if (lastDayShift == "N")
+                    {
+                        lastDayOfPreviousMonthSchedule[i].Data[1] = true;
+                    }
+                }
+            }
+        }
 
 
+        private void getDataAboutSundaysInPrevoiusMonth()
+        {
+            // get data about prevoius month
+            DateTime prevoiusMonth = getPreviousMonthFileName(year, month);
 
+            // make list of sundays in previous month
+            List<int> sundaysListInPrevoiusMonth = new List<int>();
+            for (int day = 1; day < DateTime.DaysInMonth(prevoiusMonth.Year, prevoiusMonth.Month); day++)
+            {
+                DateTime dt = new DateTime(prevoiusMonth.Year, prevoiusMonth.Month, day);
+                if (dt.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    sundaysListInPrevoiusMonth.Add(day);
+                }
+            }
+
+            // check all emoployees sundays
+            for (int i = 0; i < employeeCount; i++)
+            {
+                Employee empl = employeeList[i];
+                List<EmployeeWorkArrangement> _ewa = prevoiusMonth_dwa.allEmployeeWorkArrangement.Where(e => e.employee.Id.Equals(empl.Id)).ToList();
+                if (_ewa.Count > 0)
+                {
+                    sundaysListInPrevoiusMonth.Reverse();
+                    foreach (int sunday in sundaysListInPrevoiusMonth)
+                    {
+                        string lastDayShift = _ewa.First().GetSingleWorkArrangement(sunday);
+                        if (lastDayShift == "D" || lastDayShift == "N" || lastDayShift == "d")
+                        {
+                            numberOfRecentlyWorkedSundays[i] += 1;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    } 
+                }
+                else
+                {
+                    numberOfRecentlyWorkedSundays[i] = 0;
+                }
+            }
         }
     }
 }
