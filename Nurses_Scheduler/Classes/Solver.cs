@@ -144,7 +144,9 @@ namespace Nurses_Scheduler.Classes
         private int[] employeesOnDayShiftCounter;
         private int[] employeesOnNightShiftCounter;
         private List<int> sundaysList;
-        
+        private List<int> sundaysListInPrevoiusMonth;
+        private List<int> mondaysList;
+
 
 
         public  Solver (DepartmentWorkArrangement _dwa, List<int> _eventDays, int _year, int _month, int _requiredFullTimeShifts, bool _requiredPartTimeShift) 
@@ -158,6 +160,7 @@ namespace Nurses_Scheduler.Classes
             daysInMonth = DateTime.DaysInMonth(_year, _month);
             employeeCount = ewa.Count;
             monthSchedule = new shiftData[employeeCount, daysInMonth];
+            lastDayOfPreviousMonthSchedule = new shiftData[employeeCount];
             employeeList = new List<Employee>();
             requiredFullTimeShifts = _requiredFullTimeShifts;
             requiredPartTimeShift = _requiredPartTimeShift;
@@ -182,6 +185,7 @@ namespace Nurses_Scheduler.Classes
                 
                 
                 employeeList.Add(ewa[employeeNumber].employee);
+                lastDayOfPreviousMonthSchedule[employeeNumber] = new shiftData(false, false, false, false);
 
                 List<string> temporaryEmployeeScheduleData = new List<string>(ewa[employeeNumber].GetWorkArrangementAsList());
                 for (int day = 0; day < daysInMonth; day++)
@@ -294,6 +298,7 @@ namespace Nurses_Scheduler.Classes
 
             // find which days are sundays
             sundaysList = new List<int>();
+            mondaysList = new List<int>();
             for (int day = 1; day <= daysInMonth; day++)
             {
                 DateTime dt = new DateTime(year, month, day);
@@ -301,10 +306,14 @@ namespace Nurses_Scheduler.Classes
                 {
                     sundaysList.Add(day);
                 }
+                if (dt.DayOfWeek == DayOfWeek.Monday)
+                {
+                    mondaysList.Add(day);
+                }
             }
 
 
-
+            getDataFromPreviousMonth();
             GenerateHardCoistrainsCorrectSchedule();
         }
 
@@ -315,6 +324,7 @@ namespace Nurses_Scheduler.Classes
             for (int day = 0; day < daysInMonth; day++)
             {
                 bool isThisSunday = sundaysList.Contains(day + 1);
+                bool isThisMonday = mondaysList.Contains(day + 1);
                 for (int gruop_id = 0; gruop_id < my_fundamentalEmplyees[day].employees_Day.Count; gruop_id++)
                 {
                     // if on given day are missing complementary employees of type 0 (pielęgniarki)
@@ -326,6 +336,11 @@ namespace Nurses_Scheduler.Classes
                         bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "D", day)      &
                                           CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day)   &
                                           CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup);
+                        
+                        if (isThisMonday)
+                        {
+                            updateSundayList(day);
+                        }
                         if (isThisSunday)
                         {
                             canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day);
@@ -337,9 +352,6 @@ namespace Nurses_Scheduler.Classes
                             my_fundamentalEmplyees[day].employees_Day[gruop_id].employeeCount += 1;
                             employeesOnDayShiftCounter[day] += 1;
                             Debug.WriteLine("occupation: " + occupation + " day: " + day.ToString() + " employee: " + employeeNumFromCurrentGroup.ToString());
-
-
-
                         }
                     }
                 }
@@ -355,6 +367,10 @@ namespace Nurses_Scheduler.Classes
                         bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "N", day)      &
                                           CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day)   &
                                           CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup);
+                        if (isThisMonday)
+                        {
+                            updateSundayList(day);
+                        }
                         if (isThisSunday)
                         {
                             canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day);
@@ -371,7 +387,7 @@ namespace Nurses_Scheduler.Classes
                 }
 
                 Debug.WriteLine("Pracownicy podstawowi uzupełnieni");
-                getDataFromPreviousMonth();
+                
 
 
 
@@ -396,6 +412,7 @@ namespace Nurses_Scheduler.Classes
         {
             if (day > 0)
             {
+                // check on current month data
                 if (ShiftType.Equals("D"))
                 {
                     bool nightBefore = this.monthSchedule[EmployeeIndex, day - 1].Data[1];
@@ -414,13 +431,23 @@ namespace Nurses_Scheduler.Classes
             }
             else
             {
-                // to do, get data from previous month, and basing on them determine shifts approval
-                return true;
+                // check on previous month data
+                if (ShiftType.Equals("D"))
+                {
+                    bool nightBefore = this.lastDayOfPreviousMonthSchedule[EmployeeIndex].Data[1];
+                    return !nightBefore;
+                }
+                if (ShiftType.Equals("N"))
+                {
+                    bool currentDay = this.lastDayOfPreviousMonthSchedule[EmployeeIndex].Data[0];
+                    return !currentDay;
+                }
+                if (ShiftType.Equals("d"))
+                {
+                    bool nightBefore = this.lastDayOfPreviousMonthSchedule[EmployeeIndex].Data[1];
+                    return !nightBefore;
+                }
             }
-            
-
-
-
             return false;
         }
 
@@ -457,22 +484,14 @@ namespace Nurses_Scheduler.Classes
                     {
                         this.modified_dwa.allEmployeeWorkArrangement[employee_i].SetEmployeeWorkArrangement(day + 1, "N");
                     }
-
                 }
             }
-
             return this.modified_dwa;
         }
 
 
         private void getDataFromPreviousMonth()
         {
-            // solver looks for schedule files from previous month
-            // if found -> use it
-            // if not found -> tell it to user and think of every employee as one with no shifts assigned in previous month
-            // when having the schedule look for correct department
-            // gather data about last day in previous month
-            // gather data about last not working sunday in month.
             DateTime prevoiusMonth = getPreviousMonthFileName(year, month);
             string prevoiusMonthFileName = "Schedules\\" + prevoiusMonth.Month.ToString() + "_" + prevoiusMonth.Year.ToString() + "_grafik.txt";
             bool fileExist = File.Exists(prevoiusMonthFileName);
@@ -486,7 +505,6 @@ namespace Nurses_Scheduler.Classes
                 MessageBoxButton button = MessageBoxButton.OK;
                 MessageBoxImage icon = MessageBoxImage.Warning;
                 MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
-
             }
             else
             {
@@ -531,6 +549,10 @@ namespace Nurses_Scheduler.Classes
             for (int i = 0; i < employeeCount; i++)
             {
                 Employee empl = employeeList[i];
+                if (empl == null)
+                {
+                    continue;
+                }
                 List<EmployeeWorkArrangement> _ewa = prevoiusMonth_dwa.allEmployeeWorkArrangement.Where(e => e.employee.Id.Equals(empl.Id)).ToList();
                 if (_ewa.Count > 0)
                 {
@@ -559,7 +581,7 @@ namespace Nurses_Scheduler.Classes
             DateTime prevoiusMonth = getPreviousMonthFileName(year, month);
 
             // make list of sundays in previous month
-            List<int> sundaysListInPrevoiusMonth = new List<int>();
+            sundaysListInPrevoiusMonth = new List<int>();
             for (int day = 1; day < DateTime.DaysInMonth(prevoiusMonth.Year, prevoiusMonth.Month); day++)
             {
                 DateTime dt = new DateTime(prevoiusMonth.Year, prevoiusMonth.Month, day);
@@ -573,6 +595,10 @@ namespace Nurses_Scheduler.Classes
             for (int i = 0; i < employeeCount; i++)
             {
                 Employee empl = employeeList[i];
+                if (empl == null)
+                {
+                    continue;
+                }
                 List<EmployeeWorkArrangement> _ewa = prevoiusMonth_dwa.allEmployeeWorkArrangement.Where(e => e.employee.Id.Equals(empl.Id)).ToList();
                 if (_ewa.Count > 0)
                 {
@@ -588,13 +614,63 @@ namespace Nurses_Scheduler.Classes
                         {
                             break;
                         }
-                    } 
+                    }
+                    sundaysListInPrevoiusMonth.Reverse();
                 }
                 else
                 {
                     numberOfRecentlyWorkedSundays[i] = 0;
                 }
             }
+        }
+
+
+        private void updateSundayList(int dayUpToWhichUpdate)
+        {
+            sundaysList.Reverse();
+            
+            for (int i = 0; i < employeeCount; i++)
+            {
+                numberOfRecentlyWorkedSundays[i] = 0;
+            }
+
+            bool checkInPreviousMonth = true;
+
+            foreach (int sunday_i in sundaysList)
+            {
+                if (sunday_i <= dayUpToWhichUpdate)
+                {
+                    checkInPreviousMonth = false;
+                    for (int employee_i = 0; employee_i < employeeCount; employee_i++)
+                    {
+                        if (this.monthSchedule[employee_i, sunday_i].Data[0] || this.monthSchedule[employee_i, sunday_i].Data[1])
+                        {
+                            if (sunday_i == sundaysList.First())
+                            {
+                                numberOfRecentlyWorkedSundays[employee_i] = 1;
+                            }
+                            else
+                            {
+                                if (numberOfRecentlyWorkedSundays[employee_i] > 0)
+                                {
+                                    numberOfRecentlyWorkedSundays[employee_i] += 1;
+                                }
+                                else
+                                {
+                                    numberOfRecentlyWorkedSundays[employee_i] = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (checkInPreviousMonth)
+            {
+                getDataAboutSundaysInPrevoiusMonth();
+            }
+
+            sundaysList.Reverse();
         }
     }
 }
