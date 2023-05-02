@@ -3,11 +3,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Nurses_Scheduler.Classes
@@ -112,8 +114,9 @@ namespace Nurses_Scheduler.Classes
     {
         private Department department;
         private DepartmentWorkArrangement dwa;
-        private List<EmployeeWorkArrangement> ewa;
         private DepartmentWorkArrangement modified_dwa;
+        private DepartmentWorkArrangement prevoiusMonth_dwa;
+        private List<EmployeeWorkArrangement> ewa;
         private List<int> eventDays;
         private int daysInMonth;
         private int year;
@@ -368,6 +371,7 @@ namespace Nurses_Scheduler.Classes
                 }
 
                 Debug.WriteLine("Pracownicy podstawowi uzupełnieni");
+                getDataFromPreviousMonth();
 
 
 
@@ -441,8 +445,6 @@ namespace Nurses_Scheduler.Classes
 
         public DepartmentWorkArrangement getSchedule()
         {
-            // this.modified_dwa
-            // this.monthSchedule[EmployeeIndex, day - 1];
             for (int employee_i = 0; employee_i < employeeCount; employee_i++)
             {
                 for (int day = 0; day < daysInMonth; day++)
@@ -465,8 +467,73 @@ namespace Nurses_Scheduler.Classes
 
         private void getDataFromPreviousMonth()
         {
-            ScheduleData data = ScheduleFile.ReadExistingSchedule("Schedules\\" /* name of file from previous month */);
+            // solver looks for schedule files from previous month
+            // if found -> use it
+            // if not found -> tell it to user and think of every employee as one with no shifts assigned in previous month
+            // when having the schedule look for correct department
+            // gather data about last day in previous month
+            // gather data about last not working sunday in month.
+
+            string prevoiusMonthFileName = "Schedules\\" + getPreviousMonthFileName(2023, 1);
+            bool fileExist = File.Exists(prevoiusMonthFileName);
+
+            if (!fileExist)
+            {
+                string messageBoxText = "Nie znaleziono grafiku dla poprzedniego miesiąca. \n" +
+                                        "Jeśli chcesz, aby dane na temat rozkładu pracy pracowników z poprzedniego " +
+                                        "miesiąca zostały wzięte pod uwagę najpierw dodaj ręcznie poprzedni miesiąc";
+                string caption = "Brakujące dane";
+                MessageBoxButton button = MessageBoxButton.OK;
+                MessageBoxImage icon = MessageBoxImage.Warning;
+                MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
+
+            }
+            else
+            {
+                ScheduleData data = ScheduleFile.ReadExistingSchedule(prevoiusMonthFileName);
+                prevoiusMonth_dwa = findMy_dwa(data.ListOfDepartmentsWorkArrangements, department.Id);
+                getDataAboutLastDayOfPrevoiusMonth();
+            }
         }
 
+        private string getPreviousMonthFileName(int year, int month)
+        {
+            DateTime dt = new DateTime(year, month, 1);
+            Debug.WriteLine("current month: " + dt.Month.ToString());
+            dt = dt.AddMonths(-1);
+            Debug.WriteLine("prevoius month: " + dt.Month.ToString());
+            return dt.Month.ToString() + "_" + dt.Year.ToString() + "_grafik.txt";
+        }
+
+
+        private DepartmentWorkArrangement findMy_dwa(List<DepartmentWorkArrangement> deps, int id)
+        {
+            List<DepartmentWorkArrangement> filtered = deps.Where(d => d.department.Id.Equals(id)).ToList();
+            if (filtered.Count == 1)
+            {
+                return filtered[0];
+            }
+                       
+            string messageBoxText = "W grafiku z poprzedniego miesiąca nie znaleziono danych dotyczących " +
+                                    "aktualnie grafikowanego oddziału. W celu poprawnego działania programu " + 
+                                    "uzupełnij brakujące dane.";
+            string caption = "Brakujące dane";
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Warning;
+            MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
+
+            return null;
+        }
+
+
+        private void getDataAboutLastDayOfPrevoiusMonth()
+        {
+            // employeeList
+            // lastDayOfPreviousMonthSchedule[]
+            // prevoiusMonth_dwa.allEmployeeWorkArrangement;
+
+
+
+        }
     }
 }
