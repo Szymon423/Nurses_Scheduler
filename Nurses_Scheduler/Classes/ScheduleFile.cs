@@ -77,15 +77,24 @@ namespace Nurses_Scheduler.Classes
             FileContent.Add(dataToAdd);
         }
 
-        public async Task Save()
+        public async Task Save(bool requestsOrSchedule) // requests - 0, schedule - 1
         {
             string raportFileName = scheduleData.Month.ToString() + "_" +
                                     scheduleData.Year.ToString() + "_" +
                                     "grafik.txt";
 
-            // need to implement whether given file allready exist, it yes, ask user if he really wants to overrwite it
+            string path;
+            if (requestsOrSchedule) // requests - 0, schedule - 1
+            {
+                Directory.CreateDirectory("Schedules");
+                path = System.IO.Path.Combine(App.folderPath, "Schedules");
+            }
+            else
+            {
+                Directory.CreateDirectory("Requests");
+                path = System.IO.Path.Combine(App.folderPath, "Requests");
 
-            string path = System.IO.Path.Combine(App.folderPath, "Requests");
+            }
 
             var requestFiles = Directory.EnumerateFiles(path, "*.txt");
             if (requestFiles.Any())
@@ -114,8 +123,16 @@ namespace Nurses_Scheduler.Classes
                     }   
                 }  
             }
-            Directory.CreateDirectory("Requests");
-            await File.WriteAllLinesAsync("Requests\\" + raportFileName, FileContent);
+            if (requestsOrSchedule) // requests - 0, schedule - 1
+            {
+                await File.WriteAllLinesAsync("Schedules\\" + raportFileName, FileContent);
+            }
+            else
+            {
+                await File.WriteAllLinesAsync("Requests\\" + raportFileName, FileContent);
+
+            }
+            
 
             string messageBoxText1 = "Grafik został zapisany";
             string caption1 = "Zapisywanie";

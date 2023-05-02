@@ -120,6 +120,7 @@ namespace Nurses_Scheduler.Classes
         private int month;
         private int employeeCount;
         private shiftData[/* employeeCount */, /* daysInMonth */] monthSchedule;
+        private shiftData[/* employeeCount */] lastDayOfPreviousMonthSchedule;
         private List<Employee> employeeList;
         private List<int> numberOfRecentlyWorkedSundays;
         private int requiredFullTimeShifts;
@@ -140,6 +141,7 @@ namespace Nurses_Scheduler.Classes
         private int[] employeesOnDayShiftCounter;
         private int[] employeesOnNightShiftCounter;
         private List<int> sundaysList;
+        
 
 
         public  Solver (DepartmentWorkArrangement _dwa, List<int> _eventDays, int _year, int _month, int _requiredFullTimeShifts, bool _requiredPartTimeShift) 
@@ -458,6 +460,12 @@ namespace Nurses_Scheduler.Classes
             }
 
             return this.modified_dwa;
+        }
+
+
+        private void getDataFromPreviousMonth()
+        {
+            ScheduleData data = ScheduleFile.ReadExistingSchedule("Schedules\\" /* name of file from previous month */);
         }
 
     }

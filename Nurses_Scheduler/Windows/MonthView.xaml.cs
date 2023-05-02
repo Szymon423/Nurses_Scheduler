@@ -264,7 +264,7 @@ namespace Nurses_Scheduler.Windows
                     EmployeeWorkArrangement ewa = scheduleData.ListOfDepartmentsWorkArrangements[j].allEmployeeWorkArrangement[i];
                     if (ewa.employee.Occupation != previousOccupation)
                     {
-                        scheduleData.ListOfDepartmentsWorkArrangements[j].allEmployeeWorkArrangement.Insert(i, new EmployeeWorkArrangement(previousOccupation));
+                        scheduleData.ListOfDepartmentsWorkArrangements[j].allEmployeeWorkArrangement.Insert(i, new EmployeeWorkArrangement(ewa.employee.Occupation));
                         forbiddenClickRows.Add(i);
                     }
                     previousOccupation = ewa.employee.Occupation;
@@ -350,8 +350,16 @@ namespace Nurses_Scheduler.Windows
         private void MonthChoosed_Click(object sender, RoutedEventArgs e)
         {
             GetNumberOfDaysInMonth();
-            string path = System.IO.Path.Combine(App.folderPath, "Requests");
 
+            string path;
+            if (isUserEnteringRequests)
+            {
+                path = System.IO.Path.Combine(App.folderPath, "Requests");
+            }
+            else
+            {
+                path = System.IO.Path.Combine(App.folderPath, "Schedules");
+            }
 
             var requestFiles = Directory.EnumerateFiles(path, "*.txt");
             if (requestFiles.Any())
@@ -368,15 +376,34 @@ namespace Nurses_Scheduler.Windows
                 }
                 if (requestForChoosenMonthExist)
                 {
-                    string messageBoxText = "Prośby na: " + App.months[choosenMonth - 1] + " " + choosenYear.ToString() + " już istnieją \n" +
-                                            "Otworzone zostaną ostatnio wprowadzone prośby";
+                    string messageBoxText;
+
+                    if (isUserEnteringRequests)
+                    {
+                        messageBoxText = "Prośby na: " + App.months[choosenMonth - 1] + " " + choosenYear.ToString() + " już istnieją \n" +
+                                         "Otworzone zostaną ostatnio wprowadzone prośby";
+                    }
+                    else
+                    {
+                        messageBoxText = "Grafik na: " + App.months[choosenMonth - 1] + " " + choosenYear.ToString() + " już istnieje \n" +
+                                         "Otworzony zostanie ostatnio utworzpny grafik";
+                    }
                     string caption = "Harmonogram";
                     MessageBoxButton button = MessageBoxButton.OK;
                     MessageBoxImage icon = MessageBoxImage.Information;
                     MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
 
                     // part for getting data from file
-                    ScheduleData data = ScheduleFile.ReadExistingSchedule("Requests\\" + fileToCompare);                    
+                    string filePath;
+                    if (isUserEnteringRequests)
+                    {
+                        filePath = "Requests\\" + fileToCompare;
+                    }
+                    else
+                    {
+                        filePath = "Schedules\\" + fileToCompare;
+                    }
+                    ScheduleData data = ScheduleFile.ReadExistingSchedule(filePath);
                     GenerateNewMonthView(data);
                 }
                 else
@@ -528,8 +555,9 @@ namespace Nurses_Scheduler.Windows
         private void GenerateSchedule_Click(object sender, RoutedEventArgs e)
         {
             Solver test = new Solver(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]], eventDays, choosenYear, choosenMonth, 12, true);
+            departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]] = test.getSchedule();
+            MonthGrid_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
 
-            MonthGrid_DataGrid.ItemsSource = test.getSchedule().allEmployeeWorkArrangement;
 
 
 
@@ -544,7 +572,7 @@ namespace Nurses_Scheduler.Windows
         {
             ScheduleData scheduleData = new ScheduleData(choosenMonth, choosenYear, workingHoures, departmentsWorkArrangement);
             ScheduleFile scheduleFile = new ScheduleFile(scheduleData);
-            await scheduleFile.Save();
+            await scheduleFile.Save(!isUserEnteringRequests); // requests - false, schedule - true
         }
 
         private double CalculateWorkingHoures(int eventDaysNumber, int daysInMonth)
