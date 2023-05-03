@@ -131,6 +131,8 @@ namespace Nurses_Scheduler.Classes
         private bool[] requiredPartTimeShift;
         private List<FundamentalEmployee> fundamentalEmployees_Day;
         private List<FundamentalEmployee> fundamentalEmployees_Night;
+        private List<string> fundamentalEmployessOccupations_Day;
+        private List<string> fundamentalEmployessOccupations_Night;
         private List<ComplementaryEmployee> complementaryEmployess_Day;
         private List<ComplementaryEmployee> complementaryEmployess_Night;
         private List<string> complementaryEmployessOccupations_Day;
@@ -264,15 +266,30 @@ namespace Nurses_Scheduler.Classes
             complementaryEmployessOccupations_Day = new List<string>();
             complementaryEmployessOccupations_Night = new List<string>();
 
-            foreach (var cmpl in complementaryEmployess_Day)
+            foreach (ComplementaryEmployee cmpl in complementaryEmployess_Day)
             {
                 complementaryEmployessOccupations_Day.Add(cmpl.Occupation);
             }
 
-            foreach (var cmpl in complementaryEmployess_Night)
+            foreach (ComplementaryEmployee cmpl in complementaryEmployess_Night)
             {
                 complementaryEmployessOccupations_Night.Add(cmpl.Occupation);
             }
+
+            fundamentalEmployessOccupations_Day = new List<string>();
+            fundamentalEmployessOccupations_Night = new List<string>();
+
+            foreach (shiftEmployees cmpl in expected_fundamentalEmplyees.employees_Day)
+            {
+                fundamentalEmployessOccupations_Day.Add(cmpl.occupation);
+            }
+
+            foreach (shiftEmployees cmpl in expected_fundamentalEmplyees.employees_Night)
+            {
+                fundamentalEmployessOccupations_Night.Add(cmpl.occupation);
+            }
+
+
 
             // określ ile bieżących tygodni będzie w miesiącu
             if (daysInMonth == 28)
@@ -474,7 +491,6 @@ namespace Nurses_Scheduler.Classes
 
             Debug.WriteLine("Uzupełniono do minimalnego wymaganego składu pracowników");
 
-            // ShiftCounter[employeeNumFromCurrentGroup]
             for (int employeeNumber = 0; employeeNumber < employeeCount; employeeNumber++)
             {
                 if (employeeList[employeeNumber] == null)
@@ -484,11 +500,67 @@ namespace Nurses_Scheduler.Classes
 
                 while (ShiftCounter[employeeNumber] < requiredFullTimeShifts[employeeNumber])
                 {
+                    string shiftType;
+                    // with probability of 66% assign day shift, with probability 34% assign night shift
+                    if (complementaryEmployessOccupations_Night.Contains(employeeList[employeeNumber].Occupation) || fundamentalEmployessOccupations_Night.Contains(employeeList[employeeNumber].Occupation))
+                    {
+                        // can choose night
+                        if (rand.Next(0, 101) > 66)
+                        {
+                            // chosen day
+                            shiftType = "D";
+                        }
+                        else
+                        {
+                            // chosen night
+                            shiftType = "N";
+                        }
+                    }
+                    else
+                    {
+                        // only day shift
+                        shiftType = "D";
+                    }
 
+                    // choose day
+                    int day = rand.Next(0, daysInMonth);
+                    bool isThisSunday = sundaysList.Contains(day + 1);
+
+                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumber, shiftType, day) &
+                                      CheckIfExistAllreadyAssignedShift(employeeNumber, day) &
+                                      CheckIfAll_12h_ShiftsAreAssigned(employeeNumber) &
+                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumber, day, shiftType);
+
+                    if (day < daysInMonth - 1)
+                    {
+                        updateSundayList(day + 1);
+                    }
+                    if (isThisSunday)
+                    {
+                        canProceed &= CheckIfNotFourthSunday(employeeNumber, day);
+                    }
+                    if (canProceed)
+                    {
+                        monthSchedule[employeeNumber, day].Data[1] = true;
+                        ShiftCounter[employeeNumber] += 1;
+                        employeesOnNightShiftCounter[day] += 1;
+                        Debug.WriteLine("Complementary: \t occupation: " + employeeList[employeeNumber].Occupation + " " + shiftType + ": " + day.ToString() + " employee: " + employeeNumber.ToString());
+                    }
                 }
             }
 
-            Debug.WriteLine("Uzupełniono godziny wszystkim pracownikom");
+            Debug.WriteLine("Uzupełniono pełne zmiany wszystkim pracownikom");
+
+            for (int employeeNumber = 0; employeeNumber < employeeCount; employeeNumber++)
+            {
+                if (employeeList[employeeNumber] == null)
+                {
+                    continue;
+                }
+            }
+
+            Debug.WriteLine("Uzupełniono krótką zmianę wszystkim pracownikom");
+
         }
 
 
