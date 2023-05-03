@@ -504,16 +504,15 @@ namespace Nurses_Scheduler.Classes
                     // with probability of 66% assign day shift, with probability 34% assign night shift
                     if (complementaryEmployessOccupations_Night.Contains(employeeList[employeeNumber].Occupation) || fundamentalEmployessOccupations_Night.Contains(employeeList[employeeNumber].Occupation))
                     {
-                        // can choose night
-                        if (rand.Next(0, 101) > 66)
-                        {
-                            // chosen day
-                            shiftType = "D";
-                        }
-                        else
+                        if (rand.Next(0, 101) > 80)
                         {
                             // chosen night
                             shiftType = "N";
+                        }
+                        else
+                        {
+                            // chosen day
+                            shiftType = "D";
                         }
                     }
                     else
@@ -556,6 +555,35 @@ namespace Nurses_Scheduler.Classes
                 if (employeeList[employeeNumber] == null)
                 {
                     continue;
+                }
+
+                while (requiredPartTimeShift[employeeNumber])
+                {
+                    // choose day
+                    int day = rand.Next(0, daysInMonth);
+                    bool isThisSunday = sundaysList.Contains(day + 1);
+                    string shiftType = "d";
+
+                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumber, shiftType, day) &
+                                      CheckIfExistAllreadyAssignedShift(employeeNumber, day) &
+                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumber, day, shiftType);
+
+                    if (day < daysInMonth - 1)
+                    {
+                        updateSundayList(day + 1);
+                    }
+                    if (isThisSunday)
+                    {
+                        canProceed &= CheckIfNotFourthSunday(employeeNumber, day);
+                    }
+                    if (canProceed)
+                    {
+                        monthSchedule[employeeNumber, day].Data[0] = true;
+                        monthSchedule[employeeNumber, day].Data[2] = true;
+                        requiredPartTimeShift[employeeNumber] = false;
+                        employeesOnNightShiftCounter[day] += 1;
+                        Debug.WriteLine("ShortShift: \t occupation: " + employeeList[employeeNumber].Occupation + " " + shiftType + ": " + day.ToString() + " employee: " + employeeNumber.ToString());
+                    }
                 }
             }
 
@@ -770,11 +798,15 @@ namespace Nurses_Scheduler.Classes
             {
                 for (int day = 0; day < daysInMonth; day++)
                 {
-                    if (this.monthSchedule[employee_i, day].Data[0])
+                    if (this.monthSchedule[employee_i, day].Data[0] && this.monthSchedule[employee_i, day].Data[2])
+                    {
+                        this.modified_dwa.allEmployeeWorkArrangement[employee_i].SetEmployeeWorkArrangement(day + 1, "d");
+                    }
+                    else if (this.monthSchedule[employee_i, day].Data[0])
                     {
                         this.modified_dwa.allEmployeeWorkArrangement[employee_i].SetEmployeeWorkArrangement(day + 1, "D");
                     }
-                    if (this.monthSchedule[employee_i, day].Data[1])
+                    else if (this.monthSchedule[employee_i, day].Data[1])
                     {
                         this.modified_dwa.allEmployeeWorkArrangement[employee_i].SetEmployeeWorkArrangement(day + 1, "N");
                     }
