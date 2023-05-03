@@ -63,5 +63,16 @@ namespace Nurses_Scheduler.Classes
         {
             allEmployeeWorkArrangement[nurseIndex].SetEmployeeWorkArrangement(dayInMonth, value);
         }
+
+        public void CleanAllEmployeeWorkArrangement()
+        {
+            for (int employee_i = 0; employee_i < allEmployeeWorkArrangement.Count; employee_i++)
+            {
+                for (int day = 0; day < 31; day++)
+                {
+                    this.SetNurseWorkArrangement(employee_i, day, "");
+                }
+            }
+        }
     }
 }

@@ -151,6 +151,8 @@ namespace Nurses_Scheduler.Classes
         private List<int> sundaysList;
         private List<int> sundaysListInPrevoiusMonth;
         private List<int> mondaysList;
+        private List<(int _day, int _employeeCount)> queueOfDaysDay;
+        private List<(int _day, int _employeeCount)> queueOfDaysNight;
 
 
 
@@ -311,7 +313,8 @@ namespace Nurses_Scheduler.Classes
                 numberOfRecentlyWorkedSundays.Add(0);
             }
 
-            this.modified_dwa = new DepartmentWorkArrangement(this.dwa);
+            modified_dwa = new DepartmentWorkArrangement(this.dwa);
+            modified_dwa.CleanAllEmployeeWorkArrangement();
 
             // prepare shift counting array, foreach employee set it to 0
             ShiftCounter = new int[employeeCount];
@@ -344,6 +347,9 @@ namespace Nurses_Scheduler.Classes
                     mondaysList.Add(day);
                 }
             }
+
+            queueOfDaysDay = new List<(int, int)>();
+            queueOfDaysNight = new List<(int, int)>();
 
             CalculateEmployeesWorkingHoures();
             getDataFromPreviousMonth();
@@ -504,25 +510,38 @@ namespace Nurses_Scheduler.Classes
                     // with probability of 66% assign day shift, with probability 34% assign night shift
                     if (complementaryEmployessOccupations_Night.Contains(employeeList[employeeNumber].Occupation) || fundamentalEmployessOccupations_Night.Contains(employeeList[employeeNumber].Occupation))
                     {
-                        if (rand.Next(0, 101) > 80)
+                        if (rand.Next(0, 101) > 90) // chosen night
                         {
-                            // chosen night
                             shiftType = "N";
                         }
-                        else
+                        else // chosen day
                         {
-                            // chosen day
                             shiftType = "D";
                         }
                     }
-                    else
+                    else // only day shift
                     {
-                        // only day shift
                         shiftType = "D";
                     }
 
-                    // choose day
-                    int day = rand.Next(0, daysInMonth);
+                    updateQueueWithDays();
+                    // choose day with linear possibility - odwrotna dystrybuanta funkcja: f(x) = 1 - x
+                    // day lower in List - bigger possibility of beeing choosen
+                    double uniformPossibility = rand.Next(0, 5000) / 10000.0;
+                    double linearPossibility = 1.0 - Math.Sqrt(1.0 - 2.0 * uniformPossibility);
+                    double quadraticPossibility = Math.Pow(3.0 * uniformPossibility, (1.0 / 3.0));
+                    int dayIndex = (int)(linearPossibility * daysInMonth);
+                    // int dayIndex = rand.Next(0, daysInMonth / 2);
+                    int day;
+                    if (shiftType.Equals("D"))
+                    {
+                        day = queueOfDaysDay[dayIndex]._day;
+                    }
+                    else
+                    {
+                        day = queueOfDaysNight[dayIndex]._day;
+                    }                
+
                     bool isThisSunday = sundaysList.Contains(day + 1);
 
                     bool canProceed = CheckIf_12h_BetweenShifts(employeeNumber, shiftType, day) &
@@ -530,19 +549,24 @@ namespace Nurses_Scheduler.Classes
                                       CheckIfAll_12h_ShiftsAreAssigned(employeeNumber) &
                                       CheckIfStill_35h_InFollowing_7_Days(employeeNumber, day, shiftType);
 
-                    if (day < daysInMonth - 1)
-                    {
-                        updateSundayList(day + 1);
-                    }
+                    updateSundayList(daysInMonth);
                     if (isThisSunday)
                     {
                         canProceed &= CheckIfNotFourthSunday(employeeNumber, day);
                     }
                     if (canProceed)
                     {
-                        monthSchedule[employeeNumber, day].Data[1] = true;
-                        ShiftCounter[employeeNumber] += 1;
-                        employeesOnNightShiftCounter[day] += 1;
+                        if (shiftType.Equals("D"))
+                        {
+                            monthSchedule[employeeNumber, day].Data[0] = true;
+                            employeesOnDayShiftCounter[day] += 1;
+                        }
+                        else if (shiftType.Equals("N"))
+                        {
+                            monthSchedule[employeeNumber, day].Data[1] = true;
+                            employeesOnNightShiftCounter[day] += 1;
+                        }
+                        ShiftCounter[employeeNumber] += 1; 
                         Debug.WriteLine("Complementary: \t occupation: " + employeeList[employeeNumber].Occupation + " " + shiftType + ": " + day.ToString() + " employee: " + employeeNumber.ToString());
                     }
                 }
@@ -568,10 +592,7 @@ namespace Nurses_Scheduler.Classes
                                       CheckIfExistAllreadyAssignedShift(employeeNumber, day) &
                                       CheckIfStill_35h_InFollowing_7_Days(employeeNumber, day, shiftType);
 
-                    if (day < daysInMonth - 1)
-                    {
-                        updateSundayList(day + 1);
-                    }
+                    updateSundayList(daysInMonth);
                     if (isThisSunday)
                     {
                         canProceed &= CheckIfNotFourthSunday(employeeNumber, day);
@@ -589,6 +610,17 @@ namespace Nurses_Scheduler.Classes
 
             Debug.WriteLine("Uzupełniono krótką zmianę wszystkim pracownikom");
 
+            Debug.WriteLine("statystyki zmiany dziennej");
+            foreach ((int _day, int _employeeCount) data in queueOfDaysDay)
+            {
+                Debug.WriteLine("day: " + data._day.ToString() + "\t Count: " + data._employeeCount.ToString());
+            }
+
+            Debug.WriteLine("statystyki zmiany nocnej");
+            foreach ((int _day, int _employeeCount) data in queueOfDaysNight)
+            {
+                Debug.WriteLine("day: " + data._day.ToString() + "\t Count: " + data._employeeCount.ToString());
+            }
         }
 
 
@@ -617,7 +649,12 @@ namespace Nurses_Scheduler.Classes
                 if (ShiftType.Equals("N"))
                 {
                     bool currentDay = this.monthSchedule[EmployeeIndex, day].Data[0];
-                    return !currentDay;
+                    bool daytAfter = false;
+                    if (day < daysInMonth - 1)
+                    {
+                        daytAfter = this.monthSchedule[EmployeeIndex, day + 1].Data[0];
+                    }  
+                    return !currentDay & !daytAfter;
                 }
                 if (ShiftType.Equals("d"))
                 {
@@ -636,7 +673,8 @@ namespace Nurses_Scheduler.Classes
                 if (ShiftType.Equals("N"))
                 {
                     bool currentDay = this.lastDayOfPreviousMonthSchedule[EmployeeIndex].Data[0];
-                    return !currentDay;
+                    bool daytAfter = this.monthSchedule[EmployeeIndex, 0].Data[0];
+                    return !currentDay & !daytAfter;
                 }
                 if (ShiftType.Equals("d"))
                 {
@@ -995,8 +1033,27 @@ namespace Nurses_Scheduler.Classes
             {
                 getDataAboutSundaysInPrevoiusMonth();
             }
-
             sundaysList.Reverse();
+        }
+
+
+        private void updateQueueWithDays()
+        {
+            queueOfDaysDay = new List<(int, int)>();
+            queueOfDaysNight = new List<(int, int)>();
+            for (int day = 0; day < daysInMonth; day++)
+            {
+                (int _day, int _employeeCount) dayInfo = (day, employeesOnDayShiftCounter[day]);
+                (int _day, int _employeeCount) nightInfo = (day, employeesOnNightShiftCounter[day]);
+
+                queueOfDaysDay.Add(dayInfo);
+                queueOfDaysNight.Add(nightInfo);
+            }
+            queueOfDaysDay = queueOfDaysDay.OrderBy(x => x._employeeCount).ToList();
+            queueOfDaysNight = queueOfDaysNight.OrderBy(x => x._employeeCount).ToList();
+
+            // queueOfDaysDay.Reverse();
+            // queueOfDaysNight.Reverse();
         }
     }
 }
