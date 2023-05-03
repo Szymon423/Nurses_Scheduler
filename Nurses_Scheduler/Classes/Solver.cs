@@ -1,4 +1,5 @@
 ﻿using Nurses_Scheduler.Classes.DataBaseClasses;
+using Nurses_Scheduler.Windows;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -126,12 +127,14 @@ namespace Nurses_Scheduler.Classes
         private shiftData[/* employeeCount */] lastDayOfPreviousMonthSchedule;
         private List<Employee> employeeList;
         private List<int> numberOfRecentlyWorkedSundays;
-        private int requiredFullTimeShifts;
-        private bool requiredPartTimeShift;
+        private int[] requiredFullTimeShifts;
+        private bool[] requiredPartTimeShift;
         private List<FundamentalEmployee> fundamentalEmployees_Day;
         private List<FundamentalEmployee> fundamentalEmployees_Night;
         private List<ComplementaryEmployee> complementaryEmployess_Day;
         private List<ComplementaryEmployee> complementaryEmployess_Night;
+        private List<string> complementaryEmployessOccupations_Day;
+        private List<string> complementaryEmployessOccupations_Night;
         private int minimalEmployeeNumberPerDayShift;
         private int minimalEmployeeNumberPerNightShift;
         private int followingWeeksInMonth; 
@@ -149,7 +152,7 @@ namespace Nurses_Scheduler.Classes
 
 
 
-        public  Solver (DepartmentWorkArrangement _dwa, List<int> _eventDays, int _year, int _month, int _requiredFullTimeShifts, bool _requiredPartTimeShift) 
+        public  Solver (DepartmentWorkArrangement _dwa, List<int> _eventDays, int _year, int _month) 
         {
             dwa = _dwa;
             department = _dwa.department;
@@ -162,8 +165,8 @@ namespace Nurses_Scheduler.Classes
             monthSchedule = new shiftData[employeeCount, daysInMonth];
             lastDayOfPreviousMonthSchedule = new shiftData[employeeCount];
             employeeList = new List<Employee>();
-            requiredFullTimeShifts = _requiredFullTimeShifts;
-            requiredPartTimeShift = _requiredPartTimeShift;
+            requiredFullTimeShifts = new int[employeeCount];
+            requiredPartTimeShift = new bool[employeeCount];
             minimalEmployeeNumberPerDayShift = department.MinimalEmployeePerDayShift;
             minimalEmployeeNumberPerNightShift = department.MinimalEmployeePerNightShift;
             employeeGroupIndices = new List<employeeGroupIndex>();
@@ -258,6 +261,19 @@ namespace Nurses_Scheduler.Classes
             complementaryEmployess_Day = ComplementaryEmployee.GetComplementaryEmployeesDB(department.Id, "D");
             complementaryEmployess_Night = ComplementaryEmployee.GetComplementaryEmployeesDB(department.Id, "N");
 
+            complementaryEmployessOccupations_Day = new List<string>();
+            complementaryEmployessOccupations_Night = new List<string>();
+
+            foreach (var cmpl in complementaryEmployess_Day)
+            {
+                complementaryEmployessOccupations_Day.Add(cmpl.Occupation);
+            }
+
+            foreach (var cmpl in complementaryEmployess_Night)
+            {
+                complementaryEmployessOccupations_Night.Add(cmpl.Occupation);
+            }
+
             // określ ile bieżących tygodni będzie w miesiącu
             if (daysInMonth == 28)
             {
@@ -312,7 +328,7 @@ namespace Nurses_Scheduler.Classes
                 }
             }
 
-
+            CalculateEmployeesWorkingHoures();
             getDataFromPreviousMonth();
             GenerateHardCoistrainsCorrectSchedule();
         }
@@ -325,37 +341,8 @@ namespace Nurses_Scheduler.Classes
             {
                 bool isThisSunday = sundaysList.Contains(day + 1);
                 bool isThisMonday = mondaysList.Contains(day + 1);
-                for (int gruop_id = 0; gruop_id < my_fundamentalEmplyees[day].employees_Day.Count; gruop_id++)
-                {
-                    // if on given day are missing complementary employees of type 0 (pielęgniarki)
-                    while (my_fundamentalEmplyees[day].employees_Day[gruop_id].employeeCount < expected_fundamentalEmplyees.employees_Day[gruop_id].employeeCount)
-                    {
-                        // random chose number of employee froom group of 0 (pielęgniarki)
-                        string occupation = expected_fundamentalEmplyees.employees_Day[gruop_id].occupation;
-                        int employeeNumFromCurrentGroup = rand.Next(employeeGroupIndices[OccupationToGroupIndex[occupation]].start, employeeGroupIndices[OccupationToGroupIndex[occupation]].end + 1);
-                        bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "D", day)      &
-                                          CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day)   &
-                                          CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup);
-                        
-                        if (isThisMonday)
-                        {
-                            updateSundayList(day);
-                        }
-                        if (isThisSunday)
-                        {
-                            canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day);
-                        }
-                        if (canProceed)
-                        {
-                            monthSchedule[employeeNumFromCurrentGroup, day].Data[0] = true;
-                            ShiftCounter[employeeNumFromCurrentGroup] += 1;
-                            my_fundamentalEmplyees[day].employees_Day[gruop_id].employeeCount += 1;
-                            employeesOnDayShiftCounter[day] += 1;
-                            Debug.WriteLine("occupation: " + occupation + " day: " + day.ToString() + " employee: " + employeeNumFromCurrentGroup.ToString());
-                        }
-                    }
-                }
 
+                // fill up schedule with fundamental employees on day shifts
                 for (int gruop_id = 0; gruop_id < my_fundamentalEmplyees[day].employees_Night.Count; gruop_id++)
                 {
                     // if on given day are missing complementary employees of type 0 (pielęgniarki)
@@ -364,9 +351,10 @@ namespace Nurses_Scheduler.Classes
                         // random chose number of employee froom group of 0 (pielęgniarki)
                         string occupation = expected_fundamentalEmplyees.employees_Night[gruop_id].occupation;
                         int employeeNumFromCurrentGroup = rand.Next(employeeGroupIndices[OccupationToGroupIndex[occupation]].start, employeeGroupIndices[OccupationToGroupIndex[occupation]].end + 1);
-                        bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "N", day)      &
-                                          CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day)   &
-                                          CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup);
+                        bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "N", day) &
+                                          CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day) &
+                                          CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup) &
+                                          CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "N");
                         if (isThisMonday)
                         {
                             updateSundayList(day);
@@ -386,13 +374,121 @@ namespace Nurses_Scheduler.Classes
                     }
                 }
 
-                Debug.WriteLine("Pracownicy podstawowi uzupełnieni");
-                
-
-
-
-
+                // fill up schedule with fundamental employees on night shifts
+                for (int gruop_id = 0; gruop_id < my_fundamentalEmplyees[day].employees_Day.Count; gruop_id++)
+                {
+                    // if on given day are missing complementary employees of type 0 (pielęgniarki)
+                    while (my_fundamentalEmplyees[day].employees_Day[gruop_id].employeeCount < expected_fundamentalEmplyees.employees_Day[gruop_id].employeeCount)
+                    {
+                        // random chose number of employee froom group of 0 (pielęgniarki)
+                        string occupation = expected_fundamentalEmplyees.employees_Day[gruop_id].occupation;
+                        int employeeNumFromCurrentGroup = rand.Next(employeeGroupIndices[OccupationToGroupIndex[occupation]].start, employeeGroupIndices[OccupationToGroupIndex[occupation]].end + 1);
+                        bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "D", day)      &
+                                          CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day)   &
+                                          CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup)         &
+                                          CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "D");
+                        
+                        if (isThisMonday)
+                        {
+                            updateSundayList(day);
+                        }
+                        if (isThisSunday)
+                        {
+                            canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day);
+                        }
+                        if (canProceed)
+                        {
+                            monthSchedule[employeeNumFromCurrentGroup, day].Data[0] = true;
+                            ShiftCounter[employeeNumFromCurrentGroup] += 1;
+                            my_fundamentalEmplyees[day].employees_Day[gruop_id].employeeCount += 1;
+                            employeesOnDayShiftCounter[day] += 1;
+                            Debug.WriteLine("occupation: " + occupation + " day: " + day.ToString() + " employee: " + employeeNumFromCurrentGroup.ToString());
+                        }
+                    }
+                }
             }
+
+            Debug.WriteLine("Pracownicy podstawowi uzupełnieni");
+
+            for (int day = 0; day < daysInMonth; day++)
+            {
+                bool isThisSunday = sundaysList.Contains(day + 1);
+                bool isThisMonday = mondaysList.Contains(day + 1);
+
+                // fill up schedule with complementary employees on day shifts
+                while (employeesOnDayShiftCounter[day] < minimalEmployeeNumberPerDayShift)
+                {
+                    string occupation = complementaryEmployessOccupations_Day[rand.Next(0, complementaryEmployessOccupations_Day.Count - 1)];
+                    int employeeNumFromCurrentGroup = rand.Next(employeeGroupIndices[OccupationToGroupIndex[occupation]].start, employeeGroupIndices[OccupationToGroupIndex[occupation]].end + 1);
+
+                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "D", day) &
+                                      CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day) &
+                                      CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup) &
+                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "D");
+                    
+                    if (isThisMonday)
+                    {
+                        updateSundayList(day);
+                    }
+                    if (isThisSunday)
+                    {
+                        canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day);
+                    }
+                    if (canProceed)
+                    {
+                        monthSchedule[employeeNumFromCurrentGroup, day].Data[0] = true;
+                        ShiftCounter[employeeNumFromCurrentGroup] += 1;
+                        employeesOnDayShiftCounter[day] += 1;
+                        Debug.WriteLine("Complementary: \t occupation: " + occupation + " day: " + day.ToString() + " employee: " + employeeNumFromCurrentGroup.ToString());
+                    }
+                }
+
+                // fill up schedule with complementary employees on night shifts
+                while (employeesOnNightShiftCounter[day] < minimalEmployeeNumberPerNightShift)
+                {
+                    string occupation = complementaryEmployessOccupations_Night[rand.Next(0, complementaryEmployessOccupations_Night.Count - 1)];
+                    int employeeNumFromCurrentGroup = rand.Next(employeeGroupIndices[OccupationToGroupIndex[occupation]].start, employeeGroupIndices[OccupationToGroupIndex[occupation]].end + 1);
+
+                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "N", day) &
+                                      CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day) &
+                                      CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup) &
+                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "N");
+
+                    if (isThisMonday)
+                    {
+                        updateSundayList(day);
+                    }
+                    if (isThisSunday)
+                    {
+                        canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day);
+                    }
+                    if (canProceed)
+                    {
+                        monthSchedule[employeeNumFromCurrentGroup, day].Data[1] = true;
+                        ShiftCounter[employeeNumFromCurrentGroup] += 1;
+                        employeesOnNightShiftCounter[day] += 1;
+                        Debug.WriteLine("Complementary: \t occupation: " + occupation + " night: " + day.ToString() + " employee: " + employeeNumFromCurrentGroup.ToString());
+                    }
+                }
+            }
+
+            Debug.WriteLine("Uzupełniono do minimalnego wymaganego składu pracowników");
+
+            // ShiftCounter[employeeNumFromCurrentGroup]
+            for (int employeeNumber = 0; employeeNumber < employeeCount; employeeNumber++)
+            {
+                if (employeeList[employeeNumber] == null)
+                {
+                    continue;
+                }
+
+                while (ShiftCounter[employeeNumber] < requiredFullTimeShifts[employeeNumber])
+                {
+
+                }
+            }
+
+            Debug.WriteLine("Uzupełniono godziny wszystkim pracownikom");
         }
 
 
@@ -404,7 +500,7 @@ namespace Nurses_Scheduler.Classes
 
         private bool CheckIfNotFourthSunday(int EmployeeIndex , int day)
         {
-            return !(numberOfRecentlyWorkedSundays[EmployeeIndex] > 3);
+            return numberOfRecentlyWorkedSundays[EmployeeIndex] < 3;
         }
 
 
@@ -448,25 +544,151 @@ namespace Nurses_Scheduler.Classes
                     return !nightBefore;
                 }
             }
+            Debug.WriteLine("12h between shifts returned false");
             return false;
         }
 
 
         private bool CheckIfExistAllreadyAssignedShift(int EmployeeIndex, int day)
         {
-            bool currentDay = this.monthSchedule[EmployeeIndex, day].Data[0];
-            bool currentNight = this.monthSchedule[EmployeeIndex, day].Data[1];   
+            bool currentDay = monthSchedule[EmployeeIndex, day].Data[0];
+            bool currentNight = monthSchedule[EmployeeIndex, day].Data[1];   
             return !(currentDay | currentNight);
         }
 
 
         private bool CheckIfAll_12h_ShiftsAreAssigned(int EmployeeIndex)
         {
-            if (ShiftCounter[EmployeeIndex] < this.requiredFullTimeShifts)
+            if (ShiftCounter[EmployeeIndex] < requiredFullTimeShifts[EmployeeIndex])
             {
                 return true;
             }
+            Debug.WriteLine("all 12h shifts returned false");
+            
             return false;
+        }
+
+
+        private void CalculateEmployeesWorkingHoures()
+        {
+            for (int EmployeeIdex = 0; EmployeeIdex < employeeCount; EmployeeIdex++)
+            {
+                if (employeeList[EmployeeIdex] == null)
+                {
+                    continue;
+                }
+                string workingTime = employeeList[EmployeeIdex].WorkingTime;
+                double workingHoures;
+                if (workingTime.Equals("Pełny etat"))
+                {
+                    workingHoures = MonthView.CalculateWorkingHoures(eventDays.Count, daysInMonth, MonthView.FullTime);
+                }
+                else if (workingTime.Equals("1/2 etatu"))
+                {
+                    workingHoures = MonthView.CalculateWorkingHoures(eventDays.Count, daysInMonth, MonthView.HalfTime);
+                }
+                else if (workingTime.Equals("3/4 etatu"))
+                {
+                    workingHoures = MonthView.CalculateWorkingHoures(eventDays.Count, daysInMonth, MonthView.ThreeFourthOfTime);
+                }
+                else
+                {
+                    workingHoures = 0.0;
+                }
+
+                int houres = (int)workingHoures;
+                int minutes = (int)Math.Round((workingHoures - houres) * 60);
+                int fullTimeDays = houres / 12;
+                int shortShitfHoures = houres - fullTimeDays * 12;
+
+                requiredFullTimeShifts[EmployeeIdex] = fullTimeDays;
+                if (shortShitfHoures > 0 || minutes > 0)
+                {
+                    requiredPartTimeShift[EmployeeIdex] = true;
+                }
+            }
+        }
+
+
+        private bool CheckIfStill_35h_InFollowing_7_Days(int employeeIndex, int day, string shiftToInsert)
+        {
+            // copy of previous state
+            BitArray copy = new BitArray(monthSchedule[employeeIndex, day].Data);
+
+            // temporary insert this shift
+            if (shiftToInsert.Equals("D"))
+            {
+                monthSchedule[employeeIndex, day].Data[0] = true;
+            }
+            else if (shiftToInsert.Equals("N"))
+            {
+                monthSchedule[employeeIndex, day].Data[1] = true;
+            }
+            else if (shiftToInsert.Equals("d"))
+            {
+                monthSchedule[employeeIndex, day].Data[0] = true;
+                monthSchedule[employeeIndex, day].Data[1] = true;
+            }
+
+            int startDay = (day / 7) * 7;
+            int endDay = startDay + 7;
+            if (endDay > daysInMonth - 1)
+            {
+                endDay = daysInMonth - 1;
+            }
+            bool currentDayShiftExist, nextDayShiftExist, doubleNextDayShiftExist, canProceed = false;
+
+            for (int i = startDay; i < endDay - 1; i++)
+            {
+                // check for D, /
+                currentDayShiftExist = monthSchedule[employeeIndex, i].Data[0];
+                nextDayShiftExist = monthSchedule[employeeIndex, i + 1].Data[0] | monthSchedule[employeeIndex, i + 1].Data[1];
+                if (currentDayShiftExist & !nextDayShiftExist)
+                {
+                    canProceed = true;
+                    Debug.WriteLine("check for:  D, /");
+                    break;
+                }
+
+                // check for /, /
+                currentDayShiftExist = monthSchedule[employeeIndex, i].Data[0] | monthSchedule[employeeIndex, i + 1].Data[1]; 
+                nextDayShiftExist = monthSchedule[employeeIndex, i + 1].Data[0] | monthSchedule[employeeIndex, i + 1].Data[1];
+                if (!currentDayShiftExist & !nextDayShiftExist)
+                {
+                    canProceed = true;
+                    Debug.WriteLine("check for:  /, /");
+                    break;
+                }
+
+                if (i < endDay - 2)
+                {
+                    // check for N, /, N
+                    currentDayShiftExist = monthSchedule[employeeIndex, i].Data[1];
+                    nextDayShiftExist = monthSchedule[employeeIndex, i + 1].Data[0] | monthSchedule[employeeIndex, i + 1].Data[1];
+                    doubleNextDayShiftExist = monthSchedule[employeeIndex, i + 2].Data[1];
+                    if (currentDayShiftExist & !nextDayShiftExist & doubleNextDayShiftExist)
+                    {
+                        canProceed = true;
+                        Debug.WriteLine("check for:  N, /, N");
+                        break;
+                    }
+                }
+            }
+
+            // rollback previous temporary changes
+            monthSchedule[employeeIndex, day].Data = copy;
+
+            if (!canProceed && (endDay - startDay < 4))
+            {
+                canProceed = true;
+                Debug.WriteLine("Allow due to short week (under 4 days)");
+            }
+
+            if (!canProceed)
+            {
+                Debug.WriteLine("35h returned false");
+            }
+            return canProceed;
         }
 
 

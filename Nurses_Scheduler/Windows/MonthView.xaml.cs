@@ -50,6 +50,10 @@ namespace Nurses_Scheduler.Windows
         private List<Department> departmentList;
         private List<DepartmentWorkArrangement> departmentsWorkArrangement;
 
+        public static int FullTime = 0;
+        public static int HalfTime = 1;
+        public static int ThreeFourthOfTime = 2;
+
 
         public MonthView(bool isUserEnteringRequests)
         {
@@ -319,7 +323,7 @@ namespace Nurses_Scheduler.Windows
                 }
                 dt = dt.AddDays(1);
             }
-            workingHoures = CalculateWorkingHoures(eventDays.Count, daysInMonth);
+            workingHoures = CalculateWorkingHoures(eventDays.Count, daysInMonth, MonthView.FullTime);
             workingHoures_TextBox.Text = RaportData.convertWorkingHoures(workingHoures).Replace("(", "\n(");
             return;
         }
@@ -554,7 +558,7 @@ namespace Nurses_Scheduler.Windows
         
         private void GenerateSchedule_Click(object sender, RoutedEventArgs e)
         {
-            Solver test = new Solver(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]], eventDays, choosenYear, choosenMonth, 12, true);
+            Solver test = new Solver(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]], eventDays, choosenYear, choosenMonth);
             departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]] = test.getSchedule();
             MonthGrid_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
 
@@ -575,14 +579,39 @@ namespace Nurses_Scheduler.Windows
             await scheduleFile.Save(!isUserEnteringRequests); // requests - false, schedule - true
         }
 
-        private double CalculateWorkingHoures(int eventDaysNumber, int daysInMonth)
+        public static double CalculateWorkingHoures(int eventDaysNumber, int daysInMonth, int workingTime)
         {
-            int workingDays = daysInMonth - eventDaysNumber;
-            double workingHoures = workingDays * 455.0 / 60.0;
-            Debug.WriteLine("\neventDaysNumber: " + eventDaysNumber.ToString());
-            Debug.WriteLine("daysInMonth: " + daysInMonth.ToString());
-            Debug.WriteLine("Working houres: " + workingHoures.ToString());
-            return workingHoures;
+            if (workingTime == MonthView.FullTime)
+            {
+                int workingDays = daysInMonth - eventDaysNumber;
+                double workingHoures = workingDays * 455.0 / 60.0;
+                Debug.WriteLine("\neventDaysNumber: " + eventDaysNumber.ToString());
+                Debug.WriteLine("daysInMonth: " + daysInMonth.ToString());
+                Debug.WriteLine("Working houres: " + workingHoures.ToString());
+                return workingHoures;
+            }
+
+            if (workingTime == MonthView.HalfTime)
+            {
+                int workingDays = daysInMonth - eventDaysNumber;
+                double workingHoures = workingDays * 455.0 / 60.0 / 2.0;
+                Debug.WriteLine("\neventDaysNumber: " + eventDaysNumber.ToString());
+                Debug.WriteLine("daysInMonth: " + daysInMonth.ToString());
+                Debug.WriteLine("Working houres: " + workingHoures.ToString());
+                return workingHoures;
+            }
+
+            if (workingTime == MonthView.ThreeFourthOfTime)
+            {
+                int workingDays = daysInMonth - eventDaysNumber;
+                double workingHoures = workingDays * 455.0 / 60.0 * 3.0 / 4.0;
+                Debug.WriteLine("\neventDaysNumber: " + eventDaysNumber.ToString());
+                Debug.WriteLine("daysInMonth: " + daysInMonth.ToString());
+                Debug.WriteLine("Working houres: " + workingHoures.ToString());
+                return workingHoures;
+            }
+
+            return 0.0;
         }
     }
 }
