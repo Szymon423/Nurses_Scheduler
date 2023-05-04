@@ -378,13 +378,10 @@ namespace Nurses_Scheduler.Classes
                                           CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day) &
                                           CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup) &
                                           CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "N");
-                        if (isThisMonday)
-                        {
-                            updateSundayList(day);
-                        }
+
                         if (isThisSunday)
                         {
-                            canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day);
+                            canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "N");
                         }
                         if (canProceed)
                         {
@@ -411,13 +408,9 @@ namespace Nurses_Scheduler.Classes
                                           CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup)         &
                                           CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "D");
                         
-                        if (isThisMonday)
-                        {
-                            updateSundayList(day);
-                        }
                         if (isThisSunday)
                         {
-                            canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day);
+                            canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "D");
                         }
                         if (canProceed)
                         {
@@ -449,13 +442,9 @@ namespace Nurses_Scheduler.Classes
                                       CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup) &
                                       CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "D");
                     
-                    if (isThisMonday)
-                    {
-                        updateSundayList(day);
-                    }
                     if (isThisSunday)
                     {
-                        canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day);
+                        canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "D");
                     }
                     if (canProceed)
                     {
@@ -477,13 +466,9 @@ namespace Nurses_Scheduler.Classes
                                       CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup) &
                                       CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "N");
 
-                    if (isThisMonday)
-                    {
-                        updateSundayList(day);
-                    }
                     if (isThisSunday)
                     {
-                        canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day);
+                        canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "N");
                     }
                     if (canProceed)
                     {
@@ -529,9 +514,7 @@ namespace Nurses_Scheduler.Classes
                     // day lower in List - bigger possibility of beeing choosen
                     double uniformPossibility = rand.Next(0, 5000) / 10000.0;
                     double linearPossibility = 1.0 - Math.Sqrt(1.0 - 2.0 * uniformPossibility);
-                    double quadraticPossibility = Math.Pow(3.0 * uniformPossibility, (1.0 / 3.0));
                     int dayIndex = (int)(linearPossibility * daysInMonth);
-                    // int dayIndex = rand.Next(0, daysInMonth / 2);
                     int day;
                     if (shiftType.Equals("D"))
                     {
@@ -549,10 +532,9 @@ namespace Nurses_Scheduler.Classes
                                       CheckIfAll_12h_ShiftsAreAssigned(employeeNumber) &
                                       CheckIfStill_35h_InFollowing_7_Days(employeeNumber, day, shiftType);
 
-                    updateSundayList(daysInMonth);
                     if (isThisSunday)
                     {
-                        canProceed &= CheckIfNotFourthSunday(employeeNumber, day);
+                        canProceed &= CheckIfNotFourthSunday(employeeNumber, day, shiftType);
                     }
                     if (canProceed)
                     {
@@ -592,10 +574,9 @@ namespace Nurses_Scheduler.Classes
                                       CheckIfExistAllreadyAssignedShift(employeeNumber, day) &
                                       CheckIfStill_35h_InFollowing_7_Days(employeeNumber, day, shiftType);
 
-                    updateSundayList(daysInMonth);
                     if (isThisSunday)
                     {
-                        canProceed &= CheckIfNotFourthSunday(employeeNumber, day);
+                        canProceed &= CheckIfNotFourthSunday(employeeNumber, day, shiftType);
                     }
                     if (canProceed)
                     {
@@ -630,9 +611,52 @@ namespace Nurses_Scheduler.Classes
         }
 
 
-        private bool CheckIfNotFourthSunday(int EmployeeIndex , int day)
+        private bool CheckIfNotFourthSunday(int employeeIndex , int day, string shiftToInsert)
         {
-            return numberOfRecentlyWorkedSundays[EmployeeIndex] < 3;
+            // copy of previous state
+            BitArray copy = new BitArray(monthSchedule[employeeIndex, day].Data);
+
+            // temporary insert this shift
+            if (shiftToInsert.Equals("D"))
+            {
+                monthSchedule[employeeIndex, day].Data[0] = true;
+            }
+            else if (shiftToInsert.Equals("N"))
+            {
+                monthSchedule[employeeIndex, day].Data[1] = true;
+            }
+            else if (shiftToInsert.Equals("d"))
+            {
+                monthSchedule[employeeIndex, day].Data[0] = true;
+                monthSchedule[employeeIndex, day].Data[1] = true;
+            }
+
+            bool canProceed = true;
+
+            int temporaryCounter = numberOfRecentlyWorkedSundays[employeeIndex];
+
+            foreach (int sunday_i in sundaysList)
+            {
+                if (monthSchedule[employeeIndex, sunday_i - 1].Data[0] == true || monthSchedule[employeeIndex, sunday_i - 1].Data[1] == true)
+                {
+                    temporaryCounter += 1;
+
+                    if (temporaryCounter > 3)
+                    {
+                        canProceed = false;
+                        break;
+                    }
+                }
+                else
+                {
+                    temporaryCounter = 0;
+                }
+            }
+  
+            // rollback previous temporary changes
+            monthSchedule[employeeIndex, day].Data = copy;
+
+            return canProceed;
         }
 
 
@@ -989,54 +1013,6 @@ namespace Nurses_Scheduler.Classes
         }
 
 
-        private void updateSundayList(int dayUpToWhichUpdate)
-        {
-            sundaysList.Reverse();
-            
-            for (int i = 0; i < employeeCount; i++)
-            {
-                numberOfRecentlyWorkedSundays[i] = 0;
-            }
-
-            bool checkInPreviousMonth = true;
-
-            foreach (int sunday_i in sundaysList)
-            {
-                if (sunday_i <= dayUpToWhichUpdate)
-                {
-                    checkInPreviousMonth = false;
-                    for (int employee_i = 0; employee_i < employeeCount; employee_i++)
-                    {
-                        if (this.monthSchedule[employee_i, sunday_i].Data[0] || this.monthSchedule[employee_i, sunday_i].Data[1])
-                        {
-                            if (sunday_i == sundaysList.First())
-                            {
-                                numberOfRecentlyWorkedSundays[employee_i] = 1;
-                            }
-                            else
-                            {
-                                if (numberOfRecentlyWorkedSundays[employee_i] > 0)
-                                {
-                                    numberOfRecentlyWorkedSundays[employee_i] += 1;
-                                }
-                                else
-                                {
-                                    numberOfRecentlyWorkedSundays[employee_i] = 0;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (checkInPreviousMonth)
-            {
-                getDataAboutSundaysInPrevoiusMonth();
-            }
-            sundaysList.Reverse();
-        }
-
-
         private void updateQueueWithDays()
         {
             queueOfDaysDay = new List<(int, int)>();
@@ -1051,9 +1027,6 @@ namespace Nurses_Scheduler.Classes
             }
             queueOfDaysDay = queueOfDaysDay.OrderBy(x => x._employeeCount).ToList();
             queueOfDaysNight = queueOfDaysNight.OrderBy(x => x._employeeCount).ToList();
-
-            // queueOfDaysDay.Reverse();
-            // queueOfDaysNight.Reverse();
         }
     }
 }
