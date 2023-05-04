@@ -153,10 +153,11 @@ namespace Nurses_Scheduler.Classes
         private List<int> mondaysList;
         private List<(int _day, int _employeeCount)> queueOfDaysDay;
         private List<(int _day, int _employeeCount)> queueOfDaysNight;
+        private List<int> weekendDays;
 
 
 
-        public  Solver (DepartmentWorkArrangement _dwa, List<int> _eventDays, int _year, int _month) 
+        public  Solver (DepartmentWorkArrangement _dwa, List<int> _eventDays, int _year, int _month)
         {
             dwa = _dwa;
             department = _dwa.department;
@@ -351,6 +352,7 @@ namespace Nurses_Scheduler.Classes
             queueOfDaysDay = new List<(int, int)>();
             queueOfDaysNight = new List<(int, int)>();
 
+            makeWeekendDaysList();
             CalculateEmployeesWorkingHoures();
             getDataFromPreviousMonth();
             GenerateHardCoistrainsCorrectSchedule();
@@ -1027,6 +1029,48 @@ namespace Nurses_Scheduler.Classes
             }
             queueOfDaysDay = queueOfDaysDay.OrderBy(x => x._employeeCount).ToList();
             queueOfDaysNight = queueOfDaysNight.OrderBy(x => x._employeeCount).ToList();
+
+            // place weekend days higher in List -> less people during weekends
+            for (int i = 0; i < daysInMonth - weekendDays.Count; i++)
+            {
+                bool decrement = false;
+                if (weekendDays.Contains(queueOfDaysDay[i]._day + 1))
+                {
+                    (int _day, int _employeeCount) tempInfo = queueOfDaysDay[i];
+                    queueOfDaysDay.RemoveAt(i);
+                    queueOfDaysDay.Add(tempInfo);
+                    decrement = true;
+                }
+
+                if (weekendDays.Contains(queueOfDaysNight[i]._day + 1))
+                {
+                    (int _day, int _employeeCount) tempInfo = queueOfDaysNight[i];
+                    queueOfDaysNight.RemoveAt(i);
+                    queueOfDaysNight.Add(tempInfo);
+                    decrement = true;
+                }
+
+                if (decrement)
+                {
+                    i--;
+                }
+            }
         }
+
+
+        private void makeWeekendDaysList()
+        {
+            weekendDays = new List<int>();
+
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                DateTime dt = new DateTime(year, month, day);
+                if (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday || eventDays.Contains(day))
+                {
+                    weekendDays.Add(day);
+                }
+            }
+        }
+
     }
 }
