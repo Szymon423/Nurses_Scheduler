@@ -78,6 +78,7 @@ namespace Nurses_Scheduler.Classes
         }
     }
 
+
     public class dayEmployees
     {
         public List<shiftEmployees> employees_Day;
@@ -1085,5 +1086,101 @@ namespace Nurses_Scheduler.Classes
             }
         }
 
+        private void SimullatedAnnealing(double initialTemeprature, double temperatureFactor, double minTemperature, int maxIterations, double k)
+        {
+            // copy of ooryginal first solution
+            shiftData[,] oldMonthSchedule = monthSchedule.Clone() as shiftData[,];
+            shiftData[,] bestSolution = monthSchedule.Clone() as shiftData[,];
+            shiftData[,] solution;
+
+            double temperature = initialTemeprature;
+            double bestPower = Power(oldMonthSchedule);
+            double delta;
+            double currentPower;
+            int iteration = 0;
+            bool acceptSolution = false;
+            bool canContiniue = true;    
+            Random rand = new Random();
+            
+            while (canContiniue)
+            {
+                // generate solution
+                solution = generateSolutionFromNeighbourhood(bestSolution);
+                
+                // calculate it's Power
+                currentPower = Power(solution);
+
+                delta = currentPower - bestPower;
+
+                if (delta > 0.0)
+                {
+                    acceptSolution = true;
+                }
+                else
+                {
+                    if (rand.NextDouble() > Math.Exp(delta / (k * temperature)))
+                    {
+                        acceptSolution = true;
+                    }
+                }
+
+                if (acceptSolution)
+                {
+                    bestSolution = solution.Clone() as shiftData[,];
+                    bestPower = currentPower;
+                    acceptSolution = false;
+                }
+
+                // change tempperature, increase iterations and check finishing factor
+                temperature = newTemperature(temperature, iteration, 0.95, "logarithmic");
+                iteration++;
+                if (iteration >= maxIterations)
+                {
+                    canContiniue = false;
+                }
+            }
+
+            monthSchedule = bestSolution.Clone() as shiftData[,];
+        }
+
+        private shiftData[,] generateSolutionFromNeighbourhood(shiftData[,] sd)
+        {
+            // copy item to target
+            shiftData[,] solution = sd.Clone() as shiftData[,];
+
+            // do something random to generate ALLOWED solution
+
+
+            return solution;
+        }
+
+
+        private double newTemperature(double currentTemperature, int currentIteration, double k, string version)
+        {
+            double temperature = currentTemperature;
+
+            switch (version)
+            {
+                case "linear":
+                    temperature -= k;
+                    break;
+
+                case "logarithmic":
+                    temperature *= Math.Pow(k, currentIteration);
+                    break;
+            }
+
+            // = currentTemperature * k;
+            return temperature;
+        }
+
+        private double Power(shiftData[,] A)
+        {
+            double delta = 5.0;
+
+
+
+            return delta;
+        }
     }
 }
