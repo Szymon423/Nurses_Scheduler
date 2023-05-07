@@ -1115,6 +1115,7 @@ namespace Nurses_Scheduler.Classes
             }
         }
 
+
         private void SimullatedAnnealing(double initialTemeprature, double temperatureFactor, double minTemperature, int maxIterations, double k)
         {
             // copy of ooryginal first solution
@@ -1172,6 +1173,7 @@ namespace Nurses_Scheduler.Classes
             monthSchedule = bestSolution.Clone() as shiftData[,];
         }
 
+
         private shiftData[,] generateSolutionFromNeighbourhood(shiftData[,] sd)
         {
             // copy item to target
@@ -1210,42 +1212,23 @@ namespace Nurses_Scheduler.Classes
         {
             int initialPoints = 100;
             int pointsToAdd = 0;
-
-            // check fitting to employees requests
-            for (int empl_i = 0; empl_i < employeeCount; empl_i++)
-            {
-                for (int day_i = 0; day_i < daysInMonth; day_i++)
-                {
-                    // \ is equal -> +10pkt
-                    if (A[empl_i, day_i].Data[0] == monthRequests[empl_i, day_i].Data[0] && A[empl_i, day_i].Data[1] == monthRequests[empl_i, day_i].Data[1])
-                    {
-                        pointsToAdd += 10;
-                        continue;
-                    }
-                    // D is equal -> +8pkt
-                    if (A[empl_i, day_i].Data[0] == monthRequests[empl_i, day_i].Data[0])
-                    {
-                        pointsToAdd += 8;
-                        continue;
-                    }
-                    // N is equal -> +7pkt
-                    if (A[empl_i, day_i].Data[1] == monthRequests[empl_i, day_i].Data[1])
-                    {
-                        pointsToAdd += 7;
-                    }
-                }
-            }
-
-            // check for combinations bigger than D, D, D, ... or N, N, ...
             int dayComboCounter = 0;
             int nightComboCounter = 0;
+            int[] employeeCount_Working_Day = Enumerable.Repeat<int>(0, daysInMonth).ToArray();
+            int[] employeeCount_Working_Night = Enumerable.Repeat<int>(0, daysInMonth).ToArray();
+            int[] employeeCount_nonWorking_Day = Enumerable.Repeat<int>(0, daysInMonth).ToArray();
+            int[] employeeCount_nonWorking_Night = Enumerable.Repeat<int>(0, daysInMonth).ToArray();
+
+            // check fitting to employees requests
+            // check for combinations bigger than D, D, D, ... or N, N, ...
+
             for (int empl_i = 0; empl_i < employeeCount; empl_i++)
             {
                 dayComboCounter = 0;
                 nightComboCounter = 0;
-
                 for (int day_i = 0; day_i < daysInMonth; day_i++)
                 {
+                    // check for combo in D
                     if (A[empl_i, day_i].Data[0] == true)
                     {
                         dayComboCounter++;
@@ -1254,11 +1237,12 @@ namespace Nurses_Scheduler.Classes
                     {
                         if (dayComboCounter > 3)
                         {
-                            pointsToAdd += 15 * (dayComboCounter - 3);
+                            pointsToAdd -= 15 * (dayComboCounter - 3);
                         }
                         dayComboCounter = 0;
                     }
 
+                    // // check for combo in N
                     if (A[empl_i, day_i].Data[1] == true)
                     {
                         nightComboCounter++;
@@ -1267,16 +1251,66 @@ namespace Nurses_Scheduler.Classes
                     {
                         if (nightComboCounter > 2)
                         {
-                            pointsToAdd += 15 * (nightComboCounter - 2);
+                            pointsToAdd -= 15 * (nightComboCounter - 2);
                         }
                         nightComboCounter = 0;
                     }
+
+                    // calculate people per shift
+                    if (weekendDays.Contains(day_i + 1))
+                    {
+                        if (A[empl_i, day_i].Data[0] == true) employeeCount_nonWorking_Day[day_i]++;
+                        if (A[empl_i, day_i].Data[1] == true) employeeCount_nonWorking_Night[day_i]++;
+                    }
+                    else
+                    {
+                        if (A[empl_i, day_i].Data[0] == true) employeeCount_Working_Day[day_i]++;
+                        if (A[empl_i, day_i].Data[1] == true) employeeCount_Working_Night[day_i]++;
+                    }
+
+                    // \ is equal -> +10pkt
+                    if (A[empl_i, day_i].Data[0] == monthRequests[empl_i, day_i].Data[0] && A[empl_i, day_i].Data[1] == monthRequests[empl_i, day_i].Data[1])
+                    {
+                        pointsToAdd += 10;
+                        // continue;
+                    }
+                    // D is equal -> +8pkt
+                    if (A[empl_i, day_i].Data[0] == monthRequests[empl_i, day_i].Data[0])
+                    {
+                        pointsToAdd += 8;
+                        // continue;
+                    }
+                    // N is equal -> +7pkt
+                    if (A[empl_i, day_i].Data[1] == monthRequests[empl_i, day_i].Data[1])
+                    {
+                        pointsToAdd += 7;
+                    }
                 }
             }
-
-            // TO DO: checking for equal D shift assignment hrough working days
-
+            pointsToAdd -= 5 * (int)StandardDeviation(employeeCount_Working_Day);
+            pointsToAdd -= 5 * (int)StandardDeviation(employeeCount_Working_Night);
+            pointsToAdd -= 5 * (int)StandardDeviation(employeeCount_nonWorking_Day);
+            pointsToAdd -= 5 * (int)StandardDeviation(employeeCount_nonWorking_Night);
+           
             return initialPoints + pointsToAdd;
+        }
+
+
+        private double StandardDeviation(int[] arr)
+        {
+            int sum = 0;
+            foreach (int item in arr)
+            {
+                sum += item;
+            }
+            double avg = sum / arr.Length;
+
+            double sumOfSquares = 0;
+            foreach (int item in arr)
+            {
+                sumOfSquares += Math.Pow(item - avg, 2);
+            }
+            return Math.Sqrt(sumOfSquares / arr.Length);
         }
     }
 }
