@@ -399,6 +399,7 @@ namespace Nurses_Scheduler.Classes
             CalculateEmployeesWorkingHoures();
             getDataFromPreviousMonth();
             GenerateHardCoistrainsCorrectSchedule();
+            AmmendScheduleAccordingToSoftConstrains();
         }
 
 
@@ -652,7 +653,7 @@ namespace Nurses_Scheduler.Classes
 
         private void AmmendScheduleAccordingToSoftConstrains()
         {
-
+            SimullatedAnnealing(100.0, 5.0, 10000, 0.95);
         }
 
 
@@ -1116,7 +1117,7 @@ namespace Nurses_Scheduler.Classes
         }
 
 
-        private void SimullatedAnnealing(double initialTemeprature, double temperatureFactor, double minTemperature, int maxIterations, double k)
+        private void SimullatedAnnealing(double initialTemeprature, double minTemperature, int maxIterations, double k)
         {
             // copy of ooryginal first solution
             shiftData[,] oldMonthSchedule = monthSchedule.Clone() as shiftData[,];
@@ -1180,6 +1181,134 @@ namespace Nurses_Scheduler.Classes
             shiftData[,] solution = sd.Clone() as shiftData[,];
 
             // do something random to generate ALLOWED solution
+            Random rand = new Random((int) DateTime.Now.Ticks & 0x0000FFFF);
+            
+            // random chooose employee
+            int randomEmployee;
+            do
+            {
+                randomEmployee = rand.Next(0, employeeCount);
+            }
+            while (employeeList[randomEmployee] == null);
+
+            bool canProceed = false;
+            int day1, day2, oldShiftCounterValue;
+            BitArray day1Data, day2Data;
+            string day1ShiftType = "";
+            string day2ShiftType = "";
+            do
+            {
+                // random choose days to change shifts
+                day1 = rand.Next(0, daysInMonth);      
+                do
+                {
+                    day2 = rand.Next(0, daysInMonth);
+                }
+                while (day1 == day2);
+
+                // check if there are any shifts in those days
+                bool day1ShiftsExist = sd[randomEmployee, day1].Data[0] | sd[randomEmployee, day1].Data[1];
+                bool day2ShiftsExist = sd[randomEmployee, day2].Data[0] | sd[randomEmployee, day2].Data[1];
+
+                if (day1ShiftsExist || day2ShiftsExist)
+                {
+                    // make copy of old data
+                    day1Data = new BitArray(sd[randomEmployee, day1].Data);
+                    day2Data = new BitArray(sd[randomEmployee, day2].Data);
+                    oldShiftCounterValue = ShiftCounter[randomEmployee];
+
+                    // make all counters not take into consideration those two days
+                    if (day1ShiftsExist)
+                    {
+                        ShiftCounter[randomEmployee] -= 1;
+                        if (sd[randomEmployee, day1].Data[0] && sd[randomEmployee, day1].Data[2])
+                        {
+                            day1ShiftType = "d";
+                            employeesOnDayShiftCounter[day1] -= 1;
+                        }
+                        else if (sd[randomEmployee, day1].Data[0])
+                        {
+                            day1ShiftType = "D";
+                            employeesOnDayShiftCounter[day1] -= 1;
+                        }
+                        else if (sd[randomEmployee, day1].Data[1])
+                        {
+                            day1ShiftType = "N";
+                            employeesOnNightShiftCounter[day1] -= 1;
+                        }
+
+                    }
+                    if (day2ShiftsExist)
+                    {
+                        ShiftCounter[randomEmployee] -= 1;
+                        if (sd[randomEmployee, day2].Data[0] && sd[randomEmployee, day2].Data[2])
+                        {
+                            day2ShiftType = "d";
+                            employeesOnDayShiftCounter[day2] -= 1;
+                        }
+                        else if (sd[randomEmployee, day2].Data[0])
+                        {
+                            day2ShiftType = "D";
+                            employeesOnDayShiftCounter[day2] -= 1;
+                        }
+                        else if (sd[randomEmployee, day2].Data[1])
+                        {
+                            day2ShiftType = "N";
+                            employeesOnNightShiftCounter[day2] -= 1;
+                        }
+                    }
+                    bool canContiniueDay1 = false;
+                    bool canContiniueDay2 = false;
+
+                    if (!day1ShiftType.Equals(""))
+                    {
+                        // try to put day1 into day2
+                        /////////////////////////////// to nie zadziała, muszę zrobić jedną funkcję sprawdzzającą / sprawić, żeby te aktualne brały pod uwagę argument jako ShiftData[,]
+                        canContiniueDay1 = CheckIf_12h_BetweenShifts(randomEmployee, day1ShiftType, day2) &
+                                           CheckIfStill_35h_InFollowing_7_Days(randomEmployee, day1, day1ShiftType) &
+                                           CheckIfStillEnoughOfFundamentalEMployees(randomEmployee, day1, day1ShiftType);
+                    }
+                    
+
+                    if (sundaysList.Contains(day2 + 1))
+                    {
+                        canContiniueDay1 &= CheckIfNotFourthSunday(randomEmployee, day2, day1ShiftType);
+                    }
+                    if (canContiniueDay1)
+                    {
+                        if (day1ShiftType.Equals("D"))
+                        {
+                            solution[randomEmployee, day2].Data[0] = true;
+                            employeesOnDayShiftCounter[day2] += 1;
+                        }
+                        else if (day1ShiftType.Equals("d"))
+                        {
+                            monthSchedule[randomEmployee, day2].Data[0] = true;
+                            monthSchedule[randomEmployee, day2].Data[2] = true;
+                            employeesOnDayShiftCounter[day2] += 1;
+                        }
+                        else if (day1ShiftType.Equals("N"))
+                        {
+                            monthSchedule[randomEmployee, day2].Data[1] = true;
+                        }
+
+                        ShiftCounter[randomEmployee] += 1;
+                    }
+
+
+                }
+                else
+                {
+                    canProceed = false;
+                }
+            }
+            while (!canProceed);
+
+
+             
+
+
+
 
 
             return solution;
@@ -1311,6 +1440,14 @@ namespace Nurses_Scheduler.Classes
                 sumOfSquares += Math.Pow(item - avg, 2);
             }
             return Math.Sqrt(sumOfSquares / arr.Length);
+        }
+    
+        
+        private bool CheckIfStillEnoughOfFundamentalEMployees(int employeeIndex, int day, string ShiftType)
+        {
+
+
+            return true;
         }
     }
 }
