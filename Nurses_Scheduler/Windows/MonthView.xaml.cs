@@ -558,18 +558,72 @@ namespace Nurses_Scheduler.Windows
         
         private void GenerateSchedule_Click(object sender, RoutedEventArgs e)
         {
-            Solver test = new Solver(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]], eventDays, choosenYear, choosenMonth);
+            // get chosen department
+            Department myDepartment = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].department;
+            DepartmentWorkArrangement myDwa;
+
+            // load requests for choosen Month
+            string path = System.IO.Path.Combine(App.folderPath, "Requests");        
+
+            var requestFiles = Directory.EnumerateFiles(path, "*.txt");
+
+            if (requestFiles.Any())
+            {
+                bool requestForChoosenMonthExist = false;
+                string fileToCompare = choosenMonth.ToString() + "_" + choosenYear.ToString() + "_grafik.txt";
+                foreach (string file in requestFiles)
+                {
+                    string shortFileName = file.Replace(path + "\\", "");
+                    if (shortFileName.Equals(fileToCompare))
+                    {
+                        requestForChoosenMonthExist = true;
+                        break;
+                    }
+                }
+                if (requestForChoosenMonthExist)
+                {
+                    // part for getting data from file
+                    string filePath = "Requests\\" + fileToCompare;
+                    
+                    ScheduleData data = ScheduleFile.ReadExistingSchedule(filePath);
+                    var dwa = data.ListOfDepartmentsWorkArrangements;
+
+                    List<DepartmentWorkArrangement> myDwaList = dwa.Where(d => d.department.Id.Equals(myDepartment.Id)).ToList();
+
+                    if (myDwaList.Any())
+                    {
+                        myDwa = myDwaList.First();
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Didn't find request for this month. Generating empty data");
+                        myDwa = null;
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("Didn't find request for this month. Generating empty data");
+                    myDwa = null;
+                }
+            }
+            else
+            {
+                Debug.WriteLine("No requests at all. Generating empty data.");
+                myDwa = null;
+            }
+
+            if (myDwa == null)
+            {
+
+            }
+
+            Solver test = new Solver(departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]], eventDays, choosenYear, choosenMonth, myDwa);
             departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]] = test.getSchedule();
             MonthGrid_DataGrid.ItemsSource = departmentsWorkArrangement[DepartmentToIndex[Department_ComboBox.Text]].allEmployeeWorkArrangement;
 
 
 
 
-            string messageBoxText = "Tutaj zostanie wprowadzona funkcjonalność do układania grafiku.";
-            string caption = "Harmonogram";
-            MessageBoxButton button = MessageBoxButton.OK;
-            MessageBoxImage icon = MessageBoxImage.Information;
-            MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
         }
 
         private async void SaveSchedule_Click(object sender, RoutedEventArgs e)

@@ -131,12 +131,14 @@ namespace Nurses_Scheduler.Classes
         private DepartmentWorkArrangement dwa;
         private DepartmentWorkArrangement modified_dwa;
         private DepartmentWorkArrangement prevoiusMonth_dwa;
+        private DepartmentWorkArrangement requests_dwa;
         private List<EmployeeWorkArrangement> ewa;
         private List<int> eventDays;
         private int daysInMonth;
         private int year;
         private int month;
         private int employeeCount;
+        private shiftData[/* employeeCount */, /* daysInMonth */] monthRequests;
         private shiftData[/* employeeCount */, /* daysInMonth */] monthSchedule;
         private shiftData[/* employeeCount */] lastDayOfPreviousMonthSchedule;
         private List<Employee> employeeList;
@@ -171,17 +173,19 @@ namespace Nurses_Scheduler.Classes
 
 
 
-        public  Solver (DepartmentWorkArrangement _dwa, List<int> _eventDays, int _year, int _month)
+        public  Solver (DepartmentWorkArrangement _dwa, List<int> _eventDays, int _year, int _month, DepartmentWorkArrangement requestsDwa)
         {
             dwa = _dwa;
             department = _dwa.department;
             ewa = _dwa.allEmployeeWorkArrangement;
+            requests_dwa = requestsDwa;
             eventDays = _eventDays;
             year = _year;
             month = _month;
             daysInMonth = DateTime.DaysInMonth(_year, _month);
             employeeCount = ewa.Count;
             monthSchedule = new shiftData[employeeCount, daysInMonth];
+            monthRequests = new shiftData[employeeCount, daysInMonth];
             lastDayOfPreviousMonthSchedule = new shiftData[employeeCount];
             employeeList = new List<Employee>();
             requiredFullTimeShifts = new int[employeeCount];
@@ -236,6 +240,31 @@ namespace Nurses_Scheduler.Classes
             currentGroup = new employeeGroupIndex(start, end);
             employeeGroupIndices.Add(currentGroup);
             OccupationToGroupIndex.Add(ewa[start].employee.Occupation, employeeGroupIndices.Count - 1);
+
+
+            // asigninging proper shift data for requests of all employees
+            for (int employeeNumber = 0; employeeNumber < employeeCount; employeeNumber++)
+            {
+                List<string> temporaryEmployeeScheduleData = new List<string>(requests_dwa.allEmployeeWorkArrangement[employeeNumber].GetWorkArrangementAsList());
+                for (int day = 0; day < daysInMonth; day++)
+                {
+                    bool dayShift = temporaryEmployeeScheduleData[day].Equals("D") | temporaryEmployeeScheduleData[day].Equals("d");
+                    bool nightShift = temporaryEmployeeScheduleData[day].Equals("N");
+                    bool shortShift = temporaryEmployeeScheduleData[day].Equals("d");
+                    bool vacationDay = false;
+                    if (!(dayShift | nightShift | shortShift))
+                    {
+                        vacationDay = temporaryEmployeeScheduleData[day].Equals("U")  |
+                                      temporaryEmployeeScheduleData[day].Equals("Um") |
+                                      temporaryEmployeeScheduleData[day].Equals("Us") |
+                                      temporaryEmployeeScheduleData[day].Equals("Uo") |
+                                      temporaryEmployeeScheduleData[day].Equals("Uż") |
+                                      temporaryEmployeeScheduleData[day].Equals("C")  |
+                                      temporaryEmployeeScheduleData[day].Equals("Op");
+                    }
+                    monthRequests[employeeNumber, day] = new shiftData(dayShift, nightShift, shortShift, vacationDay);
+                }
+            }
 
             foreach (var o in employeeGroupIndices)
             {
@@ -1094,9 +1123,9 @@ namespace Nurses_Scheduler.Classes
             shiftData[,] solution;
 
             double temperature = initialTemeprature;
-            double bestPower = Power(oldMonthSchedule);
+            double bestQuality = Quality(oldMonthSchedule);
             double delta;
-            double currentPower;
+            double currentQuality;
             int iteration = 0;
             bool acceptSolution = false;
             bool canContiniue = true;    
@@ -1107,10 +1136,10 @@ namespace Nurses_Scheduler.Classes
                 // generate solution
                 solution = generateSolutionFromNeighbourhood(bestSolution);
                 
-                // calculate it's Power
-                currentPower = Power(solution);
+                // calculate it's Quality
+                currentQuality = Quality(solution);
 
-                delta = currentPower - bestPower;
+                delta = currentQuality - bestQuality;
 
                 if (delta > 0.0)
                 {
@@ -1127,8 +1156,9 @@ namespace Nurses_Scheduler.Classes
                 if (acceptSolution)
                 {
                     bestSolution = solution.Clone() as shiftData[,];
-                    bestPower = currentPower;
+                    bestQuality = currentQuality;
                     acceptSolution = false;
+                    Debug.WriteLine("New solution at: " + iteration.ToString() + " iteration, with quality of: " + bestQuality.ToString());
                 }
 
                 // change tempperature, increase iterations and check finishing factor
@@ -1139,7 +1169,6 @@ namespace Nurses_Scheduler.Classes
                     canContiniue = false;
                 }
             }
-
             monthSchedule = bestSolution.Clone() as shiftData[,];
         }
 
@@ -1168,19 +1197,86 @@ namespace Nurses_Scheduler.Classes
                 case "logarithmic":
                     temperature *= Math.Pow(k, currentIteration);
                     break;
-            }
 
-            // = currentTemperature * k;
+                case "geometric":
+                    temperature *= k;
+                    break;
+            }
             return temperature;
         }
 
-        private double Power(shiftData[,] A)
+
+        private double Quality(shiftData[,] A)
         {
-            double delta = 5.0;
+            int initialPoints = 100;
+            int pointsToAdd = 0;
 
+            // check fitting to employees requests
+            for (int empl_i = 0; empl_i < employeeCount; empl_i++)
+            {
+                for (int day_i = 0; day_i < daysInMonth; day_i++)
+                {
+                    // \ is equal -> +10pkt
+                    if (A[empl_i, day_i].Data[0] == monthRequests[empl_i, day_i].Data[0] && A[empl_i, day_i].Data[1] == monthRequests[empl_i, day_i].Data[1])
+                    {
+                        pointsToAdd += 10;
+                        continue;
+                    }
+                    // D is equal -> +8pkt
+                    if (A[empl_i, day_i].Data[0] == monthRequests[empl_i, day_i].Data[0])
+                    {
+                        pointsToAdd += 8;
+                        continue;
+                    }
+                    // N is equal -> +7pkt
+                    if (A[empl_i, day_i].Data[1] == monthRequests[empl_i, day_i].Data[1])
+                    {
+                        pointsToAdd += 7;
+                    }
+                }
+            }
 
+            // check for combinations bigger than D, D, D, ... or N, N, ...
+            int dayComboCounter = 0;
+            int nightComboCounter = 0;
+            for (int empl_i = 0; empl_i < employeeCount; empl_i++)
+            {
+                dayComboCounter = 0;
+                nightComboCounter = 0;
 
-            return delta;
+                for (int day_i = 0; day_i < daysInMonth; day_i++)
+                {
+                    if (A[empl_i, day_i].Data[0] == true)
+                    {
+                        dayComboCounter++;
+                    }
+                    else
+                    {
+                        if (dayComboCounter > 3)
+                        {
+                            pointsToAdd += 15 * (dayComboCounter - 3);
+                        }
+                        dayComboCounter = 0;
+                    }
+
+                    if (A[empl_i, day_i].Data[1] == true)
+                    {
+                        nightComboCounter++;
+                    }
+                    else
+                    {
+                        if (nightComboCounter > 2)
+                        {
+                            pointsToAdd += 15 * (nightComboCounter - 2);
+                        }
+                        nightComboCounter = 0;
+                    }
+                }
+            }
+
+            // TO DO: checking for equal D shift assignment hrough working days
+
+            return initialPoints + pointsToAdd;
         }
     }
 }
