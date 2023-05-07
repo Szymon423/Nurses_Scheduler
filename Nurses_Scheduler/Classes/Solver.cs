@@ -50,6 +50,13 @@ namespace Nurses_Scheduler.Classes
             Data[7] = true; // starting with error corresponging to wrong occupation
             Error = 0x01; 
         }
+
+
+        public shiftData(shiftData sd)
+        {
+            Error = sd.Error;
+            Data = sd.Data;
+        }
     }
 
 
@@ -62,6 +69,12 @@ namespace Nurses_Scheduler.Classes
         {
             employeeCount = _count;
             occupation = _occupation;
+        }
+
+        public shiftEmployees(shiftEmployees se)
+        {
+            employeeCount = se.employeeCount;
+            occupation = se.occupation;
         }
     }
 
