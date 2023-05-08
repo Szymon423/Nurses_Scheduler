@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace Nurses_Scheduler.Classes
 {
@@ -26,7 +27,7 @@ namespace Nurses_Scheduler.Classes
         //  |     |--> bit 1 is employy working on night shift
         //  |     |--> bit 2 is this a short shift
         //  |     |--> bit 3 is this some king of vacation - non working shitf
-        //  |     |--> bit 4
+        //  |     |--> bit 4 is emplooyee requesting day free
         //  |     |--> bit 5
         //  |     |--> bit 6
         //  |     |--> bit 7 Error
@@ -36,15 +37,14 @@ namespace Nurses_Scheduler.Classes
         public byte Error;
 
 
-        public shiftData(bool dayShift = false, bool nightShift = false, bool shortShift = false, bool vacationDay = false)
+        public shiftData(bool dayShift = false, bool nightShift = false, bool shortShift = false, bool vacationDay = false, bool dayFree = false)
         {
-            
             Data = new BitArray(8, false);
             Data[0] = dayShift;
             Data[1] = nightShift;
             Data[2] = shortShift;
             Data[3] = vacationDay;
-            // Data[4] = ...;
+            Data[4] = dayFree;
             // Data[5] = ...;
             // Data[6] = ...;
             Data[7] = true; // starting with error corresponging to wrong occupation
@@ -211,7 +211,7 @@ namespace Nurses_Scheduler.Classes
                 
                 
                 employeeList.Add(ewa[employeeNumber].employee);
-                lastDayOfPreviousMonthSchedule[employeeNumber] = new shiftData(false, false, false, false);
+                lastDayOfPreviousMonthSchedule[employeeNumber] = new shiftData(false, false, false, false, false);
 
                 List<string> temporaryEmployeeScheduleData = new List<string>(ewa[employeeNumber].GetWorkArrangementAsList());
                 for (int day = 0; day < daysInMonth; day++)
@@ -223,6 +223,7 @@ namespace Nurses_Scheduler.Classes
                     bool nightShift = false;
                     bool shortShift = false;
                     bool vacationDay = false;
+                    bool requestForFreeDay = false;
                     if (!(dayShift || nightShift || shortShift))
                     {
                         vacationDay = temporaryEmployeeScheduleData[day].Equals("U")  |
@@ -233,7 +234,7 @@ namespace Nurses_Scheduler.Classes
                                       temporaryEmployeeScheduleData[day].Equals("C")  |
                                       temporaryEmployeeScheduleData[day].Equals("Op");
                     }
-                    monthSchedule[employeeNumber, day] = new shiftData(dayShift, nightShift, shortShift, vacationDay);
+                    monthSchedule[employeeNumber, day] = new shiftData(dayShift, nightShift, shortShift, vacationDay, requestForFreeDay);
                 }
             }
             end = employeeCount - 1;
@@ -241,16 +242,22 @@ namespace Nurses_Scheduler.Classes
             employeeGroupIndices.Add(currentGroup);
             OccupationToGroupIndex.Add(ewa[start].employee.Occupation, employeeGroupIndices.Count - 1);
 
-
+            int offset = 0;
             // asigninging proper shift data for requests of all employees
             for (int employeeNumber = 0; employeeNumber < employeeCount; employeeNumber++)
             {
-                List<string> temporaryEmployeeScheduleData = new List<string>(requests_dwa.allEmployeeWorkArrangement[employeeNumber].GetWorkArrangementAsList());
+                if (employeeList[employeeNumber] == null)
+                {
+                    offset++;
+                    continue;
+                }
+                List<string> temporaryEmployeeScheduleData = new List<string>(requests_dwa.allEmployeeWorkArrangement[employeeNumber - offset].GetWorkArrangementAsList());
                 for (int day = 0; day < daysInMonth; day++)
                 {
                     bool dayShift = temporaryEmployeeScheduleData[day].Equals("D") | temporaryEmployeeScheduleData[day].Equals("d");
                     bool nightShift = temporaryEmployeeScheduleData[day].Equals("N");
                     bool shortShift = temporaryEmployeeScheduleData[day].Equals("d");
+                    bool requestForFreeDay = temporaryEmployeeScheduleData[day].Equals("/");
                     bool vacationDay = false;
                     if (!(dayShift | nightShift | shortShift))
                     {
@@ -262,7 +269,7 @@ namespace Nurses_Scheduler.Classes
                                       temporaryEmployeeScheduleData[day].Equals("C")  |
                                       temporaryEmployeeScheduleData[day].Equals("Op");
                     }
-                    monthRequests[employeeNumber, day] = new shiftData(dayShift, nightShift, shortShift, vacationDay);
+                    monthRequests[employeeNumber, day] = new shiftData(dayShift, nightShift, shortShift, vacationDay, requestForFreeDay);
                 }
             }
 
@@ -420,14 +427,14 @@ namespace Nurses_Scheduler.Classes
                         // random chose number of employee froom group of 0 (pielęgniarki)
                         string occupation = expected_fundamentalEmplyees.employees_Night[gruop_id].occupation;
                         int employeeNumFromCurrentGroup = rand.Next(employeeGroupIndices[OccupationToGroupIndex[occupation]].start, employeeGroupIndices[OccupationToGroupIndex[occupation]].end + 1);
-                        bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "N", day) &
-                                          CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day) &
+                        bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "N", day, ref monthSchedule) &
+                                          CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day, ref monthSchedule) &
                                           CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup) &
-                                          CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "N");
+                                          CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "N", ref monthSchedule);
 
                         if (isThisSunday)
                         {
-                            canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "N");
+                            canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "N", ref monthSchedule);
                         }
                         if (canProceed)
                         {
@@ -449,14 +456,14 @@ namespace Nurses_Scheduler.Classes
                         // random chose number of employee froom group of 0 (pielęgniarki)
                         string occupation = expected_fundamentalEmplyees.employees_Day[gruop_id].occupation;
                         int employeeNumFromCurrentGroup = rand.Next(employeeGroupIndices[OccupationToGroupIndex[occupation]].start, employeeGroupIndices[OccupationToGroupIndex[occupation]].end + 1);
-                        bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "D", day)      &
-                                          CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day)   &
+                        bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "D", day, ref monthSchedule)      &
+                                          CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day, ref monthSchedule)   &
                                           CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup)         &
-                                          CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "D");
+                                          CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "D", ref monthSchedule);
                         
                         if (isThisSunday)
                         {
-                            canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "D");
+                            canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "D", ref monthSchedule);
                         }
                         if (canProceed)
                         {
@@ -483,14 +490,14 @@ namespace Nurses_Scheduler.Classes
                     string occupation = complementaryEmployessOccupations_Day[rand.Next(0, complementaryEmployessOccupations_Day.Count - 1)];
                     int employeeNumFromCurrentGroup = rand.Next(employeeGroupIndices[OccupationToGroupIndex[occupation]].start, employeeGroupIndices[OccupationToGroupIndex[occupation]].end + 1);
 
-                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "D", day) &
-                                      CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day) &
+                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "D", day, ref monthSchedule) &
+                                      CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day, ref monthSchedule) &
                                       CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup) &
-                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "D");
+                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "D", ref monthSchedule);
                     
                     if (isThisSunday)
                     {
-                        canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "D");
+                        canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "D", ref monthSchedule);
                     }
                     if (canProceed)
                     {
@@ -507,14 +514,14 @@ namespace Nurses_Scheduler.Classes
                     string occupation = complementaryEmployessOccupations_Night[rand.Next(0, complementaryEmployessOccupations_Night.Count - 1)];
                     int employeeNumFromCurrentGroup = rand.Next(employeeGroupIndices[OccupationToGroupIndex[occupation]].start, employeeGroupIndices[OccupationToGroupIndex[occupation]].end + 1);
 
-                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "N", day) &
-                                      CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day) &
+                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumFromCurrentGroup, "N", day, ref monthSchedule) &
+                                      CheckIfExistAllreadyAssignedShift(employeeNumFromCurrentGroup, day, ref monthSchedule) &
                                       CheckIfAll_12h_ShiftsAreAssigned(employeeNumFromCurrentGroup) &
-                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "N");
+                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumFromCurrentGroup, day, "N", ref monthSchedule);
 
                     if (isThisSunday)
                     {
-                        canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "N");
+                        canProceed &= CheckIfNotFourthSunday(employeeNumFromCurrentGroup, day, "N", ref monthSchedule);
                     }
                     if (canProceed)
                     {
@@ -573,14 +580,14 @@ namespace Nurses_Scheduler.Classes
 
                     bool isThisSunday = sundaysList.Contains(day + 1);
 
-                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumber, shiftType, day) &
-                                      CheckIfExistAllreadyAssignedShift(employeeNumber, day) &
+                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumber, shiftType, day, ref monthSchedule) &
+                                      CheckIfExistAllreadyAssignedShift(employeeNumber, day, ref monthSchedule) &
                                       CheckIfAll_12h_ShiftsAreAssigned(employeeNumber) &
-                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumber, day, shiftType);
+                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumber, day, shiftType, ref monthSchedule);
 
                     if (isThisSunday)
                     {
-                        canProceed &= CheckIfNotFourthSunday(employeeNumber, day, shiftType);
+                        canProceed &= CheckIfNotFourthSunday(employeeNumber, day, shiftType, ref monthSchedule);
                     }
                     if (canProceed)
                     {
@@ -616,13 +623,13 @@ namespace Nurses_Scheduler.Classes
                     bool isThisSunday = sundaysList.Contains(day + 1);
                     string shiftType = "d";
 
-                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumber, shiftType, day) &
-                                      CheckIfExistAllreadyAssignedShift(employeeNumber, day) &
-                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumber, day, shiftType);
+                    bool canProceed = CheckIf_12h_BetweenShifts(employeeNumber, shiftType, day, ref monthSchedule) &
+                                      CheckIfExistAllreadyAssignedShift(employeeNumber, day, ref monthSchedule) &
+                                      CheckIfStill_35h_InFollowing_7_Days(employeeNumber, day, shiftType, ref monthSchedule);
 
                     if (isThisSunday)
                     {
-                        canProceed &= CheckIfNotFourthSunday(employeeNumber, day, shiftType);
+                        canProceed &= CheckIfNotFourthSunday(employeeNumber, day, shiftType, ref monthSchedule);
                     }
                     if (canProceed)
                     {
@@ -653,11 +660,11 @@ namespace Nurses_Scheduler.Classes
 
         private void AmmendScheduleAccordingToSoftConstrains()
         {
-            SimullatedAnnealing(100.0, 5.0, 10000, 0.95);
+            SimullatedAnnealing(100.0, 5.0, 1000, 0.95);
         }
 
 
-        private bool CheckIfNotFourthSunday(int employeeIndex , int day, string shiftToInsert)
+        private bool CheckIfNotFourthSunday(int employeeIndex , int day, string shiftToInsert, ref shiftData[,] monthSchedule)
         {
             // copy of previous state
             BitArray copy = new BitArray(monthSchedule[employeeIndex, day].Data);
@@ -706,29 +713,29 @@ namespace Nurses_Scheduler.Classes
         }
 
 
-        private bool CheckIf_12h_BetweenShifts(int EmployeeIndex, string ShiftType, int day)
+        private bool CheckIf_12h_BetweenShifts(int EmployeeIndex, string ShiftType, int day, ref shiftData[,] monthSchedule)
         {
             if (day > 0)
             {
                 // check on current month data
                 if (ShiftType.Equals("D"))
                 {
-                    bool nightBefore = this.monthSchedule[EmployeeIndex, day - 1].Data[1];
+                    bool nightBefore = monthSchedule[EmployeeIndex, day - 1].Data[1];
                     return !nightBefore;
                 }
                 if (ShiftType.Equals("N"))
                 {
-                    bool currentDay = this.monthSchedule[EmployeeIndex, day].Data[0];
+                    bool currentDay = monthSchedule[EmployeeIndex, day].Data[0];
                     bool daytAfter = false;
                     if (day < daysInMonth - 1)
                     {
-                        daytAfter = this.monthSchedule[EmployeeIndex, day + 1].Data[0];
+                        daytAfter = monthSchedule[EmployeeIndex, day + 1].Data[0];
                     }  
                     return !currentDay & !daytAfter;
                 }
                 if (ShiftType.Equals("d"))
                 {
-                    bool nightBefore = this.monthSchedule[EmployeeIndex, day - 1].Data[1];
+                    bool nightBefore = monthSchedule[EmployeeIndex, day - 1].Data[1];
                     return !nightBefore;
                 }
             }
@@ -743,7 +750,7 @@ namespace Nurses_Scheduler.Classes
                 if (ShiftType.Equals("N"))
                 {
                     bool currentDay = this.lastDayOfPreviousMonthSchedule[EmployeeIndex].Data[0];
-                    bool daytAfter = this.monthSchedule[EmployeeIndex, 0].Data[0];
+                    bool daytAfter = monthSchedule[EmployeeIndex, 0].Data[0];
                     return !currentDay & !daytAfter;
                 }
                 if (ShiftType.Equals("d"))
@@ -752,12 +759,11 @@ namespace Nurses_Scheduler.Classes
                     return !nightBefore;
                 }
             }
-            Debug.WriteLine("12h between shifts returned false");
             return false;
         }
 
 
-        private bool CheckIfExistAllreadyAssignedShift(int EmployeeIndex, int day)
+        private bool CheckIfExistAllreadyAssignedShift(int EmployeeIndex, int day, ref shiftData[,] monthSchedule)
         {
             bool currentDay = monthSchedule[EmployeeIndex, day].Data[0];
             bool currentNight = monthSchedule[EmployeeIndex, day].Data[1];   
@@ -770,9 +776,7 @@ namespace Nurses_Scheduler.Classes
             if (ShiftCounter[EmployeeIndex] < requiredFullTimeShifts[EmployeeIndex])
             {
                 return true;
-            }
-            Debug.WriteLine("all 12h shifts returned false");
-            
+            }          
             return false;
         }
 
@@ -818,7 +822,7 @@ namespace Nurses_Scheduler.Classes
         }
 
 
-        private bool CheckIfStill_35h_InFollowing_7_Days(int employeeIndex, int day, string shiftToInsert)
+        private bool CheckIfStill_35h_InFollowing_7_Days(int employeeIndex, int day, string shiftToInsert, ref shiftData[,] monthSchedule)
         {
             // copy of previous state
             BitArray copy = new BitArray(monthSchedule[employeeIndex, day].Data);
@@ -854,7 +858,7 @@ namespace Nurses_Scheduler.Classes
                 if (currentDayShiftExist & !nextDayShiftExist)
                 {
                     canProceed = true;
-                    Debug.WriteLine("check for:  D, /");
+                    // Debug.WriteLine("check for:  D, /");
                     break;
                 }
 
@@ -864,7 +868,7 @@ namespace Nurses_Scheduler.Classes
                 if (!currentDayShiftExist & !nextDayShiftExist)
                 {
                     canProceed = true;
-                    Debug.WriteLine("check for:  /, /");
+                    // Debug.WriteLine("check for:  /, /");
                     break;
                 }
 
@@ -877,7 +881,7 @@ namespace Nurses_Scheduler.Classes
                     if (currentDayShiftExist & !nextDayShiftExist & doubleNextDayShiftExist)
                     {
                         canProceed = true;
-                        Debug.WriteLine("check for:  N, /, N");
+                        // Debug.WriteLine("check for:  N, /, N");
                         break;
                     }
                 }
@@ -1135,6 +1139,8 @@ namespace Nurses_Scheduler.Classes
             
             while (canContiniue)
             {
+                // Debug.WriteLine("iteration: " + iteration.ToString() + " temp: " + temperature.ToString());
+                
                 // generate solution
                 solution = generateSolutionFromNeighbourhood(bestSolution);
                 
@@ -1164,7 +1170,7 @@ namespace Nurses_Scheduler.Classes
                 }
 
                 // change tempperature, increase iterations and check finishing factor
-                temperature = newTemperature(temperature, iteration, 0.95, "logarithmic");
+                temperature = newTemperature(temperature, iteration, 0.999, "logarithmic");
                 iteration++;
                 if (iteration >= maxIterations)
                 {
@@ -1178,138 +1184,58 @@ namespace Nurses_Scheduler.Classes
         private shiftData[,] generateSolutionFromNeighbourhood(shiftData[,] sd)
         {
             // copy item to target
-            shiftData[,] solution = sd.Clone() as shiftData[,];
+            shiftData[,] solution;
 
             // do something random to generate ALLOWED solution
             Random rand = new Random((int) DateTime.Now.Ticks & 0x0000FFFF);
             
             // random chooose employee
             int randomEmployee;
-            do
-            {
-                randomEmployee = rand.Next(0, employeeCount);
-            }
-            while (employeeList[randomEmployee] == null);
-
+            
             bool canProceed = false;
             int day1, day2, oldShiftCounterValue;
-            BitArray day1Data, day2Data;
-            string day1ShiftType = "";
+            BitArray tempData;
+            string day1ShiftType = ""; 
             string day2ShiftType = "";
+
             do
             {
+                // copy item to target
+                solution = sd.Clone() as shiftData[,];
+                
+                // radnom choose employee
+                do  
+                {
+                    randomEmployee = rand.Next(0, employeeCount);
+                }
+                while (employeeList[randomEmployee] == null);
+
                 // random choose days to change shifts
                 day1 = rand.Next(0, daysInMonth);      
                 do
                 {
                     day2 = rand.Next(0, daysInMonth);
                 }
-                while (day1 == day2);
+                while (solution[randomEmployee, day1].Data == solution[randomEmployee, day2].Data);
 
                 // check if there are any shifts in those days
                 bool day1ShiftsExist = sd[randomEmployee, day1].Data[0] | sd[randomEmployee, day1].Data[1];
                 bool day2ShiftsExist = sd[randomEmployee, day2].Data[0] | sd[randomEmployee, day2].Data[1];
 
-                if (day1ShiftsExist || day2ShiftsExist)
+                // if there is no shifts then continiue
+                if (!(day1ShiftsExist | day2ShiftsExist))
                 {
-                    // make copy of old data
-                    day1Data = new BitArray(sd[randomEmployee, day1].Data);
-                    day2Data = new BitArray(sd[randomEmployee, day2].Data);
-                    oldShiftCounterValue = ShiftCounter[randomEmployee];
-
-                    // make all counters not take into consideration those two days
-                    if (day1ShiftsExist)
-                    {
-                        ShiftCounter[randomEmployee] -= 1;
-                        if (sd[randomEmployee, day1].Data[0] && sd[randomEmployee, day1].Data[2])
-                        {
-                            day1ShiftType = "d";
-                            employeesOnDayShiftCounter[day1] -= 1;
-                        }
-                        else if (sd[randomEmployee, day1].Data[0])
-                        {
-                            day1ShiftType = "D";
-                            employeesOnDayShiftCounter[day1] -= 1;
-                        }
-                        else if (sd[randomEmployee, day1].Data[1])
-                        {
-                            day1ShiftType = "N";
-                            employeesOnNightShiftCounter[day1] -= 1;
-                        }
-
-                    }
-                    if (day2ShiftsExist)
-                    {
-                        ShiftCounter[randomEmployee] -= 1;
-                        if (sd[randomEmployee, day2].Data[0] && sd[randomEmployee, day2].Data[2])
-                        {
-                            day2ShiftType = "d";
-                            employeesOnDayShiftCounter[day2] -= 1;
-                        }
-                        else if (sd[randomEmployee, day2].Data[0])
-                        {
-                            day2ShiftType = "D";
-                            employeesOnDayShiftCounter[day2] -= 1;
-                        }
-                        else if (sd[randomEmployee, day2].Data[1])
-                        {
-                            day2ShiftType = "N";
-                            employeesOnNightShiftCounter[day2] -= 1;
-                        }
-                    }
-                    bool canContiniueDay1 = false;
-                    bool canContiniueDay2 = false;
-
-                    if (!day1ShiftType.Equals(""))
-                    {
-                        // try to put day1 into day2
-                        /////////////////////////////// to nie zadziała, muszę zrobić jedną funkcję sprawdzzającą / sprawić, żeby te aktualne brały pod uwagę argument jako ShiftData[,]
-                        canContiniueDay1 = CheckIf_12h_BetweenShifts(randomEmployee, day1ShiftType, day2) &
-                                           CheckIfStill_35h_InFollowing_7_Days(randomEmployee, day1, day1ShiftType) &
-                                           CheckIfStillEnoughOfFundamentalEMployees(randomEmployee, day1, day1ShiftType);
-                    }
-                    
-
-                    if (sundaysList.Contains(day2 + 1))
-                    {
-                        canContiniueDay1 &= CheckIfNotFourthSunday(randomEmployee, day2, day1ShiftType);
-                    }
-                    if (canContiniueDay1)
-                    {
-                        if (day1ShiftType.Equals("D"))
-                        {
-                            solution[randomEmployee, day2].Data[0] = true;
-                            employeesOnDayShiftCounter[day2] += 1;
-                        }
-                        else if (day1ShiftType.Equals("d"))
-                        {
-                            monthSchedule[randomEmployee, day2].Data[0] = true;
-                            monthSchedule[randomEmployee, day2].Data[2] = true;
-                            employeesOnDayShiftCounter[day2] += 1;
-                        }
-                        else if (day1ShiftType.Equals("N"))
-                        {
-                            monthSchedule[randomEmployee, day2].Data[1] = true;
-                        }
-
-                        ShiftCounter[randomEmployee] += 1;
-                    }
-
-
+                    continue;
                 }
-                else
-                {
-                    canProceed = false;
-                }
+
+                // force changes, and check if they are coorrect
+                tempData = solution[randomEmployee, day1].Data;
+                solution[randomEmployee, day1].Data = solution[randomEmployee, day2].Data;
+                solution[randomEmployee, day2].Data = tempData;
+
+                canProceed = checkIfChangesAreLegal(day1, day2, randomEmployee, ref solution);
             }
             while (!canProceed);
-
-
-             
-
-
-
-
 
             return solution;
         }
@@ -1353,6 +1279,10 @@ namespace Nurses_Scheduler.Classes
 
             for (int empl_i = 0; empl_i < employeeCount; empl_i++)
             {
+                if (employeeList[empl_i] == null)
+                {
+                    continue;
+                }
                 dayComboCounter = 0;
                 nightComboCounter = 0;
                 for (int day_i = 0; day_i < daysInMonth; day_i++)
@@ -1398,19 +1328,19 @@ namespace Nurses_Scheduler.Classes
                     }
 
                     // \ is equal -> +10pkt
-                    if (A[empl_i, day_i].Data[0] == monthRequests[empl_i, day_i].Data[0] && A[empl_i, day_i].Data[1] == monthRequests[empl_i, day_i].Data[1])
+                    if (monthRequests[empl_i, day_i].Data[4] && A[empl_i, day_i].Data[0] == false && A[empl_i, day_i].Data[1] == false)
                     {
                         pointsToAdd += 10;
                         // continue;
                     }
                     // D is equal -> +8pkt
-                    if (A[empl_i, day_i].Data[0] == monthRequests[empl_i, day_i].Data[0])
+                    if (A[empl_i, day_i].Data[0] && monthRequests[empl_i, day_i].Data[0])
                     {
                         pointsToAdd += 8;
                         // continue;
                     }
                     // N is equal -> +7pkt
-                    if (A[empl_i, day_i].Data[1] == monthRequests[empl_i, day_i].Data[1])
+                    if (A[empl_i, day_i].Data[1] && monthRequests[empl_i, day_i].Data[1])
                     {
                         pointsToAdd += 7;
                     }
@@ -1443,11 +1373,145 @@ namespace Nurses_Scheduler.Classes
         }
     
         
-        private bool CheckIfStillEnoughOfFundamentalEMployees(int employeeIndex, int day, string ShiftType)
+        private bool CheckIfStillEnoughOfFundamentalEmployees(int employeeIndex, int day, ref shiftData[,] monthSchedule)
         {
+            dayEmployees de = new dayEmployees(expected_fundamentalEmplyees);
 
+            for (int i = 0; i < fundamentalEmployessOccupations_Day.Count; i++)
+            {
+                string occupation = fundamentalEmployessOccupations_Day[i];
 
+                for (int employee_i = 0; employee_i < employeeCount; employee_i++)
+                {
+                    if (employeeList[employee_i] == null)
+                    {
+                        continue;
+                    }
+
+                    if (monthSchedule[employee_i, day].Data[0] == true && monthSchedule[employee_i, day].Data[2] == false)
+                    {
+                        if (employeeList[employee_i].Occupation == occupation)
+                        {
+                            de.employees_Day[i].employeeCount--;
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < fundamentalEmployessOccupations_Night.Count; i++)
+            {
+                string occupation = fundamentalEmployessOccupations_Night[i];
+
+                for (int employee_i = 0; employee_i < employeeCount; employee_i++)
+                {
+                    if (employeeList[employee_i] == null)
+                    {
+                        continue;
+                    }
+
+                    if (monthSchedule[employee_i, day].Data[1] == true)
+                    {
+                        if (employeeList[employee_i].Occupation == occupation)
+                        {
+                            de.employees_Night[i].employeeCount--;
+                        }
+                    }
+                }
+            }
+
+            foreach (shiftEmployees se in de.employees_Day)
+            {
+                if (se.employeeCount > 1)
+                {
+                    return false;
+                }
+            }
+
+            foreach (shiftEmployees se in de.employees_Night)
+            {
+                if (se.employeeCount > 1)
+                {
+                    return false;
+                }
+            }
             return true;
         }
+
+
+        private bool checkIfChangesAreLegal(int day1, int day2, int employeeIndex, ref shiftData[,] monthSchedule)
+        {          
+            string day1ShiftType = getShiftType(monthSchedule[employeeIndex, day1].Data);
+            string day2ShiftType = getShiftType(monthSchedule[employeeIndex, day2].Data);
+
+            // check day1
+            if (day1ShiftType != "")
+            {
+                // check if 12h breaks still exist
+                if (!CheckIf_12h_BetweenShifts(employeeIndex, day1ShiftType, day1, ref monthSchedule))
+                {
+                    return false;
+                }
+
+                // check if 35 houres still exist
+                if (!CheckIfStill_35h_InFollowing_7_Days(employeeIndex, day1, day1ShiftType, ref monthSchedule))
+                {
+                    return false;
+                }
+
+                // check if still enough Fundamental employees
+                if (!CheckIfStillEnoughOfFundamentalEmployees(employeeIndex, day1, ref monthSchedule))
+                {
+                    return false;
+                }
+            }
+
+
+            // check day2
+            if (day2ShiftType != "")
+            {
+                // check if 12h breaks still exist
+                if (!CheckIf_12h_BetweenShifts(employeeIndex, day2ShiftType, day2, ref monthSchedule))
+                {
+                    return false;
+                }
+
+                // check if 35 houres still exist
+                if (!CheckIfStill_35h_InFollowing_7_Days(employeeIndex, day2, day2ShiftType, ref monthSchedule))
+                {
+                    return false;
+                }
+
+                // check if still enough Fundamental employees
+                if (!CheckIfStillEnoughOfFundamentalEmployees(employeeIndex, day2, ref monthSchedule))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
+        private string getShiftType(BitArray Data)
+        {
+            string day1ShiftType;
+            if (Data[0] && Data[2])
+            {
+                day1ShiftType = "d";
+            }
+            else if (Data[0])
+            {
+                day1ShiftType = "D";
+            }
+            else if (Data[1])
+            {
+                day1ShiftType = "N";
+            }
+            else
+            {
+                day1ShiftType = "";
+            }
+            return day1ShiftType;
+        }
+
     }
 }
