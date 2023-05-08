@@ -660,7 +660,7 @@ namespace Nurses_Scheduler.Classes
 
         private void AmmendScheduleAccordingToSoftConstrains()
         {
-            SimullatedAnnealing(100.0, 5.0, 100, 0.95);
+            SimullatedAnnealing(100.0, 1.0, 1000, 0.99);
         }
 
 
@@ -750,8 +750,8 @@ namespace Nurses_Scheduler.Classes
                 if (ShiftType.Equals("N"))
                 {
                     bool currentDay = this.lastDayOfPreviousMonthSchedule[EmployeeIndex].Data[0];
-                    bool daytAfter = monthSchedule[EmployeeIndex, 0].Data[0];
-                    return !currentDay & !daytAfter;
+                    bool dayAfter = monthSchedule[EmployeeIndex, 1].Data[0];
+                    return !currentDay & !dayAfter;
                 }
                 if (ShiftType.Equals("d"))
                 {
@@ -1182,6 +1182,11 @@ namespace Nurses_Scheduler.Classes
 
                 // change tempperature, increase iterations and check finishing factor
                 temperature = newTemperature(temperature, iteration, 0.999, "logarithmic");
+                if (temperature < minTemperature)
+                {
+                    temperature = minTemperature;
+                }
+
                 iteration++;
                 if (iteration >= maxIterations)
                 {
@@ -1287,7 +1292,7 @@ namespace Nurses_Scheduler.Classes
 
         private double Quality(shiftData[,] A)
         {
-            int initialPoints = 100;
+            int initialPoints = 5000;
             int pointsToAdd = 0;
             int dayComboCounter;
             int nightComboCounter;
@@ -1321,7 +1326,7 @@ namespace Nurses_Scheduler.Classes
                     {
                         if (dayComboCounter > 2)
                         {
-                            pointsToAdd -= 15 * (dayComboCounter - 2);
+                            pointsToAdd -= 30 * (dayComboCounter - 2);
                         }
                         dayComboCounter = 0;
                     }
@@ -1335,7 +1340,7 @@ namespace Nurses_Scheduler.Classes
                     {
                         if (nightComboCounter > 1)
                         {
-                            pointsToAdd -= 15 * (nightComboCounter - 1);
+                            pointsToAdd -= 30 * (nightComboCounter - 1);
                         }
                         nightComboCounter = 0;
                     }
@@ -1348,7 +1353,7 @@ namespace Nurses_Scheduler.Classes
                     {
                         if (bothComboCounter > 3)
                         {
-                            pointsToAdd -= 15 * (bothComboCounter - 3);
+                            pointsToAdd -= 100 * (bothComboCounter - 3);
                         }
                         bothComboCounter = 0;
                     }
@@ -1415,10 +1420,8 @@ namespace Nurses_Scheduler.Classes
         {
             dayEmployees de = new dayEmployees(expected_fundamentalEmplyees);
 
-            for (int i = 0; i < fundamentalEmployessOccupations_Day.Count; i++)
+            for (int i = 0; i < de.employees_Day.Count; i++)
             {
-                string occupation = fundamentalEmployessOccupations_Day[i];
-
                 for (int employee_i = 0; employee_i < employeeCount; employee_i++)
                 {
                     if (employeeList[employee_i] == null)
@@ -1428,7 +1431,7 @@ namespace Nurses_Scheduler.Classes
 
                     if (monthSchedule[employee_i, day].Data[0] == true && monthSchedule[employee_i, day].Data[2] == false)
                     {
-                        if (employeeList[employee_i].Occupation == occupation)
+                        if (employeeList[employee_i].Occupation == de.employees_Day[i].occupation)
                         {
                             de.employees_Day[i].employeeCount--;
                         }
@@ -1436,10 +1439,8 @@ namespace Nurses_Scheduler.Classes
                 }
             }
 
-            for (int i = 0; i < fundamentalEmployessOccupations_Night.Count; i++)
+            for (int i = 0; i < de.employees_Night.Count; i++)
             {
-                string occupation = fundamentalEmployessOccupations_Night[i];
-
                 for (int employee_i = 0; employee_i < employeeCount; employee_i++)
                 {
                     if (employeeList[employee_i] == null)
@@ -1449,7 +1450,7 @@ namespace Nurses_Scheduler.Classes
 
                     if (monthSchedule[employee_i, day].Data[1] == true)
                     {
-                        if (employeeList[employee_i].Occupation == occupation)
+                        if (employeeList[employee_i].Occupation == de.employees_Night[i].occupation)
                         {
                             de.employees_Night[i].employeeCount--;
                         }
@@ -1459,6 +1460,7 @@ namespace Nurses_Scheduler.Classes
 
             foreach (shiftEmployees se in de.employees_Day)
             {
+                // Debug.WriteLine("=========================================== Day: " + se.occupation + ": " + se.employeeCount);
                 if (se.employeeCount > 1)
                 {
                     return false;
@@ -1467,6 +1469,7 @@ namespace Nurses_Scheduler.Classes
 
             foreach (shiftEmployees se in de.employees_Night)
             {
+                // Debug.WriteLine("=========================================== Night: " + se.occupation + ": " + se.employeeCount);
                 if (se.employeeCount > 1)
                 {
                     return false;
@@ -1550,6 +1553,5 @@ namespace Nurses_Scheduler.Classes
             }
             return day1ShiftType;
         }
-
     }
 }
