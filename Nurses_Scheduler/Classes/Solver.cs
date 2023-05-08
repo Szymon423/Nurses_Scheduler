@@ -660,7 +660,7 @@ namespace Nurses_Scheduler.Classes
 
         private void AmmendScheduleAccordingToSoftConstrains()
         {
-            SimullatedAnnealing(100.0, 5.0, 1000, 0.95);
+            SimullatedAnnealing(100.0, 5.0, 100, 0.95);
         }
 
 
@@ -1126,10 +1126,14 @@ namespace Nurses_Scheduler.Classes
             // copy of ooryginal first solution
             shiftData[,] oldMonthSchedule = monthSchedule.Clone() as shiftData[,];
             shiftData[,] bestSolution = monthSchedule.Clone() as shiftData[,];
+            shiftData[,] bestEverSolution = monthSchedule.Clone() as shiftData[,];
             shiftData[,] solution;
 
             double temperature = initialTemeprature;
             double bestQuality = Quality(oldMonthSchedule);
+            double bestEverQuality = bestQuality;
+            double startQuality = bestQuality;
+            double endQuality;
             double delta;
             double currentQuality;
             int iteration = 0;
@@ -1155,7 +1159,9 @@ namespace Nurses_Scheduler.Classes
                 }
                 else
                 {
-                    if (rand.NextDouble() > Math.Exp(delta / (k * temperature)))
+                    double prop = Math.Exp(delta / (k * temperature));
+                    Debug.WriteLine(prop.ToString());
+                    if (rand.NextDouble() > prop)
                     {
                         acceptSolution = true;
                     }
@@ -1165,6 +1171,11 @@ namespace Nurses_Scheduler.Classes
                 {
                     bestSolution = solution.Clone() as shiftData[,];
                     bestQuality = currentQuality;
+                    if (bestQuality > bestEverQuality)
+                    {
+                        bestEverQuality = bestQuality;
+                        bestEverSolution = bestSolution.Clone() as shiftData[,];
+                    }
                     acceptSolution = false;
                     Debug.WriteLine("New solution at: " + iteration.ToString() + " iteration, with quality of: " + bestQuality.ToString());
                 }
@@ -1177,7 +1188,18 @@ namespace Nurses_Scheduler.Classes
                     canContiniue = false;
                 }
             }
-            monthSchedule = bestSolution.Clone() as shiftData[,];
+            monthSchedule = bestEverSolution.Clone() as shiftData[,];
+            endQuality = bestQuality;
+            Debug.WriteLine("=================================== DONE ===================================");
+
+            string messageBoxText = "Start Quality: " + startQuality.ToString("0.0") + "\n" +
+                                    "End Quality: " + endQuality.ToString("0.0") + "\n" +
+                                    "Best Ever Quality: " + bestEverQuality.ToString("0.0");
+
+            string caption = "Quality check";
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Warning;
+            MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
         }
 
 
@@ -1267,8 +1289,9 @@ namespace Nurses_Scheduler.Classes
         {
             int initialPoints = 100;
             int pointsToAdd = 0;
-            int dayComboCounter = 0;
-            int nightComboCounter = 0;
+            int dayComboCounter;
+            int nightComboCounter;
+            int bothComboCounter;
             int[] employeeCount_Working_Day = Enumerable.Repeat<int>(0, daysInMonth).ToArray();
             int[] employeeCount_Working_Night = Enumerable.Repeat<int>(0, daysInMonth).ToArray();
             int[] employeeCount_nonWorking_Day = Enumerable.Repeat<int>(0, daysInMonth).ToArray();
@@ -1285,18 +1308,20 @@ namespace Nurses_Scheduler.Classes
                 }
                 dayComboCounter = 0;
                 nightComboCounter = 0;
+                bothComboCounter = 0;
                 for (int day_i = 0; day_i < daysInMonth; day_i++)
                 {
                     // check for combo in D
                     if (A[empl_i, day_i].Data[0] == true)
                     {
                         dayComboCounter++;
+                        bothComboCounter++;
                     }
                     else
                     {
-                        if (dayComboCounter > 3)
+                        if (dayComboCounter > 2)
                         {
-                            pointsToAdd -= 15 * (dayComboCounter - 3);
+                            pointsToAdd -= 15 * (dayComboCounter - 2);
                         }
                         dayComboCounter = 0;
                     }
@@ -1308,11 +1333,24 @@ namespace Nurses_Scheduler.Classes
                     }
                     else
                     {
-                        if (nightComboCounter > 2)
+                        if (nightComboCounter > 1)
                         {
-                            pointsToAdd -= 15 * (nightComboCounter - 2);
+                            pointsToAdd -= 15 * (nightComboCounter - 1);
                         }
                         nightComboCounter = 0;
+                    }
+
+                    if (A[empl_i, day_i].Data[0] == true || A[empl_i, day_i].Data[1] == true)
+                    {
+                        bothComboCounter++;
+                    }
+                    else
+                    {
+                        if (bothComboCounter > 3)
+                        {
+                            pointsToAdd -= 15 * (bothComboCounter - 3);
+                        }
+                        bothComboCounter = 0;
                     }
 
                     // calculate people per shift
@@ -1330,19 +1368,19 @@ namespace Nurses_Scheduler.Classes
                     // \ is equal -> +10pkt
                     if (monthRequests[empl_i, day_i].Data[4] && A[empl_i, day_i].Data[0] == false && A[empl_i, day_i].Data[1] == false)
                     {
-                        pointsToAdd += 10;
+                        pointsToAdd += 100;
                         // continue;
                     }
                     // D is equal -> +8pkt
                     if (A[empl_i, day_i].Data[0] && monthRequests[empl_i, day_i].Data[0])
                     {
-                        pointsToAdd += 8;
+                        pointsToAdd += 80;
                         // continue;
                     }
                     // N is equal -> +7pkt
                     if (A[empl_i, day_i].Data[1] && monthRequests[empl_i, day_i].Data[1])
                     {
-                        pointsToAdd += 7;
+                        pointsToAdd += 70;
                     }
                 }
             }
