@@ -660,7 +660,8 @@ namespace Nurses_Scheduler.Classes
 
         private void AmmendScheduleAccordingToSoftConstrains()
         {
-            SimullatedAnnealing(100.0, 1.0, 10000, 0.99, "logarithmic");
+            // SimullatedAnnealing(100.0, 1.0, 10000, 0.99, "logarithmic");
+            TabuSearch(100, 7, 30);
         }
 
 
@@ -893,12 +894,12 @@ namespace Nurses_Scheduler.Classes
             if (!canProceed && (endDay - startDay < 4))
             {
                 canProceed = true;
-                Debug.WriteLine("Allow due to short week (under 4 days)");
+                // Debug.WriteLine("Allow due to short week (under 4 days)");
             }
 
             if (!canProceed)
             {
-                Debug.WriteLine("35h returned false");
+                // Debug.WriteLine("35h returned false");
             }
             return canProceed;
         }
@@ -1564,7 +1565,7 @@ namespace Nurses_Scheduler.Classes
         }
 
 
-        private void TabuSearch(int maxIterations, int tabuListLength)
+        private void TabuSearch(int maxIterations, int tabuListLength, int maxNotChangingIterations)
         {
             // copy of ooryginal first solution
             shiftData[,] oldMonthSchedule = monthSchedule.Clone() as shiftData[,];
@@ -1574,13 +1575,16 @@ namespace Nurses_Scheduler.Classes
             Neighbour localBestNeighbour = new Neighbour(bestEverSolution, (0, 0, 0, "", ""));
             Neighbour BestEverNeighbour = new Neighbour(localBestNeighbour);
             
-
             double localBestQuality = Quality(oldMonthSchedule);
             double localBestNeighbourQuality = localBestQuality;
             double bestEverQuality = localBestQuality;
             double startQuality = localBestQuality;
             double endQuality;
             double currentQuality;
+
+            int iterationsWithoutChanges = 0;
+
+            bool changeOccured = false;
 
             // list of neighbours
             List<Neighbour> neighbourhood;
@@ -1590,6 +1594,8 @@ namespace Nurses_Scheduler.Classes
             
             for (int iteration = 0; iteration < maxIterations; iteration++)
             {
+                changeOccured = false;
+                
                 // get neighbourhood for current local best solution
                 neighbourhood = getNeighbourhoodOf(localBestNeighbour.schedule);
 
@@ -1608,7 +1614,8 @@ namespace Nurses_Scheduler.Classes
                             localBestNeighbour = neighbourhood[i];
                             localBestNeighbourQuality = currentQuality;
                             tabuList.Add(localBestNeighbour.changes);
-                            Debug.WriteLine("Found better solution with quality: " + localBestNeighbourQuality.ToString());
+                            changeOccured = true;
+                            Debug.WriteLine("Iteration: " + iteration.ToString() + " Found better solution with quality: " + localBestNeighbourQuality.ToString());
                         }
                     }
                     
@@ -1616,8 +1623,22 @@ namespace Nurses_Scheduler.Classes
                     {
                         BestEverNeighbour = neighbourhood[i];
                         bestEverQuality = currentQuality;
-                    }   
+                    }
                 }
+
+                if (changeOccured)
+                {
+                    iterationsWithoutChanges = 0;
+                }
+                else
+                {
+                    iterationsWithoutChanges++;
+                    if (iterationsWithoutChanges > maxNotChangingIterations)
+                    {
+                        break;
+                    }
+                }
+
             }
             endQuality = localBestNeighbourQuality;
             monthSchedule = BestEverNeighbour.schedule.Clone() as shiftData[,];
@@ -1683,12 +1704,14 @@ namespace Nurses_Scheduler.Classes
             }
         }
 
+
         private List<Neighbour> getNeighbourhoodOf(shiftData[,] sd)
         {
             List<Neighbour> neighbours = new List<Neighbour>();
             Neighbour neighbourToAdd;
 
             bool canProceed = false;
+            bool day1ShiftsExist, day2ShiftsExist;
             int day1, day2, oldShiftCounterValue;
             BitArray tempData;
             string day1ShiftType = "";
@@ -1697,12 +1720,6 @@ namespace Nurses_Scheduler.Classes
             // single solution
             shiftData[,] solution;
 
-            // do something random to generate ALLOWED solution
-            Random rand = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
-
-            // random chooose employee
-            int randomEmployee;
-
             for (int employee_i = 0; employee_i < employeeList.Count; employee_i++)
             {
                 if (employeeList[employee_i] == null)
@@ -1710,50 +1727,44 @@ namespace Nurses_Scheduler.Classes
                     continue;
                 }
 
+                for (day1 = 0; day1 < daysInMonth; day1++)
+                {
+                    for (day2 = day1 + 1; day2 < daysInMonth; day2++)
+                    {
+                        // here I have acces to all possible pairs of days for all employees
+                        solution = sd.Clone() as shiftData[,];
 
+                        // if they share same schedule for those days -> continiue
+                        if (solution[employee_i, day1].Data == solution[employee_i, day2].Data)
+                        {
+                            continue;
+                        }
 
+                        // check if there are any shifts in those days
+                        day1ShiftsExist = solution[employee_i, day1].Data[0] | solution[employee_i, day1].Data[1];
+                        day2ShiftsExist = solution[employee_i, day2].Data[0] | solution[employee_i, day2].Data[1];
 
+                        // if there is no shifts then continiue
+                        if (!(day1ShiftsExist | day2ShiftsExist))
+                        {
+                            continue;
+                        }
+
+                        // force changes, and check if they are coorrect
+                        tempData = solution[employee_i, day1].Data;
+                        solution[employee_i, day1].Data = solution[employee_i, day2].Data;
+                        solution[employee_i, day2].Data = tempData;
+
+                        canProceed = checkIfChangesAreLegal(day1, day2, employee_i, ref solution);
+
+                        if (canProceed)
+                        {
+                            neighbourToAdd = new Neighbour(solution, (employee_i, day1, day2, day2ShiftType, day1ShiftType));
+                            neighbours.Add(neighbourToAdd);
+                        }
+                    }
+                }
             }
-
-            do
-            {
-                // copy item to target
-                solution = sd.Clone() as shiftData[,];
-
-                // radnom choose employee
-                do
-                {
-                    randomEmployee = rand.Next(0, employeeCount);
-                }
-                while (employeeList[randomEmployee] == null);
-
-                // random choose days to change shifts
-                day1 = rand.Next(0, daysInMonth);
-                do
-                {
-                    day2 = rand.Next(0, daysInMonth);
-                }
-                while (solution[randomEmployee, day1].Data == solution[randomEmployee, day2].Data);
-
-                // check if there are any shifts in those days
-                bool day1ShiftsExist = sd[randomEmployee, day1].Data[0] | sd[randomEmployee, day1].Data[1];
-                bool day2ShiftsExist = sd[randomEmployee, day2].Data[0] | sd[randomEmployee, day2].Data[1];
-
-                // if there is no shifts then continiue
-                if (!(day1ShiftsExist | day2ShiftsExist))
-                {
-                    continue;
-                }
-
-                // force changes, and check if they are coorrect
-                tempData = solution[randomEmployee, day1].Data;
-                solution[randomEmployee, day1].Data = solution[randomEmployee, day2].Data;
-                solution[randomEmployee, day2].Data = tempData;
-
-                canProceed = checkIfChangesAreLegal(day1, day2, randomEmployee, ref solution);
-            }
-            while (!canProceed);
-
             return neighbours;
         }
     }
