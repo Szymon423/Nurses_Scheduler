@@ -660,7 +660,7 @@ namespace Nurses_Scheduler.Classes
 
         private void AmmendScheduleAccordingToSoftConstrains()
         {
-            SimullatedAnnealing(100.0, 1.0, 1000, 0.99);
+            SimullatedAnnealing(100.0, 1.0, 10000, 0.99, "logarithmic");
         }
 
 
@@ -953,6 +953,7 @@ namespace Nurses_Scheduler.Classes
             }
         }
 
+
         private DateTime getPreviousMonthFileName(int year, int month)
         {
             DateTime dt = new DateTime(year, month, 1);
@@ -1121,7 +1122,7 @@ namespace Nurses_Scheduler.Classes
         }
 
 
-        private void SimullatedAnnealing(double initialTemeprature, double minTemperature, int maxIterations, double k)
+        private void SimullatedAnnealing(double initialTemeprature, double minTemperature, int maxIterations, double k, string tempType)
         {
             // copy of ooryginal first solution
             shiftData[,] oldMonthSchedule = monthSchedule.Clone() as shiftData[,];
@@ -1181,7 +1182,7 @@ namespace Nurses_Scheduler.Classes
                 }
 
                 // change tempperature, increase iterations and check finishing factor
-                temperature = newTemperature(temperature, iteration, 0.999, "logarithmic");
+                temperature = newTemperature(temperature, iteration, 0.99, tempType);
                 if (temperature < minTemperature)
                 {
                     temperature = minTemperature;
@@ -1389,30 +1390,40 @@ namespace Nurses_Scheduler.Classes
                     }
                 }
             }
-            pointsToAdd -= 5 * (int)StandardDeviation(employeeCount_Working_Day);
-            pointsToAdd -= 5 * (int)StandardDeviation(employeeCount_Working_Night);
-            pointsToAdd -= 5 * (int)StandardDeviation(employeeCount_nonWorking_Day);
-            pointsToAdd -= 5 * (int)StandardDeviation(employeeCount_nonWorking_Night);
+
+            List<int> _employeeCount_Working_Day = new List<int>();
+            List<int> _employeeCount_Working_Night = new List<int>();
+            List<int> _employeeCount_nonWorking_Day = new List<int>();
+            List<int> _employeeCount_nonWorking_Night = new List<int>();
+            foreach (int day in employeeCount_Working_Day) if (day != 0) _employeeCount_Working_Day.Add(day);
+            foreach (int day in employeeCount_Working_Night) if (day != 0) _employeeCount_Working_Night.Add(day);
+            foreach (int day in employeeCount_nonWorking_Day) if (day != 0) _employeeCount_nonWorking_Day.Add(day);
+            foreach (int day in employeeCount_nonWorking_Night) if (day != 0) _employeeCount_nonWorking_Night.Add(day);
+
+            pointsToAdd -= 5 * (int)StandardDeviation(_employeeCount_Working_Day);
+            pointsToAdd -= 5 * (int)StandardDeviation(_employeeCount_Working_Night);
+            pointsToAdd -= 5 * (int)StandardDeviation(_employeeCount_nonWorking_Day);
+            pointsToAdd -= 5 * (int)StandardDeviation(_employeeCount_nonWorking_Night);
            
             return initialPoints + pointsToAdd;
         }
 
 
-        private double StandardDeviation(int[] arr)
+        private double StandardDeviation(List<int> arr)
         {
             int sum = 0;
             foreach (int item in arr)
             {
                 sum += item;
             }
-            double avg = sum / arr.Length;
+            double avg = sum / arr.Count;
 
             double sumOfSquares = 0;
             foreach (int item in arr)
             {
                 sumOfSquares += Math.Pow(item - avg, 2);
             }
-            return Math.Sqrt(sumOfSquares / arr.Length);
+            return Math.Sqrt(sumOfSquares / arr.Count);
         }
     
         
@@ -1498,14 +1509,12 @@ namespace Nurses_Scheduler.Classes
                 {
                     return false;
                 }
-
-                // check if still enough Fundamental employees
-                if (!CheckIfStillEnoughOfFundamentalEmployees(employeeIndex, day1, ref monthSchedule))
-                {
-                    return false;
-                }
             }
-
+            // check if still enough Fundamental employees
+            if (!CheckIfStillEnoughOfFundamentalEmployees(employeeIndex, day1, ref monthSchedule))
+            {
+                return false;
+            }
 
             // check day2
             if (day2ShiftType != "")
@@ -1521,13 +1530,13 @@ namespace Nurses_Scheduler.Classes
                 {
                     return false;
                 }
-
-                // check if still enough Fundamental employees
-                if (!CheckIfStillEnoughOfFundamentalEmployees(employeeIndex, day2, ref monthSchedule))
-                {
-                    return false;
-                }
             }
+            // check if still enough Fundamental employees
+            if (!CheckIfStillEnoughOfFundamentalEmployees(employeeIndex, day2, ref monthSchedule))
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -1552,6 +1561,200 @@ namespace Nurses_Scheduler.Classes
                 day1ShiftType = "";
             }
             return day1ShiftType;
+        }
+
+
+        private void TabuSearch(int maxIterations, int tabuListLength)
+        {
+            // copy of ooryginal first solution
+            shiftData[,] oldMonthSchedule = monthSchedule.Clone() as shiftData[,];
+            shiftData[,] bestEverSolution = monthSchedule.Clone() as shiftData[,];
+            shiftData[,] solution;
+
+            Neighbour localBestNeighbour = new Neighbour(bestEverSolution, (0, 0, 0, "", ""));
+            Neighbour BestEverNeighbour = new Neighbour(localBestNeighbour);
+            
+
+            double localBestQuality = Quality(oldMonthSchedule);
+            double localBestNeighbourQuality = localBestQuality;
+            double bestEverQuality = localBestQuality;
+            double startQuality = localBestQuality;
+            double endQuality;
+            double currentQuality;
+
+            // list of neighbours
+            List<Neighbour> neighbourhood;
+            
+            // Tabu List
+            TabuList tabuList = new TabuList(tabuListLength);
+            
+            for (int iteration = 0; iteration < maxIterations; iteration++)
+            {
+                // get neighbourhood for current local best solution
+                neighbourhood = getNeighbourhoodOf(localBestNeighbour.schedule);
+
+                localBestNeighbour = neighbourhood[0];
+                localBestNeighbourQuality = Quality(localBestNeighbour.schedule);
+                for (int i = 1; i < neighbourhood.Count; i++)
+                {
+                    // measure quality
+                    currentQuality = Quality(neighbourhood[i].schedule);
+
+                    // check if changes are on tabu list
+                    if (!tabuList.Contains(neighbourhood[i].changes))
+                    {
+                        if (currentQuality > localBestNeighbourQuality)
+                        {
+                            localBestNeighbour = neighbourhood[i];
+                            localBestNeighbourQuality = currentQuality;
+                            tabuList.Add(localBestNeighbour.changes);
+                            Debug.WriteLine("Found better solution with quality: " + localBestNeighbourQuality.ToString());
+                        }
+                    }
+                    
+                    if (currentQuality > bestEverQuality)
+                    {
+                        BestEverNeighbour = neighbourhood[i];
+                        bestEverQuality = currentQuality;
+                    }   
+                }
+            }
+            endQuality = localBestNeighbourQuality;
+            monthSchedule = BestEverNeighbour.schedule.Clone() as shiftData[,];
+            Debug.WriteLine("=================================== TABU SEARCH DONE ===================================");
+
+            string messageBoxText = "Start Quality: " + startQuality.ToString("0.0") + "\n" +
+                                    "End Quality: " + endQuality.ToString("0.0") + "\n" +
+                                    "Best Ever Quality: " + bestEverQuality.ToString("0.0");
+
+            string caption = "Quality check";
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Warning;
+            MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.None);
+        }
+
+
+        class TabuList
+        {
+            private List<(int emmployeeIndex, int day1, int day2, string day1Shift, string day2Shift)> list;
+            private int maxLength;
+
+            public TabuList(int maxLength)
+            {
+                this.maxLength = maxLength;
+                list = new List<(int emmployeeIndex, int day1, int day2, string day1Shift, string day2Shift)>();
+            }
+
+            public void Add((int emmployeeIndex, int day1, int day2, string day1Shift, string day2Shift) item)
+            {
+                if (list.Count == maxLength)
+                {
+                    list.RemoveAt(maxLength - 1);
+                    list.Add(item);
+                }
+                else
+                {
+                    list.Add(item);
+                }
+            }
+
+            public bool Contains((int emmployeeIndex, int day1, int day2, string day1Shift, string day2Shift) item)
+            {
+                return list.Contains(item);
+            }
+        }
+
+
+        class Neighbour
+        {
+            public shiftData[,] schedule;
+            public (int emmployeeIndex, int day1, int day2, string day1Shift, string day2Shift) changes;
+
+            public Neighbour(shiftData[,] schedule, (int emmployeeIndex, int day1, int day2, string day1Shift, string day2Shift) changes)
+            {
+                this.schedule = schedule.Clone() as shiftData[,];
+                this.changes = changes;
+            }
+
+            public Neighbour(Neighbour n)
+            {
+                this.schedule = n.schedule.Clone() as shiftData[,];
+                this.changes = n.changes;
+            }
+        }
+
+        private List<Neighbour> getNeighbourhoodOf(shiftData[,] sd)
+        {
+            List<Neighbour> neighbours = new List<Neighbour>();
+            Neighbour neighbourToAdd;
+
+            bool canProceed = false;
+            int day1, day2, oldShiftCounterValue;
+            BitArray tempData;
+            string day1ShiftType = "";
+            string day2ShiftType = "";
+
+            // single solution
+            shiftData[,] solution;
+
+            // do something random to generate ALLOWED solution
+            Random rand = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
+
+            // random chooose employee
+            int randomEmployee;
+
+            for (int employee_i = 0; employee_i < employeeList.Count; employee_i++)
+            {
+                if (employeeList[employee_i] == null)
+                {
+                    continue;
+                }
+
+
+
+
+            }
+
+            do
+            {
+                // copy item to target
+                solution = sd.Clone() as shiftData[,];
+
+                // radnom choose employee
+                do
+                {
+                    randomEmployee = rand.Next(0, employeeCount);
+                }
+                while (employeeList[randomEmployee] == null);
+
+                // random choose days to change shifts
+                day1 = rand.Next(0, daysInMonth);
+                do
+                {
+                    day2 = rand.Next(0, daysInMonth);
+                }
+                while (solution[randomEmployee, day1].Data == solution[randomEmployee, day2].Data);
+
+                // check if there are any shifts in those days
+                bool day1ShiftsExist = sd[randomEmployee, day1].Data[0] | sd[randomEmployee, day1].Data[1];
+                bool day2ShiftsExist = sd[randomEmployee, day2].Data[0] | sd[randomEmployee, day2].Data[1];
+
+                // if there is no shifts then continiue
+                if (!(day1ShiftsExist | day2ShiftsExist))
+                {
+                    continue;
+                }
+
+                // force changes, and check if they are coorrect
+                tempData = solution[randomEmployee, day1].Data;
+                solution[randomEmployee, day1].Data = solution[randomEmployee, day2].Data;
+                solution[randomEmployee, day2].Data = tempData;
+
+                canProceed = checkIfChangesAreLegal(day1, day2, randomEmployee, ref solution);
+            }
+            while (!canProceed);
+
+            return neighbours;
         }
     }
 }
