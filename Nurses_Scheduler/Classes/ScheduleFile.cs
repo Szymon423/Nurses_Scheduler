@@ -146,6 +146,7 @@ namespace Nurses_Scheduler.Classes
             string[] lines = File.ReadAllLines(path);
             ScheduleData data = new ScheduleData();
             DepartmentWorkArrangement dwa = new DepartmentWorkArrangement(new Department());
+            List<Employee> employeesFromDB = new List<Employee>();
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -170,7 +171,8 @@ namespace Nurses_Scheduler.Classes
                                 data.ListOfDepartmentsWorkArrangements.Add(dwa);
                             }
                             int departmentId = int.Parse(line.Substring(3));
-                            Department department = Department.GetDepartmentById(departmentId);  
+                            Department department = Department.GetDepartmentById(departmentId);
+                            employeesFromDB = Employee.GetEmployeeByDepartment(department);
                             dwa = new DepartmentWorkArrangement(department); 
                         }
                         else
@@ -178,6 +180,18 @@ namespace Nurses_Scheduler.Classes
                             string[] subLines = line.Split(",");
                             int employeeId = Int32.Parse(subLines[0]);
                             Employee employee = Employee.GetEmployeeById(employeeId);
+                            if (employee == null)
+                            {
+                                continue;
+                            }
+                            for (int empl_i = 0; empl_i < employeesFromDB.Count; empl_i++)
+                            {
+                                if (employee.Id == employeesFromDB[empl_i].Id)
+                                {
+                                    employeesFromDB.RemoveAt(empl_i);
+                                    break;
+                                }
+                            }
                             EmployeeWorkArrangement ewa = new EmployeeWorkArrangement(employee);
                             for (int j = 1; j < subLines.Length - 1; j++)
                             {
@@ -188,6 +202,11 @@ namespace Nurses_Scheduler.Classes
 
                     }
                 }
+            }
+            foreach (Employee employee in employeesFromDB)
+            {
+                EmployeeWorkArrangement ewa = new EmployeeWorkArrangement(employee);
+                dwa.allEmployeeWorkArrangement.Add(ewa);
             }
             data.ListOfDepartmentsWorkArrangements.Add(dwa);
             return data;

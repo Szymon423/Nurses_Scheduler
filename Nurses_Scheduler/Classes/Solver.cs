@@ -226,13 +226,13 @@ namespace Nurses_Scheduler.Classes
                     bool requestForFreeDay = false;
                     if (!(dayShift || nightShift || shortShift))
                     {
-                        vacationDay = temporaryEmployeeScheduleData[day].Equals("U")  |
-                                      temporaryEmployeeScheduleData[day].Equals("Um") |
-                                      temporaryEmployeeScheduleData[day].Equals("Us") |
-                                      temporaryEmployeeScheduleData[day].Equals("Uo") |
-                                      temporaryEmployeeScheduleData[day].Equals("Uż") |
-                                      temporaryEmployeeScheduleData[day].Equals("C")  |
-                                      temporaryEmployeeScheduleData[day].Equals("Op");
+                        vacationDay = temporaryEmployeeScheduleData[day].Contains("U")  |
+                                      temporaryEmployeeScheduleData[day].Contains("Um") |
+                                      temporaryEmployeeScheduleData[day].Contains("Us") |
+                                      temporaryEmployeeScheduleData[day].Contains("Uo") |
+                                      temporaryEmployeeScheduleData[day].Contains("Uż") |
+                                      temporaryEmployeeScheduleData[day].Contains("C")  |
+                                      temporaryEmployeeScheduleData[day].Contains("Op");
                     }
                     monthSchedule[employeeNumber, day] = new shiftData(dayShift, nightShift, shortShift, vacationDay, requestForFreeDay);
                 }
@@ -252,24 +252,24 @@ namespace Nurses_Scheduler.Classes
                     continue;
                 }
                 List<string> temporaryEmployeeScheduleData = new List<string>(requests_dwa.allEmployeeWorkArrangement[employeeNumber - offset].GetWorkArrangementAsList());
-                for (int day = 0; day < daysInMonth; day++)
+                for (int day = 1; day <= daysInMonth; day++)
                 {
-                    bool dayShift = temporaryEmployeeScheduleData[day].Equals("D") | temporaryEmployeeScheduleData[day].Equals("d");
-                    bool nightShift = temporaryEmployeeScheduleData[day].Equals("N");
-                    bool shortShift = temporaryEmployeeScheduleData[day].Equals("d");
-                    bool requestForFreeDay = temporaryEmployeeScheduleData[day].Equals("/");
+                    bool dayShift = temporaryEmployeeScheduleData[day].Contains("D") | temporaryEmployeeScheduleData[day].Equals("d");
+                    bool nightShift = temporaryEmployeeScheduleData[day].Contains("N");
+                    bool shortShift = temporaryEmployeeScheduleData[day].Contains("d");
+                    bool requestForFreeDay = temporaryEmployeeScheduleData[day].Contains("/");
                     bool vacationDay = false;
                     if (!(dayShift | nightShift | shortShift))
                     {
-                        vacationDay = temporaryEmployeeScheduleData[day].Equals("U")  |
-                                      temporaryEmployeeScheduleData[day].Equals("Um") |
-                                      temporaryEmployeeScheduleData[day].Equals("Us") |
-                                      temporaryEmployeeScheduleData[day].Equals("Uo") |
-                                      temporaryEmployeeScheduleData[day].Equals("Uż") |
-                                      temporaryEmployeeScheduleData[day].Equals("C")  |
-                                      temporaryEmployeeScheduleData[day].Equals("Op");
+                        vacationDay = temporaryEmployeeScheduleData[day].Contains("U")  |
+                                      temporaryEmployeeScheduleData[day].Contains("Um") |
+                                      temporaryEmployeeScheduleData[day].Contains("Us") |
+                                      temporaryEmployeeScheduleData[day].Contains("Uo") |
+                                      temporaryEmployeeScheduleData[day].Contains("Uż") |
+                                      temporaryEmployeeScheduleData[day].Contains("C")  |
+                                      temporaryEmployeeScheduleData[day].Contains("Op");
                     }
-                    monthRequests[employeeNumber, day] = new shiftData(dayShift, nightShift, shortShift, vacationDay, requestForFreeDay);
+                    monthRequests[employeeNumber, day - 1] = new shiftData(dayShift, nightShift, shortShift, vacationDay, requestForFreeDay);
                 }
             }
 
@@ -660,8 +660,8 @@ namespace Nurses_Scheduler.Classes
 
         private void AmmendScheduleAccordingToSoftConstrains()
         {
-            // SimullatedAnnealing(100.0, 1.0, 10000, 0.99, "logarithmic");
-            TabuSearch(100, 7, 30);
+            // SimullatedAnnealing(100.0, 1.0, 10000, 0.99, "geometric");
+            TabuSearch(150, 10, 30);
         }
 
 
@@ -1183,7 +1183,7 @@ namespace Nurses_Scheduler.Classes
                 }
 
                 // change tempperature, increase iterations and check finishing factor
-                temperature = newTemperature(temperature, iteration, 0.99, tempType);
+                temperature = newTemperature(initialTemeprature, minTemperature, maxIterations, temperature, iteration, 0.99, tempType);
                 if (temperature < minTemperature)
                 {
                     temperature = minTemperature;
@@ -1270,22 +1270,22 @@ namespace Nurses_Scheduler.Classes
         }
 
 
-        private double newTemperature(double currentTemperature, int currentIteration, double k, string version)
+        private double newTemperature(double startTemperature, double finishTemperature, int maxIterations, double currentTemperature, int currentIteration, double k, string version)
         {
             double temperature = currentTemperature;
 
             switch (version)
             {
-                case "linear":
-                    temperature -= k;
-                    break;
-
-                case "logarithmic":
-                    temperature *= Math.Pow(k, currentIteration);
-                    break;
-
                 case "geometric":
                     temperature *= k;
+                    break;
+
+                case "exponential":
+                    temperature = startTemperature / Math.Exp(k * currentIteration);
+                    break;
+
+                case "trigonometric":
+                    temperature = finishTemperature + 0.55 * (startTemperature - finishTemperature) * (1 + Math.Cos(currentIteration * Math.PI / maxIterations));
                     break;
             }
             return temperature;
@@ -1375,19 +1375,19 @@ namespace Nurses_Scheduler.Classes
                     // \ is equal -> +10pkt
                     if (monthRequests[empl_i, day_i].Data[4] && A[empl_i, day_i].Data[0] == false && A[empl_i, day_i].Data[1] == false)
                     {
-                        pointsToAdd += 100;
+                        pointsToAdd += 300;
                         // continue;
                     }
                     // D is equal -> +8pkt
                     if (A[empl_i, day_i].Data[0] && monthRequests[empl_i, day_i].Data[0])
                     {
-                        pointsToAdd += 80;
+                        pointsToAdd += 200;
                         // continue;
                     }
                     // N is equal -> +7pkt
                     if (A[empl_i, day_i].Data[1] && monthRequests[empl_i, day_i].Data[1])
                     {
-                        pointsToAdd += 70;
+                        pointsToAdd += 150;
                     }
                 }
             }
@@ -1428,7 +1428,7 @@ namespace Nurses_Scheduler.Classes
         }
     
         
-        private bool CheckIfStillEnoughOfFundamentalEmployees(int employeeIndex, int day, ref shiftData[,] monthSchedule)
+        private bool CheckIfStillEnoughOfEmployees(int employeeIndex, int day, ref shiftData[,] monthSchedule)
         {
             dayEmployees de = new dayEmployees(expected_fundamentalEmplyees);
 
@@ -1487,6 +1487,38 @@ namespace Nurses_Scheduler.Classes
                     return false;
                 }
             }
+
+            int dayEmployees = 0;
+            int nightEmployees = 0;
+
+            // check for number of all employees per shift
+            for (int day_i = 0; day_i < daysInMonth; day_i++)
+            {
+                dayEmployees = 0;
+                nightEmployees = 0;
+
+                for (int employee_i = 0; employee_i < employeeCount; employee_i++)
+                {
+                    if (employeeList[employee_i] == null)
+                    {
+                        continue;
+                    }
+
+                    if (monthSchedule[employee_i, day].Data[0] == true)
+                    {
+                        dayEmployees++;
+                    }
+
+                    if (monthSchedule[employee_i, day].Data[1] == true)
+                    {
+                        nightEmployees++;
+                    }
+                }
+                if (dayEmployees < minimalEmployeeNumberPerDayShift || nightEmployees < minimalEmployeeNumberPerNightShift)
+                {
+                    return false;
+                }
+            }
             return true;
         }
 
@@ -1512,7 +1544,7 @@ namespace Nurses_Scheduler.Classes
                 }
             }
             // check if still enough Fundamental employees
-            if (!CheckIfStillEnoughOfFundamentalEmployees(employeeIndex, day1, ref monthSchedule))
+            if (!CheckIfStillEnoughOfEmployees(employeeIndex, day1, ref monthSchedule))
             {
                 return false;
             }
@@ -1533,7 +1565,7 @@ namespace Nurses_Scheduler.Classes
                 }
             }
             // check if still enough Fundamental employees
-            if (!CheckIfStillEnoughOfFundamentalEmployees(employeeIndex, day2, ref monthSchedule))
+            if (!CheckIfStillEnoughOfEmployees(employeeIndex, day2, ref monthSchedule))
             {
                 return false;
             }

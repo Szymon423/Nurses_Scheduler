@@ -69,7 +69,11 @@ namespace Nurses_Scheduler.Classes.DataBaseClasses
                 conn.CreateTable<Employee>();
                 employees = conn.Table<Employee>().ToList().Where(c => c.Id.Equals(Id)).ToList();
             }
-            return employees[0];
+            if (employees.Any())
+            {
+                return employees[0];
+            }
+            return null;
         }
 
         public static List<Employee> GetEmployeeByDepartment(Department dep)
